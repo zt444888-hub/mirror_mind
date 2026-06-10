@@ -1,0 +1,141 @@
+import 'package:flutter/material.dart';
+import '../constants/colors.dart';
+
+class ToolboxScreen extends StatelessWidget {
+  const ToolboxScreen({super.key});
+
+  static const _tools = [
+    _ToolItem(Icons.air, '4-7-8 呼吸练习', '用呼吸找回平静，每次只需1分钟', MirrorColors.secondary, '/breathing'),
+    _ToolItem(Icons.auto_stories, '认知重构卡片', '20张心理学卡片，换个角度看问题', MirrorColors.primary, '/cards'),
+    _ToolItem(Icons.favorite_border, '感恩三件事', '每天记录三件值得感恩的事', MirrorColors.accent, '/gratitude'),
+    _ToolItem(Icons.healing, '情绪急救包', '根据当前心情，即时获取应对建议', MirrorColors.warm, '/emergency'),
+    _ToolItem(Icons.self_improvement, '冥想引导', '文字引导 + 计时器，放空心灵', const Color(0xFF7B8BA6), '/meditation'),
+    _ToolItem(Icons.dashboard_customize, '心情卡片', '把今天的心情做成一张精美卡片', MirrorColors.primaryDark, '/mood-card'),
+    _ToolItem(Icons.menu_book, '情绪词库', '60+精准词汇，提升情绪粒度', const Color(0xFF8D6E63), '/emotion-vocabulary'),
+    _ToolItem(Icons.track_changes, '7天情绪挑战', '连续7天打卡，培养积极情绪习惯', const Color(0xFFD4A017), '/emotion-challenge'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(20, 8, 20, 4),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              '选择一种方式照顾自己',
+              style: TextStyle(fontSize: 15, color: MirrorColors.textSecondary),
+            ),
+          ),
+        ),
+        Expanded(
+          child: GridView.builder(
+            padding: const EdgeInsets.all(16),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 0.92,
+            ),
+            itemCount: _tools.length,
+            itemBuilder: (context, index) => _buildGridCard(context, _tools[index]),
+          ),
+        ),
+        _buildQuote(),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Widget _buildGridCard(BuildContext context, _ToolItem tool) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Card(
+      child: InkWell(
+        onTap: () => Navigator.pushNamed(context, tool.route),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: tool.color.withOpacity(0.18),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(tool.icon, color: tool.color, size: 26),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                tool.title,
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                tool.subtitle,
+                style: TextStyle(
+                  fontSize: 11,
+                  height: 1.3,
+                  color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuote() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            MirrorColors.primaryLight.withOpacity(0.3),
+            MirrorColors.accentLight.withOpacity(0.3),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const Column(
+        children: [
+          Text(
+            '"照顾好自己，不是自私，是智慧。"',
+            style: TextStyle(
+              fontSize: 15,
+              fontStyle: FontStyle.italic,
+              color: MirrorColors.primaryDark,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 8),
+          Text(
+            '—— 心镜',
+            style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ToolItem {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color color;
+  final String route;
+
+  const _ToolItem(this.icon, this.title, this.subtitle, this.color, this.route);
+}

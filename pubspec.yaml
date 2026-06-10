@@ -1,0 +1,42 @@
+name: mirror_mind
+description: 心镜 - AI情绪日记与心理健康。每天5分钟，给情绪做一次体检。
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  provider: ^6.1.1
+  sqflite: ^2.3.0
+  # sqflite_sqlcipher: ^2.3.0  # 暂时注释掉，可能版本不兼容
+  path_provider: ^2.1.1
+  flutter_secure_storage: ^9.0.0
+  http: ^1.1.0
+  intl: ^0.20.2
+  share_plus: ^10.0.0
+  path: ^1.8.3
+  speech_to_text: ^6.5.0
+  permission_handler: ^11.1.0
+  flutter_local_notifications: ^18.0.0
+  timezone: ^0.9.4
+  shared_preferences: ^2.3.0
+  fl_chart: ^0.70.0
+  url_launcher: ^6.3.0
+  pdf: ^3.11.0
+  in_app_purchase: ^3.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icons/

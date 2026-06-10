@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心镜 - 情绪广场预览</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+            background: #ffffff;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .app-bar {
+            background: linear-gradient(135deg, #B8A9C9 0%, #9B8BB4 100%);
+            color: white;
+            padding: 20px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(184, 169, 201, 0.3);
+        }
+        .app-bar h1 { font-size: 18px; font-weight: 600; }
+        .filter-bar {
+            padding: 16px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .filter-chip {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #f0f2f5;
+            color: #666;
+            font-size: 14px;
+            margin-right: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+        }
+        .filter-chip:hover { background: #e4e6eb; }
+        .filter-chip.active {
+            background: linear-gradient(135deg, #B8A9C9 0%, #9B8BB4 100%);
+            color: white;
+        }
+        .posts-container {
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+        .post-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0f0f0;
+        }
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .emotion-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+        .emotion-happy { background: linear-gradient(135deg, #FFE4E1 0%, #FFB6C1 100%); color: #c97b84; }
+        .emotion-calm { background: linear-gradient(135deg, #AED6F1 0%, #85C1E9 100%); color: #5a9fc5; }
+        .emotion-anxious { background: linear-gradient(135deg, #F5B7B1 0%, #EC7063 100%); color: #b9564b; }
+        .emotion-excited { background: linear-gradient(135deg, #D7BDE2 0%, #BB8FCE 100%); color: #966bc2; }
+        .emotion-sad { background: linear-gradient(135deg, #ABB2B9 0%, #808B96 100%); color: #5f6a74; }
+        .emotion-frustrated { background: linear-gradient(135deg, #FADBD8 0%, #F5B7B1 100%); color: #c97b84; }
+        .user-info { flex: 1; }
+        .username { font-weight: 600; font-size: 14px; color: #1a1a1a; }
+        .post-time { font-size: 12px; color: #999; }
+        .post-content { font-size: 15px; line-height: 1.6; color: #333; margin-bottom: 12px; }
+        .post-actions {
+            display: flex;
+            align-items: center;
+            padding-top: 8px;
+            border-top: 1px solid #f5f5f5;
+        }
+        .action-btn {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+        .action-btn:hover { color: #B8A9C9; }
+        .action-btn.liked { color: #e74c3c; }
+        .action-btn svg { width: 20px; height: 20px; margin-right: 6px; }
+        .action-btn span { font-size: 13px; }
+        .fab-button {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #B8A9C9 0%, #9B8BB4 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(184, 169, 201, 0.4);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .fab-button:hover { transform: scale(1.1); }
+        .fab-button svg { width: 24px; height: 24px; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: white;
+            width: 90%;
+            max-width: 360px;
+            border-radius: 20px;
+            padding: 24px;
+        }
+        .modal-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; text-align: center; }
+        .modal textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            resize: none;
+            margin-bottom: 16px;
+            outline: none;
+        }
+        .modal textarea:focus { border-color: #B8A9C9; }
+        .modal-actions { display: flex; gap: 12px; }
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .modal-btn.cancel { background: #f5f5f5; color: #666; }
+        .modal-btn.submit {
+            background: linear-gradient(135deg, #B8A9C9 0%, #9B8BB4 100%);
+            color: white;
+        }
+        .emotion-filter {
+            display: flex;
+            gap: 8px;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        .emotion-tag {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .emotion-tag.active { border-color: #B8A9C9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-bar">
+            <h1>情绪广场</h1>
+        </div>
+        <div class="filter-bar">
+            <button class="filter-chip active" onclick="filterPosts('all', this)">全部</button>
+            <button class="filter-chip" onclick="filterPosts('happy', this)">开心</button>
+            <button class="filter-chip" onclick="filterPosts('calm', this)">平静</button>
+            <button class="filter-chip" onclick="filterPosts('anxious', this)">焦虑</button>
+            <button class="filter-chip" onclick="filterPosts('excited', this)">兴奋</button>
+            <button class="filter-chip" onclick="filterPosts('sad', this)">难过</button>
+            <button class="filter-chip" onclick="filterPosts('frustrated', this)">烦躁</button>
+        </div>
+        <div class="posts-container" id="postsContainer"></div>
+        <div class="fab-button" onclick="openPostModal()">
+            <svg viewBox="0 0 24 24" fill="white">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="postModal">
+        <div class="modal">
+            <div class="modal-title">分享心情</div>
+            <textarea placeholder="说说你的心情..."></textarea>
+            <div class="emotion-filter">
+                <div class="emotion-tag emotion-happy" onclick="selectEmotion(this)"></div>
+                <div class="emotion-tag emotion-calm" onclick="selectEmotion(this)"></div>
+                <div class="emotion-tag emotion-anxious" onclick="selectEmotion(this)"></div>
+                <div class="emotion-tag emotion-excited" onclick="selectEmotion(this)"></div>
+                <div class="emotion-tag emotion-sad" onclick="selectEmotion(this)"></div>
+                <div class="emotion-tag emotion-frustrated" onclick="selectEmotion(this)"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closePostModal()">取消</button>
+                <button class="modal-btn submit" onclick="submitPost()">发布</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fallbackPosts = [
+            {"id":"1","emotion":"excited","emotionLabel":"兴奋","content":"收到了心仪公司的offer！努力终于有了回报！","likes":67,"isLiked":false,"timeAgo":"2小时前"},
+            {"id":"2","emotion":"calm","emotionLabel":"平静","content":"早上起来做了冥想，一整天都感觉很平静","likes":45,"isLiked":true,"timeAgo":"5小时前"},
+            {"id":"3","emotion":"anxious","emotionLabel":"焦虑","content":"最近总是失眠，不知道该怎么办...","likes":32,"isLiked":false,"timeAgo":"8小时前"},
+            {"id":"4","emotion":"frustrated","emotionLabel":"烦躁","content":"今天工作压力好大，但是完成了一个很难的项目","likes":24,"isLiked":false,"timeAgo":"昨天"},
+            {"id":"5","emotion":"happy","emotionLabel":"开心","content":"和朋友一起吃了火锅，聊了很多开心的话题","likes":18,"isLiked":false,"timeAgo":"昨天"},
+            {"id":"6","emotion":"sad","emotionLabel":"难过","content":"暗恋了很久的人今天结婚了，祝他幸福吧","likes":28,"isLiked":true,"timeAgo":"2天前"},
+            {"id":"7","emotion":"happy","emotionLabel":"开心","content":"完成了一个月的健身挑战，感觉身体变好了","likes":52,"isLiked":false,"timeAgo":"3天前"},
+            {"id":"8","emotion":"calm","emotionLabel":"平静","content":"周末去公园散步，听着鸟鸣，心情很放松","likes":38,"isLiked":false,"timeAgo":"3天前"},
+            {"id":"9","emotion":"excited","emotionLabel":"兴奋","content":"准备去旅行了，好期待这次的旅程！","likes":44,"isLiked":true,"timeAgo":"4天前"},
+            {"id":"10","emotion":"sad","emotionLabel":"难过","content":"工作三年了，感觉一直在原地踏步","likes":15,"isLiked":false,"timeAgo":"5天前"},
+            {"id":"11","emotion":"anxious","emotionLabel":"焦虑","content":"马上要面试了，好紧张啊","likes":29,"isLiked":false,"timeAgo":"1周前"},
+            {"id":"12","emotion":"happy","emotionLabel":"开心","content":"今天收到了好朋友送的生日礼物！","likes":41,"isLiked":true,"timeAgo":"1周前"},
+            {"id":"13","emotion":"calm","emotionLabel":"平静","content":"学会了冥想，现在每天都能静下心来","likes":33,"isLiked":false,"timeAgo":"1周前"},
+            {"id":"14","emotion":"excited","emotionLabel":"兴奋","content":"项目终于上线了，太有成就感了！","likes":55,"isLiked":false,"timeAgo":"1周前"},
+            {"id":"15","emotion":"frustrated","emotionLabel":"烦躁","content":"今天堵车堵了一个小时，好烦","likes":12,"isLiked":false,"timeAgo":"2周前"}
+        ];
+
+        let currentPosts = [];
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadPosts();
+        });
+
+        async function loadPosts() {
+            try {
+                const response = await fetch('mock_data.json');
+                if (response.ok) {
+                    currentPosts = await response.json();
+                    console.log('已加载JSON数据:', currentPosts.length, '条');
+                } else {
+                    currentPosts = [...fallbackPosts];
+                    console.log('使用内置数据');
+                }
+            } catch (error) {
+                currentPosts = [...fallbackPosts];
+                console.log('加载失败，使用内置数据:', error);
+            }
+            renderPosts(currentPosts);
+        }
+
+        function renderPosts(posts) {
+            const container = document.getElementById('postsContainer');
+            container.innerHTML = posts.map(post => `
+                <div class="post-card" data-emotion="${post.emotion}">
+                    <div class="post-header">
+                        <div class="emotion-circle emotion-${post.emotion}">${post.emotionLabel}</div>
+                        <div class="user-info">
+                            <div class="username">匿名用户</div>
+                            <div class="post-time">${post.timeAgo}</div>
+                        </div>
+                    </div>
+                    <div class="post-content">${post.content}</div>
+                    <div class="post-actions">
+                        <div class="action-btn${post.isLiked ? ' liked' : ''}" onclick="toggleLike(this)">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                            <span>${post.likes}</span>
+                        </div>
+                        <div class="action-btn">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2z"/>
+                            </svg>
+                            <span>评论</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleLike(element) {
+            element.classList.toggle('liked');
+            const span = element.querySelector('span');
+            span.textContent = element.classList.contains('liked') 
+                ? parseInt(span.textContent) + 1 
+                : parseInt(span.textContent) - 1;
+        }
+
+        function filterPosts(emotion, chipElement) {
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            if (chipElement) chipElement.classList.add('active');
+            
+            document.querySelectorAll('.post-card').forEach(card => {
+                card.style.display = emotion === 'all' || card.dataset.emotion === emotion 
+                    ? 'block' 
+                    : 'none';
+            });
+        }
+
+        function openPostModal() { 
+            document.getElementById('postModal').classList.add('show');
+            document.querySelector('.modal textarea').value = '';
+            document.querySelectorAll('.emotion-tag').forEach(t => t.classList.remove('active'));
+        }
+        function closePostModal() { 
+            document.getElementById('postModal').classList.remove('show');
+            document.querySelector('.modal textarea').value = '';
+            document.querySelectorAll('.emotion-tag').forEach(t => t.classList.remove('active'));
+        }
+        function selectEmotion(element) {
+            document.querySelectorAll('.emotion-tag').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+        }
+        function submitPost() {
+            const content = document.querySelector('.modal textarea').value.trim();
+            const selectedEmotion = document.querySelector('.emotion-tag.active');
+            
+            if (!validatePost(content, selectedEmotion)) {
+                return;
+            }
+
+            const emotionLabels = {
+                'emotion-happy': '开心',
+                'emotion-calm': '平静', 
+                'emotion-anxious': '焦虑',
+                'emotion-excited': '兴奋',
+                'emotion-sad': '难过',
+                'emotion-frustrated': '烦躁'
+            };
+
+            const newPost = {
+                id: Date.now().toString(),
+                emotion: selectedEmotion.classList[1].replace('emotion-', ''),
+                emotionLabel: emotionLabels[selectedEmotion.classList[1]],
+                content: content,
+                likes: 0,
+                isLiked: false,
+                timeAgo: '刚刚'
+            };
+
+            currentPosts.unshift(newPost);
+            renderPosts(currentPosts);
+            closePostModal();
+            alert('心情发布成功！');
+        }
+        function validatePost(content, selectedEmotion) {
+            if (!content || content.length === 0) {
+                alert('请输入心情内容');
+                return false;
+            }
+            
+            if (content.length < 2) {
+                alert('内容不能少于2个字符');
+                return false;
+            }
+            
+            if (content.length > 500) {
+                alert('内容不能超过500个字符');
+                return false;
+            }
+            
+            if (!selectedEmotion) {
+                alert('请选择一个情绪');
+                return false;
+            }
+            
+            if (content.includes('<script') || content.includes('javascript:')) {
+                alert('内容包含不安全的字符');
+                return false;
+            }
+            
+            return true;
+        }
+    </script>
+</body>
+</html>
