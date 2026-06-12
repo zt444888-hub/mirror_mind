@@ -21,7 +21,7 @@ workflows:
         pip3 install --upgrade cryptography pyjwt requests --quiet
 
         echo "===== 0.5 Generate Certificate ====="
-        echo "" > /tmp/key.p8
+        echo "$APP_STORE_CONNECT_API_KEY" > /tmp/key.p8
         NOW=$(date +%s)
         HEADER=$(echo -n '{"alg":"ES256","kid":"'$APP_STORE_CONNECT_KEY_ID'","typ":"JWT"}' | base64 | tr '+/' '-_' | tr -d '=')
         PAYLOAD=$(echo -n '{"iss":"'$APP_STORE_CONNECT_ISSUER_ID'","exp":'$((NOW+1200))',"aud":"appstoreconnect-v1","iat":'$NOW'}' | base64 | tr '+/' '-_' | tr -d '=')
