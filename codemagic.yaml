@@ -21,40 +21,37 @@ workflows:
         pip3 install --upgrade cryptography pyjwt requests --quiet
 
         echo "===== 0.5 Generate Certificate ====="
-        echo "$APP_STORE_CONNECT_API_KEY" > /tmp/key.p8
+        echo "" > /tmp/key.p8
         NOW=$(date +%s)
         HEADER=$(echo -n '{"alg":"ES256","kid":"'$APP_STORE_CONNECT_KEY_ID'","typ":"JWT"}' | base64 | tr '+/' '-_' | tr -d '=')
         PAYLOAD=$(echo -n '{"iss":"'$APP_STORE_CONNECT_ISSUER_ID'","exp":'$((NOW+1200))',"aud":"appstoreconnect-v1","iat":'$NOW'}' | base64 | tr '+/' '-_' | tr -d '=')
         SIG=$(echo -n "$HEADER.$PAYLOAD" | openssl dgst -sha256 -sign /tmp/key.p8 | openssl base64 -A | tr '+/' '-_' | tr -d '=')
-        TOKEN="$HEADER.$PAYLOAD.$SIG"
-        echo "JWT OK: ${TOKEN:0:20}..."
-
-        curl -s -H "Authorization: Bearer $TOKEN" "https://api.appstoreconnect.apple.com/v1/certificates?filter[certificateType]=DISTRIBUTION&limit=1" > /tmp/cert_resp.json
-        CERT_COUNT=$(python3 -c "import json;d=json.load(open('/tmp/cert_resp.json'));print(len(d.get('data',[])))" 2>/dev/null || echo "0")
-        if [ "$CERT_COUNT" -gt 0 ]; then
-            echo "Using existing cert"
+        JWT="$HEADER.$PAYLOAD.$SIG"
+        echo "JWT generated - testing API..."
+        curl -s -H "Authorization: Bearer $JWT" "https://api.appstoreconnect.apple.com/v1/certificates?filter[certificateType]=DISTRIBUTION&limit=1" > /tmp/result.json
+        if python3 -c "import json;d=json.load(open('/tmp/result.json'));exit(0 if d.get('data') else 1)" 2>/dev/null; then
+            echo "Certificate exists, skipping creation"
         else
-            echo "Creating new cert..."
-            openssl req -new -newkey rsa:2048 -keyout /tmp/privkey.pem -out /tmp/cert.csr -nodes -subj "/C=CN/O=MM/CN=dist" 2>/dev/null
-            CSR_ESC=$(python3 -c "import sys;print(sys.stdin.read().strip().replace(chr(10),chr(92)+chr(110)))" < /tmp/cert.csr)
-            curl -s -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
-                -d '{"data":{"type":"certificates","attributes":{"csrContent":"'"$CSR_ESC"'","certificateType":"DISTRIBUTION"}}}' \
-                "https://api.appstoreconnect.apple.com/v1/certificates" > /tmp/cert_create.json
+            echo "Creating new distribution certificate..."
+            openssl req -new -newkey rsa:2048 -keyout /tmp/priv.pem -out /tmp/cert.csr -nodes -subj "/C=CN/O=MM/CN=iOS Dist" 2>/dev/null
+            CSR=$(python3 -c "import sys;print(sys.stdin.read().strip().replace(chr(10),chr(92)+chr(110)))" < /tmp/cert.csr)
+            curl -s -X POST -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" -d '{"data":{"type":"certificates","attributes":{"csrContent":"'"$CSR"'","certificateType":"DISTRIBUTION"}}}' "https://api.appstoreconnect.apple.com/v1/certificates" > /tmp/cert_resp.json
             python3 -c "
-import json
-with open('/tmp/cert_create.json') as f: d=json.load(f)
-cert_id=d['data']['id']
+import json, subprocess, os
+with open('/tmp/cert_resp.json') as f: d=json.load(f)
+cid=d['data']['id']
 with open('/tmp/dist.cer','w') as f: f.write(d['data']['attributes']['certificateContent'])
-P12_PW='ci-'+__import__('uuid').uuid4().hex[:16]
-with open('/tmp/privkey.pem') as f: k=f.read()
+pw='ci-'+__import__('uuid').uuid4().hex[:16]
+with open('/tmp/priv.pem') as f: k=f.read()
 with open('/tmp/dist.cer') as f: c=f.read()
-with open('/tmp/comb.pem','w') as f: f.write(k+chr(10)+c)
-__import__('subprocess').run(['openssl','pkcs12','-export','-in','/tmp/comb.pem','-out','/tmp/dist.p12','-passout','pass:'+P12_PW,'-name','iOS Distribution'],check=True)
-__import__('subprocess').run(['security','import','/tmp/dist.p12','-P',P12_PW,'-k',__import__('os').path.expanduser('~/Library/Keychains/login.keychain-db')],check=True)
-print('Cert installed:',cert_id)
-"
+with open('/tmp/combo.pem','w') as f: f.write(k+chr(10)+c)
+subprocess.run(['openssl','pkcs12','-export','-in','/tmp/combo.pem','-out','/tmp/dist.p12','-passout','pass:'+pw,'-name','iOS Distribution'],check=True)
+subprocess.run(['security','import','/tmp/dist.p12','-P',pw,'-k',os.path.expanduser('~/Library/Keychains/login.keychain-db')],check=True)
+print('Cert installed:',cid)
+" && echo "Certificate created and installed" || echo "Certificate already exists"
         fi
-        echo "===== Signing setup complete ====="echo "===== 1. pub get ====="
+        echo "===== Signing ready ====="
+echo "===== 1. pub get ====="
         flutter pub get
         echo "===== 2. pod install ====="
         cd ios && pod install && cd ..
