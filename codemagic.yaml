@@ -5,6 +5,10 @@ workflows:
     environment:
       flutter: 3.44.1
       xcode: 16.0
+      vars:
+        APP_STORE_CONNECT_KEY_ID: Encrypted(Z0FBQUFBQm5HOVkxUG4yM0hfU2pYXzlfT2txeXdoQ0M3b2dpWXN3dkw4dU1qYkR2UTNISkRRd1o5d0VaenQwRXl6dmtiY210bHZWZkN6Z3BWYTRKclhIUkdGSXlrN2lYSlE9PQ==)
+        APP_STORE_CONNECT_ISSUER_ID: Encrypted(Z0FBQUFBQm5HOVkxWUdvLWg0cm1Yb3oxSUdoVXN2ZzR1T0pxNi0wV3B0QmxGV1diVm1PcUY3bFRaUnpLMHpPRFBSVlpVU1dXTjRHS2h5LVFzSDRNYlJ6d1dYcXFaZ0hoOUE9PQ==)
+        APP_STORE_CONNECT_API_KEY: Encrypted(Z0FBQUFBQm5HOVkxaDdjdndsR3FDMS1SNXZLV3ZfRHRjYkhhR2tCSUtJbFdiUGRYUUMxZTNfTm1yNS1Yb0ttaG5BcG9GQzNpdHFVdUxCaVJIdFNyNUZBVi1BR3R1c0hEbDZxazJNYi1KRE9UN1ExV2F6NUk1alBUQ0g0UGJyMEhHYzh3YXhoV2dKa2NPSl9XN1NiQ0czLXBWR19qVUtiVFhub0FJbG1FTHBtTWRyNHc9PQ==)
     triggering:
       events:
         - push
@@ -21,7 +25,11 @@ workflows:
         cd ios && pod install && cd ..
         echo "===== 3. build IPA ====="
         flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
-        echo "===== 4. upload ====="
-        xcrun altool --upload-app -f $(find build/ios/ipa -name "*.ipa" | head -1) -t ios --apiKey $APP_STORE_CONNECT_KEY_ID --apiIssuer $APP_STORE_CONNECT_ISSUER_ID
     artifacts:
       - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_KEY_ID
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        key: $APP_STORE_CONNECT_API_KEY
+        submit_to_testflight: true
