@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_local_notifications_platform_interface/flutter_local_notifications_platform_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
-/// 全局 NavigatorKey，用于通知点击后导航到指定页面
+/// 閸忋劌鐪� NavigatorKey閿涘瞼鏁ゆ禍搴ㄢ偓姘辩叀閻愮懓鍤崥搴☆嚤閼割亜鍩岄幐鍥х暰妞ょ敻娼�
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-/// 本地通知服务：负责每日情绪记录提醒与呼吸练习提醒
+/// 閺堫剙婀撮柅姘辩叀閺堝秴濮熼敍姘崇鐠愶絾鐦￠弮銉﹀剰缂侇亣顔囪ぐ鏇熷絹闁辨帊绗岄崨鐓庢儧缂佸啩绡勯幓鎰板晪
 class NotificationService {
   static final NotificationService _instance = NotificationService._();
   factory NotificationService() => _instance;
   NotificationService._();
 
-  /// 显式单例引用（推荐在业务代码中使用以表明单例意图）
+  /// 閺勬儳绱￠崡鏇氱伐瀵洜鏁ら敍鍫熷腹閼芥劕婀稉姘娴狅絿鐖滄稉顓濆▏閻€劋浜掔悰銊︽閸楁洑绶ラ幇蹇撴禈閿�?
   static NotificationService get instance => _instance;
 
   final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
 
-  // 通知 ID 常量
+  // 闁氨鐓� ID 鐢悂鍣�
   static const int dailyReminderId = 1001;
   static const int breathingReminderId = 1002;
   static const int challengeReminderId = 1003;
@@ -27,7 +26,7 @@ class NotificationService {
   static const String breathingReminderChannelId = 'breathing_reminder';
   static const String challengeReminderChannelId = 'challenge_reminder';
 
-  // SharedPreferences 键
+  // SharedPreferences 闁�?
   static const String _keyDailyEnabled = 'notification_daily_enabled';
   static const String _keyDailyHour = 'notification_daily_hour';
   static const String _keyDailyMinute = 'notification_daily_minute';
@@ -38,26 +37,26 @@ class NotificationService {
   static const String _keyChallengeHour = 'notification_challenge_hour';
   static const String _keyChallengeMinute = 'notification_challenge_minute';
 
-  // 默认时间
+  // 姒涙ǹ顓婚弮鍫曟？
   static const int defaultDailyHour = 21;
   static const int defaultDailyMinute = 0;
   static const int defaultBreathingHour = 12;
   static const int defaultBreathingMinute = 0;
 
-  // 应用当前状态
+  // 鎼存梻鏁よぐ鎾冲閻樿埖鈧�?
   AppLifecycleState _appState = AppLifecycleState.resumed;
 
-  /// 初始化通知插件（含时区数据）
+  /// 閸掓繂顫愰崠鏍偓姘辩叀閹绘帊娆㈤敍鍫濇儓閺冭泛灏弫鐗堝祦閿�?
   Future<void> initialize() async {
     tz.initializeTimeZones();
 
-    // 监听应用生命周期状态变化
+    // 閻╂垵鎯夋惔鏃傛暏閻㈢喎鎳￠崨銊︽埂閻樿埖鈧礁褰夐崠?
     WidgetsBinding.instance.addObserver(_AppLifecycleListener(this));
 
-    // Android 通知渠道配置
+    // Android 闁氨鐓″〒鐘讳壕闁板秶鐤�
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // iOS 通知权限配置
+    // iOS 闁氨鐓￠弶鍐闁板秶鐤�
     const iosSettings = DarwinInitializationSettings(
       requestSoundPermission: true,
       requestBadgePermission: true,
@@ -74,42 +73,42 @@ class NotificationService {
       onDidReceiveNotificationResponse: _onNotificationResponse,
     );
 
-    // 创建 Android 通知渠道
+    // 閸掓稑缂� Android 闁氨鐓″〒鐘讳壕
     await _createAndroidChannels();
   }
 
-  /// 更新应用状态（供外部生命周期监听器调用）
+  /// 閺囧瓨鏌婃惔鏃傛暏閻樿埖鈧緤绱欐笟娑橆樆闁劎鏁撻崨钘夋噯閺堢喓娲冮崥顒€娅掔拫鍐暏閿�?
   void updateAppState(AppLifecycleState state) {
     _appState = state;
   }
 
-  /// 检查应用是否在前台运行
+  /// 濡偓閺屻儱绨查悽銊︽Ц閸氾箑婀崜宥呭酱鏉╂劘顢�
   bool _isAppInForeground() {
     return _appState == AppLifecycleState.resumed;
   }
 
-  /// 通知点击回调：导航到首页记录页
+  /// 闁氨鐓￠悙鐟板毊閸ョ偠鐨熼敍姘嚤閼割亜鍩屾＃鏍€夌拋鏉跨秿妞�?
   void _onNotificationResponse(NotificationResponse response) {
-    // 只有在应用处于前台时才执行导航
+    // 閸欘亝婀侀崷銊ョ安閻€劌顦╂禍搴″閸欑増妞傞幍宥嗗⒔鐞涘苯顕遍懜?
     if (!_isAppInForeground()) {
-      // 应用在后台，不执行导航，系统会自动打开应用到当前页面
+      // 鎼存梻鏁ら崷銊ユ倵閸欏府绱濇稉宥嗗⒔鐞涘苯顕遍懜顏庣礉缁崵绮烘导姘冲殰閸斻劍澧﹀鈧惔鏃傛暏閸掓澘缍嬮崜宥夈€夐棃?
       return;
     }
 
     final nav = navigatorKey.currentState;
     if (nav == null) return;
 
-    // 所有通知点击统一导航到首页（记录页）
+    // 閹碘偓閺堝鈧氨鐓￠悙鐟板毊缂佺喍绔寸€佃壈鍩呴崚浼搭浕妞ょ绱欑拋鏉跨秿妞ょ绱�
     nav.pushNamedAndRemoveUntil('/', (route) => false);
   }
 
-  /// 创建 Android 通知渠道
+  /// 閸掓稑缂� Android 闁氨鐓″〒鐘讳壕
   Future<void> _createAndroidChannels() async {
     final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
 
     if (androidPlugin != null) {
-      // 每日记录提醒渠道
+      // 濮ｅ繑妫╃拋鏉跨秿閹绘劙鍟嬪〒鐘讳壕
       await androidPlugin.createNotificationChannel(
         const AndroidNotificationChannel(
           dailyReminderChannelId,
@@ -120,18 +119,18 @@ class NotificationService {
         ),
       );
 
-      // 呼吸练习提醒渠道
+      // 閸涚厧鎯涚紒鍐х瘎閹绘劙鍟嬪〒鐘讳壕
       await androidPlugin.createNotificationChannel(
         const AndroidNotificationChannel(
           breathingReminderChannelId,
-          '呼吸练习提醒',
-          description: '定时提醒你做呼吸练习',
+          '閸涚厧鎯涚紒鍐х瘎閹绘劙鍟�',
+          description: '鐎规碍妞傞幓鎰板晪娴ｇ姴浠涢崨鐓庢儧缂佸啩绡�',
           importance: Importance.defaultImportance,
           enableVibration: true,
         ),
       );
 
-      // 7天挑战提醒渠道
+      // 7婢垛晜瀵幋妯诲絹闁辨帗绗柆?
       await androidPlugin.createNotificationChannel(
         const AndroidNotificationChannel(
           challengeReminderChannelId,
@@ -144,25 +143,25 @@ class NotificationService {
     }
   }
 
-  // ==================== 每日记录提醒 ====================
+  // ==================== 濮ｅ繑妫╃拋鏉跨秿閹绘劙鍟� ====================
 
-  /// 安排每日情绪记录提醒
+  /// 鐎瑰甯撳В蹇旀）閹懐鍗庣拋鏉跨秿閹绘劙鍟�
   Future<void> scheduleDailyReminder({required int hour, required int minute}) async {
-    // 先取消已有提醒
+    // 閸忓牆褰囧☉鍫濆嚒閺堝褰侀柋?
     await _plugin.cancel(dailyReminderId);
 
     final now = DateTime.now();
     var scheduledDate = tz.TZDateTime.local(now.year, now.month, now.day, hour, minute);
 
-    // 如果今天的时间已过，安排到明天
+    // 婵″倹鐏夋禒濠傘亯閻ㄥ嫭妞傞梻鏉戝嚒鏉╁浄绱濈€瑰甯撻崚鐗堟婢�?
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
 
     await _plugin.zonedSchedule(
       dailyReminderId,
-      '心镜',
-      '今天心情怎么样？花一分钟记录一下吧~',
+      '心镜 · 7天挑战',
+      '娴犲﹤銇夎箛鍐╁剰閹簼绠為弽鍑ょ吹閼哄彉绔撮崚鍡涙寭鐠佹澘缍嶆稉鈧稉瀣儌~',
       scheduledDate,
       const NotificationDetails(
         android: AndroidNotificationDetails(
@@ -183,23 +182,23 @@ class NotificationService {
       matchDateTimeComponents: DateTimeComponents.time,
     );
 
-    // 保存设置
+    // 娣囨繂鐡ㄧ拋鍓х枂
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_keyDailyEnabled, true);
     await prefs.setInt(_keyDailyHour, hour);
     await prefs.setInt(_keyDailyMinute, minute);
   }
 
-  /// 取消每日记录提醒
+  /// 閸欐牗绉峰В蹇旀）鐠佹澘缍嶉幓鎰板晪
   Future<void> cancelDailyReminder() async {
     await _plugin.cancel(dailyReminderId);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_keyDailyEnabled, false);
   }
 
-  // ==================== 呼吸练习提醒 ====================
+  // ==================== 閸涚厧鎯涚紒鍐х瘎閹绘劙鍟� ====================
 
-  /// 安排每日呼吸练习提醒
+  /// 鐎瑰甯撳В蹇旀）閸涚厧鎯涚紒鍐х瘎閹绘劙鍟�
   Future<void> scheduleBreathingReminder({required int hour, required int minute}) async {
     await _plugin.cancel(breathingReminderId);
 
@@ -212,14 +211,14 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       breathingReminderId,
-      '心镜',
-      '该做个呼吸练习放松一下了',
+      '心镜 · 7天挑战',
+      '鐠囥儱浠涙稉顏勬嚑閸氬摜绮屾稊鐘虫杹閺夊彞绔存稉瀣╃啊',
       scheduledDate,
       const NotificationDetails(
         android: AndroidNotificationDetails(
           breathingReminderChannelId,
-          '呼吸练习提醒',
-          channelDescription: '定时提醒你做呼吸练习',
+          '閸涚厧鎯涚紒鍐х瘎閹绘劙鍟�',
+          channelDescription: '鐎规碍妞傞幓鎰板晪娴ｇ姴浠涢崨鐓庢儧缂佸啩绡�',
           importance: Importance.defaultImportance,
           priority: Priority.defaultPriority,
         ),
@@ -240,16 +239,16 @@ class NotificationService {
     await prefs.setInt(_keyBreathingMinute, minute);
   }
 
-  /// 取消呼吸练习提醒
+  /// 閸欐牗绉烽崨鐓庢儧缂佸啩绡勯幓鎰板晪
   Future<void> cancelBreathingReminder() async {
     await _plugin.cancel(breathingReminderId);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_keyBreathingEnabled, false);
   }
 
-  // ==================== 批量操作 ====================
+  // ==================== 閹靛綊鍣洪幙宥勭稊 ====================
 
-  /// 取消所有通知
+  /// 閸欐牗绉烽幍鈧張澶愨偓姘辩叀
   Future<void> cancelAll() async {
     await _plugin.cancelAll();
     final prefs = await SharedPreferences.getInstance();
@@ -258,14 +257,14 @@ class NotificationService {
     await prefs.setBool(_keyChallengeEnabled, false);
   }
 
-  // ==================== 设置读取 ====================
+  // ==================== 鐠佸墽鐤嗙拠璇插絿 ====================
 
-  /// 从 SharedPreferences 读取并恢复所有通知设置
-  /// 应用启动时调用
+  /// 娴�?SharedPreferences 鐠囪褰囬獮鑸典划婢跺秵澧嶉張澶愨偓姘辩叀鐠佸墽鐤�
+  /// 鎼存梻鏁ら崥顖氬З閺冩儼鐨熼悽?
   Future<void> restoreScheduledNotifications() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // 恢复每日记录提醒
+    // 閹垹顦插В蹇旀）鐠佹澘缍嶉幓鎰板晪
     final dailyEnabled = prefs.getBool(_keyDailyEnabled) ?? false;
     if (dailyEnabled) {
       final hour = prefs.getInt(_keyDailyHour) ?? defaultDailyHour;
@@ -273,7 +272,7 @@ class NotificationService {
       await scheduleDailyReminder(hour: hour, minute: minute);
     }
 
-    // 恢复呼吸练习提醒
+    // 閹垹顦查崨鐓庢儧缂佸啩绡勯幓鎰板晪
     final breathingEnabled = prefs.getBool(_keyBreathingEnabled) ?? false;
     if (breathingEnabled) {
       final hour = prefs.getInt(_keyBreathingHour) ?? defaultBreathingHour;
@@ -281,7 +280,7 @@ class NotificationService {
       await scheduleBreathingReminder(hour: hour, minute: minute);
     }
 
-    // 恢复挑战提醒
+    // 閹垹顦查幐鎴炲灛閹绘劙鍟�
     final challengeEnabled = prefs.getBool(_keyChallengeEnabled) ?? false;
     if (challengeEnabled) {
       final hour = prefs.getInt(_keyChallengeHour) ?? defaultDailyHour;
@@ -290,13 +289,13 @@ class NotificationService {
     }
   }
 
-  /// 获取每日记录提醒是否开启
+  /// 閼惧嘲褰囧В蹇旀）鐠佹澘缍嶉幓鎰板晪閺勵垰鎯佸鈧崥?
   static Future<bool> isDailyEnabled() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_keyDailyEnabled) ?? false;
   }
 
-  /// 获取每日记录提醒时间
+  /// 閼惧嘲褰囧В蹇旀）鐠佹澘缍嶉幓鎰板晪閺冨爼妫�
   static Future<Map<String, int>> getDailyTime() async {
     final prefs = await SharedPreferences.getInstance();
     return {
@@ -305,13 +304,13 @@ class NotificationService {
     };
   }
 
-  /// 获取呼吸练习提醒是否开启
+  /// 閼惧嘲褰囬崨鐓庢儧缂佸啩绡勯幓鎰板晪閺勵垰鎯佸鈧崥?
   static Future<bool> isBreathingEnabled() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_keyBreathingEnabled) ?? false;
   }
 
-  /// 获取呼吸练习提醒时间
+  /// 閼惧嘲褰囬崨鐓庢儧缂佸啩绡勯幓鎰板晪閺冨爼妫�
   static Future<Map<String, int>> getBreathingTime() async {
     final prefs = await SharedPreferences.getInstance();
     return {
@@ -320,9 +319,9 @@ class NotificationService {
     };
   }
 
-  // ==================== 7天挑战提醒 ====================
+  // ==================== 7婢垛晜瀵幋妯诲絹闁�?====================
 
-  /// 安排每日挑战任务提醒
+  /// 鐎瑰甯撳В蹇旀）閹告垶鍨禒璇插閹绘劙鍟�
   Future<void> scheduleChallengeReminder({required int hour, required int minute}) async {
     await _plugin.cancel(challengeReminderId);
 
@@ -363,20 +362,20 @@ class NotificationService {
     await prefs.setInt(_keyChallengeMinute, minute);
   }
 
-  /// 取消挑战提醒
+  /// 閸欐牗绉烽幐鎴炲灛閹绘劙鍟�
   Future<void> cancelChallengeReminder() async {
     await _plugin.cancel(challengeReminderId);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_keyChallengeEnabled, false);
   }
 
-  /// 获取挑战提醒是否开启
+  /// 閼惧嘲褰囬幐鎴炲灛閹绘劙鍟嬮弰顖氭儊瀵偓閸�?
   static Future<bool> isChallengeEnabled() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_keyChallengeEnabled) ?? false;
   }
 
-  /// 获取挑战提醒时间
+  /// 閼惧嘲褰囬幐鎴炲灛閹绘劙鍟嬮弮鍫曟？
   static Future<Map<String, int>> getChallengeTime() async {
     final prefs = await SharedPreferences.getInstance();
     return {
@@ -386,7 +385,7 @@ class NotificationService {
   }
 }
 
-/// 应用生命周期监听器（顶层类）
+/// 鎼存梻鏁ら悽鐔锋嚒閸涖劍婀￠惄鎴濇儔閸ｎ煉绱欐い璺虹湴缁紮绱�
 class _AppLifecycleListener extends WidgetsBindingObserver {
   final NotificationService _service;
 

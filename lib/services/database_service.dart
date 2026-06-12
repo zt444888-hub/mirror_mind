@@ -1,10 +1,3 @@
-/// 心镜 MirrorMind — 本地数据库服务
-///
-/// ## 安全说明
-/// 所有情绪记录数据仅存储在设备本地 SQLite 数据库中。
-/// 应用沙盒机制确保其他应用无法访问心镜的数据文件。
-/// 不上传任何数据至外部服务器。
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:sqflite/sqflite.dart';
@@ -25,7 +18,7 @@ class DatabaseService {
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, _dbName);
-    // 检查是否存在旧哈希命名的数据库，如有则迁移
+    // 妫€鏌ユ槸鍚﹀瓨鍦ㄦ棫鍝堝笇鍛藉悕鐨勬暟鎹簱锛屽鏈夊垯杩佺Щ
     await _migrateFromOldDb(dbPath, path);
     return await openDatabase(
       path,
@@ -35,12 +28,11 @@ class DatabaseService {
     );
   }
   
-  /// 从旧哈希命名的数据库迁移数据到固定文件名数据库
-  /// 避免 String.hashCode 跨版本不稳定导致数据丢失
+  /// 浠庢棫鍝堝笇鍛藉悕鐨勬暟鎹簱杩佺Щ鏁版嵁鍒板浐瀹氭枃浠跺悕鏁版嵁搴?  /// 閬垮厤 String.hashCode 璺ㄧ増鏈笉绋冲畾瀵艰嚧鏁版嵁涓㈠け
   Future<void> _migrateFromOldDb(String dbPath, String newPath) async {
     final newExists = await databaseExists(newPath);
-    if (newExists) return; // 新数据库已存在，无需迁移
-    // 旧命名模式：mm_<hash>.db
+    if (newExists) return; // 鏂版暟鎹簱宸插瓨鍦紝鏃犻渶杩佺Щ
+    // 鏃у懡鍚嶆ā寮忥細mm_<hash>.db
     final dir = Directory(dbPath);
     if (!await dir.exists()) return;
     final files = await dir.list().toList();
@@ -93,13 +85,13 @@ class DatabaseService {
     }
   }
 
-  /// 插入一条情绪记录
+  /// 鎻掑叆涓€鏉℃儏缁褰?
   Future<int> insertRecord(EmotionRecord record) async {
     final db = await database;
     return await db.insert(_tableName, record.toMap());
   }
 
-  /// 更新记录
+  /// 鏇存柊璁板綍
   Future<int> updateRecord(EmotionRecord record) async {
     final db = await database;
     return await db.update(
@@ -110,7 +102,7 @@ class DatabaseService {
     );
   }
 
-  /// 获取某一天的所有记录
+  /// 鑾峰彇鏌愪竴澶╃殑鎵€鏈夎褰?
   Future<List<EmotionRecord>> getRecordsByDate(DateTime date) async {
     final db = await database;
     final dateStr = date.toIso8601String().split('T')[0];
@@ -123,7 +115,7 @@ class DatabaseService {
     return maps.map((m) => EmotionRecord.fromMap(m)).toList();
   }
 
-  /// 获取某月的所有记录（用于日历标注）
+  /// 鑾峰彇鏌愭湀鐨勬墍鏈夎褰曪紙鐢ㄤ簬鏃ュ巻鏍囨敞锛?
   Future<List<EmotionRecord>> getRecordsByMonth(int year, int month) async {
     final db = await database;
     final startDate = '$year-${month.toString().padLeft(2, '0')}-01';
@@ -139,7 +131,7 @@ class DatabaseService {
     return maps.map((m) => EmotionRecord.fromMap(m)).toList();
   }
 
-  /// 获取本周记录（周一开始）
+  /// 鑾峰彇鏈懆璁板綍锛堝懆涓€寮€濮嬶級
   Future<List<EmotionRecord>> getRecordsThisWeek() async {
     final now = DateTime.now();
     final weekday = now.weekday;
@@ -159,7 +151,7 @@ class DatabaseService {
     return maps.map((m) => EmotionRecord.fromMap(m)).toList();
   }
 
-  /// 获取本年度记录（1月1日至今）
+  /// 鑾峰彇鏈勾搴﹁褰曪紙1鏈?鏃ヨ嚦浠婏級
   Future<List<EmotionRecord>> getRecordsThisYear() async {
     final now = DateTime.now();
     final yearStart = DateTime(now.year, 1, 1);
@@ -178,7 +170,7 @@ class DatabaseService {
     return maps.map((m) => EmotionRecord.fromMap(m)).toList();
   }
 
-  /// 获取最新一条记录
+  /// 鑾峰彇鏈€鏂颁竴鏉¤褰?
   Future<EmotionRecord?> getLatestRecord() async {
     final db = await database;
     final maps = await db.query(
@@ -190,7 +182,7 @@ class DatabaseService {
     return EmotionRecord.fromMap(maps.first);
   }
 
-  /// 获取所有记录（用于导出）
+  /// 鑾峰彇鎵€鏈夎褰曪紙鐢ㄤ簬瀵煎嚭锛?
   Future<List<EmotionRecord>> getAllRecords() async {
     final db = await database;
     final maps = await db.query(
@@ -200,14 +192,14 @@ class DatabaseService {
     return maps.map((m) => EmotionRecord.fromMap(m)).toList();
   }
 
-  /// 导出所有数据为 JSON 字符串
+  /// 瀵煎嚭鎵€鏈夋暟鎹负 JSON 瀛楃涓?
   Future<String> exportToJson() async {
     final records = await getAllRecords();
     final list = records.map((r) => r.toMap()).toList();
     return const JsonEncoder.withIndent('  ').convert(list);
   }
 
-  /// 删除某条记录
+  /// 鍒犻櫎鏌愭潯璁板綍
   Future<int> deleteRecord(int id) async {
     final db = await database;
     return await db.delete(
@@ -217,13 +209,13 @@ class DatabaseService {
     );
   }
 
-  /// 清空所有记录
+  /// 娓呯┖鎵€鏈夎褰?
   Future<void> deleteAllRecords() async {
     final db = await database;
     await db.delete(_tableName);
   }
 
-  /// 计算连续记录天数（从今天往前数，中断则停）
+  /// 璁＄畻杩炵画璁板綍澶╂暟锛堜粠浠婂ぉ寰€鍓嶆暟锛屼腑鏂垯鍋滐級
   Future<int> getConsecutiveDays() async {
     final db = await database;
     final maps = await db.rawQuery(
@@ -234,17 +226,17 @@ class DatabaseService {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
-    // 将所有日期字符串放入 Set 快速查找
+    // 灏嗘墍鏈夋棩鏈熷瓧绗︿覆鏀惧叆 Set 蹇€熸煡鎵?
     final dateSet = <String>{};
     for (final m in maps) {
       dateSet.add(m['date'] as String);
     }
 
-    // 今天无记录则连续天数为 0
+    // 浠婂ぉ鏃犺褰曞垯杩炵画澶╂暟涓?0
     final todayStr = today.toIso8601String().split('T')[0];
     if (!dateSet.contains(todayStr)) return 0;
 
-    // 向前累加直到间断
+    // 鍚戝墠绱姞鐩村埌闂存柇
     int consecutive = 0;
     for (int i = 0; ; i++) {
       final checkDate = today.subtract(Duration(days: i));
@@ -259,7 +251,7 @@ class DatabaseService {
     return consecutive;
   }
 
-  /// 按标签查询记录
+  /// 鎸夋爣绛炬煡璇㈣褰?
   Future<List<EmotionRecord>> getRecordsByTag(String tag) async {
     final db = await database;
     final maps = await db.query(
@@ -271,7 +263,7 @@ class DatabaseService {
     return maps.map((m) => EmotionRecord.fromMap(m)).toList();
   }
 
-  /// 按标签+月份查询记录
+  /// 鎸夋爣绛?鏈堜唤鏌ヨ璁板綍
   Future<List<EmotionRecord>> getRecordsByTagAndMonth(String tag, int year, int month) async {
     final db = await database;
     final startDate = '$year-${month.toString().padLeft(2, '0')}-01';
@@ -287,7 +279,7 @@ class DatabaseService {
     return maps.map((m) => EmotionRecord.fromMap(m)).toList();
   }
 
-  /// 获取最近30天记录
+  /// 鑾峰彇鏈€杩?0澶╄褰?
   Future<List<EmotionRecord>> getRecordsForLast30Days() async {
     final db = await database;
     final endDate = DateTime.now().add(const Duration(days: 1));
@@ -304,7 +296,7 @@ class DatabaseService {
     return maps.map((m) => EmotionRecord.fromMap(m)).toList();
   }
 
-  /// 计算有记录的总天数（去重）
+  /// 璁＄畻鏈夎褰曠殑鎬诲ぉ鏁帮紙鍘婚噸锛?
   Future<int> getTotalRecordDays() async {
     final db = await database;
     final result = await db.rawQuery(
@@ -313,7 +305,7 @@ class DatabaseService {
     return result.first['count'] as int;
   }
 
-  /// 关闭数据库
+  /// 鍏抽棴鏁版嵁搴?
   Future<void> close() async {
     final db = await database;
     await db.close();

@@ -36,7 +36,7 @@ class MirrorMindApp extends StatelessWidget {
       builder: (context, settings, _) {
         return MaterialApp(
           navigatorKey: navigatorKey,
-          title: '心镜 MirrorMind',
+          title: '蹇冮暅 MirrorMind',
           debugShowCheckedModeBanner: false,
           theme: _buildLightTheme(),
           darkTheme: _buildDarkTheme(),
@@ -59,10 +59,12 @@ class MirrorMindApp extends StatelessWidget {
             '/calendar': (_) => const CalendarScreen(),
             '/year_report': (_) => const YearReportScreen(),
             '/settings': (_) => const SettingsScreen(),
-            '/pro': (context) {
-              final args = ModalRoute.of(context)?.settings.arguments;
-              return ProScreen(hint: (args as Map<String, dynamic>?)?['hint']);
-            },
+            '/pro': (context) => Builder(
+              builder: (context) {
+                final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+                return ProScreen(hint: args?['hint']);
+              },
+            ),
           },
         );
       },
@@ -78,7 +80,6 @@ class MirrorMindApp extends StatelessWidget {
         primary: MirrorColors.primary,
         secondary: MirrorColors.secondary,
         surface: MirrorColors.surface,
-        background: MirrorColors.background,
       ),
       scaffoldBackgroundColor: MirrorColors.background,
       cardTheme: CardThemeData(
@@ -150,7 +151,6 @@ class MirrorMindApp extends StatelessWidget {
         primary: MirrorColors.primaryLight,
         secondary: MirrorColors.secondaryLight,
         surface: MirrorColors.darkSurface,
-        background: MirrorColors.darkBackground,
         brightness: Brightness.dark,
       ),
       scaffoldBackgroundColor: MirrorColors.darkBackground,

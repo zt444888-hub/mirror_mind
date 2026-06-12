@@ -52,7 +52,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final dailyTime = await NotificationService.getDailyTime();
     final breathingEnabled = await NotificationService.isBreathingEnabled();
     final breathingTime = await NotificationService.getBreathingTime();
-    final challengeEnabled = await NotificationService.isChallengeEnabled();
     final challengeTime = await NotificationService.getChallengeTime();
 
     if (mounted) {
@@ -62,9 +61,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _dailyMinute = dailyTime['minute']!;
         _breathingReminderEnabled = breathingEnabled;
         _breathingHour = breathingTime['hour']!;
-        _breathingMinute = breathingTime['minute']!;
-        _challengeReminderEnabled = challengeEnabled;
-        _challengeHour = challengeTime['hour']!;
         _challengeMinute = challengeTime['minute']!;
       });
     }
@@ -78,19 +74,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.dispose();
   }
 
-  void _saveSettings() {
+  Future<void> _saveSettings() async {
     final settings = context.read<SettingsProvider>();
-    settings.setBaseUrl(_baseUrlController.text.trim());
-    settings.setApiKey(_apiKeyController.text.trim());
-    settings.setModel(_modelController.text.trim());
+    final emotion = context.read<EmotionProvider>();
+    await settings.setBaseUrl(_baseUrlController.text.trim());
+    await settings.setApiKey(_apiKeyController.text.trim());
+    await settings.setModel(_modelController.text.trim());
 
     // 同步到 EmotionProvider
-    context.read<EmotionProvider>().updateAiConfig(
+    emotion.updateAiConfig(
       baseUrl: settings.baseUrl,
       apiKey: settings.apiKey,
       model: settings.model,
     );
 
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('设置已保存'), backgroundColor: MirrorColors.secondary),
     );
@@ -145,6 +143,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _confirmDeleteAll() async {
+    final provider = context.read<EmotionProvider>();
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -163,7 +162,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
 
     if (confirm == true) {
-      await context.read<EmotionProvider>().deleteAllData();
+      await provider.deleteAllData();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('所有数据已清除'), backgroundColor: MirrorColors.error),
@@ -239,7 +238,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _saveSettings,
+                      onPressed: () { _saveSettings(); },
                       child: const Text('保存设置'),
                     ),
                   ),
