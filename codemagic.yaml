@@ -13,14 +13,9 @@ workflows:
           include: true
           source: true
     scripts:
-      - name: Install dependencies
-        script: flutter packages pub get
-      - name: Install Pods
-        script: cd ios && pod install && cd ..
-      - name: Build IPA
-        script: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
-      - name: Upload to App Store Connect
-        script: | 
-          xcrun altool --upload-app -f $(find build/ios/ipa -name "*.ipa" | head -1) -t ios --apiKey $APP_STORE_CONNECT_KEY_ID --apiIssuer $APP_STORE_CONNECT_ISSUER_ID
+      - flutter pub get
+      - cd ios && flutter pub get && pod install
+      - flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+      - xcrun altool --upload-app -f $(find build/ios/ipa -name "*.ipa" | head -1) -t ios --apiKey $APP_STORE_CONNECT_KEY_ID --apiIssuer $APP_STORE_CONNECT_ISSUER_ID
     artifacts:
       - build/ios/ipa/*.ipa
