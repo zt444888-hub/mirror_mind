@@ -5,6 +5,8 @@ workflows:
     environment:
       flutter: 3.44.x
       xcode: 16.0
+      groups:
+        - appstore
     triggering:
       events:
         - push
@@ -20,7 +22,7 @@ workflows:
       - build/ios/ipa/*.ipa
     publishing:
       app_store_connect:
-        api_key: \
-        issuer_id: \
-        key: \
+        api_key: $APP_STORE_CONNECT_KEY_ID
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        key: $APP_STORE_CONNECT_API_KEY
         submit_to_testflight: true
