@@ -1,12 +1,10 @@
 workflows:
-  ios-release:
-    name: iOS Release Build
-    instance_type: mac_mini_m1
-    max_build_duration: 60
+  ios-build:
+    name: iOS Build & Deploy
+    instance_type: mac_mini_m2
     environment:
-      flutter: stable
-      xcode: latest
-      cocoapods: default
+      flutter: 3.44.x
+      xcode: 16.0
     triggering:
       events:
         - push
@@ -15,19 +13,14 @@ workflows:
           include: true
           source: true
     scripts:
-      - name: Install dependencies
-        script: |
-          flutter packages pub get
-          cd ios && pod install
-      - name: Build iOS release
-        script: |
-          flutter build ipa --release \
-            --build-name=1.0.0 \
-            --build-number=$(($(appstore-connect get-latest-testflight-build-number --pre-version "1.0.0" || 0) + 1))
+      - flutter packages pub get
+      - cd ios && pod install && cd ..
+      - flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
     artifacts:
       - build/ios/ipa/*.ipa
     publishing:
       app_store_connect:
-        auth: APP_STORE_CONNECT_CREDENTIALS
+        api_key: 
+        issuer_id: 
+        key_file: ""
         submit_to_testflight: true
-        submit_to_app_store: false
