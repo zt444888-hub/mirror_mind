@@ -11,10 +11,7 @@ jobs:
         with:
           xcode-version: '16.0'
 
-      - name: Install Python deps
-        run: python3 -m pip install requests pyjwt --quiet
-
-      - name: Generate certificates via Apple API
+      - name: Generate + Export + Set Secrets
         env:
           ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
@@ -24,8 +21,11 @@ jobs:
           GH_TOKEN: ${{ secrets.MY_PAT }}
         run: |
           set -e
-          python3 << 'PYEOF'
-import json, os, subprocess, base64, uuid, time, requests, jwt
+          pip3 install requests pyjwt --quiet
+
+          python3 -c "
+import json, os, subprocess, base64, uuid, time
+import requests, jwt
 
 KEY_ID = os.environ['ASC_KEY_ID']
 ISSUER_ID = os.environ['ASC_ISSUER_ID']
@@ -33,84 +33,48 @@ PRIVATE_KEY = base64.b64decode(os.environ['ASC_KEY'])
 BUNDLE_ID = os.environ['BUNDLE_ID']
 
 def gjwt():
-    now = int(time.time())
-    return jwt.encode({
-        'iss': ISSUER_ID, 'exp': now + 1200,
-        'aud': 'appstoreconnect-v1', 'iat': now
-    }, PRIVATE_KEY, algorithm='ES256', headers={'kid': KEY_ID})
+    return jwt.encode({'iss': ISSUER_ID, 'exp': int(time.time())+1200,
+        'aud': 'appstoreconnect-v1', 'iat': int(time.time())},
+        PRIVATE_KEY, algorithm='ES256', headers={'kid': KEY_ID})
 
 def api(method, path, data=None):
-    r = requests.request(method,
-        'https://api.appstoreconnect.apple.com/v1' + path,
-        headers={'Authorization': 'Bearer ' + gjwt(),
-                 'Content-Type': 'application/json'}, json=data)
+    r = requests.request(method, 'https://api.appstoreconnect.apple.com/v1'+path,
+        headers={'Authorization': 'Bearer '+gjwt(), 'Content-Type': 'application/json'}, json=data)
     if r.status_code >= 400:
-        print(f'API Error {r.status_code}: {r.text[:500]}')
+        print('API Error', r.status_code, r.text[:300])
         r.raise_for_status()
     return r.json() if r.text else {}
 
-print('=== Step 1: Generate CSR ===')
-subprocess.run(['openssl', 'req', '-new', '-newkey', 'rsa:2048',
-    '-keyout', '/tmp/key.pem', '-out', '/tmp/cert.csr',
-    '-nodes', '-subj', '/C=CN/O=MirrorMind/CN=iOS Distribution'], check=True)
-with open('/tmp/cert.csr') as f: csr = f.read()
+print('=== CSR ===')
+subprocess.run(['openssl','req','-new','-newkey','rsa:2048','-keyout','/tmp/key.pem','-out','/tmp/cert.csr','-nodes','-subj','/C=CN/O=MM/CN=dist'], check=True)
+with open('/tmp/cert.csr') as f: csr=f.read()
 
-print('=== Step 2: Create Distribution Certificate ===')
-cert = api('POST', '/certificates', {
-    'data': {'type': 'certificates', 'attributes': {
-        'csrContent': csr, 'certificateType': 'DISTRIBUTION'}}})
-cert_content = cert['data']['attributes']['certificateContent']
-cert_id = cert['data']['id']
-print(f'Certificate created: {cert_id}')
-with open('/tmp/dist.cer', 'w') as f: f.write(cert_content)
+print('=== Certificate ===')
+c=api('POST','/certificates',{'data':{'type':'certificates','attributes':{'csrContent':csr,'certificateType':'DISTRIBUTION'}}})
+with open('/tmp/dist.cer','w') as f: f.write(c['data']['attributes']['certificateContent'])
+cid=c['data']['id']
+print('Cert:',cid)
 
-print('=== Step 3: Bundle ID ===')
-br = api('GET', f'/bundleIds?filter[identifier]={BUNDLE_ID}')
-bd = br.get('data', [])
-if not bd:
-    bd = api('POST', '/bundleIds', {
-        'data': {'type': 'bundleIds', 'attributes': {
-            'name': 'MirrorMind', 'identifier': BUNDLE_ID, 'platform': 'IOS'}}})
-    bid = bd['data']['id']
-else:
-    bid = bd[0]['id']
-print(f'Bundle ID: {bid}')
+print('=== Bundle ID ===')
+b=api('GET','/bundleIds?filter[identifier]='+BUNDLE_ID)
+bid=b['data'][0]['id'] if b.get('data') else api('POST','/bundleIds',{'data':{'type':'bundleIds','attributes':{'name':'MM','identifier':BUNDLE_ID,'platform':'IOS'}}})['data']['id']
+print('BID:',bid)
 
-print('=== Step 4: Create Provisioning Profile ===')
-from datetime import datetime
-today = datetime.now().strftime('%Y%m%d')
-prof = api('POST', '/profiles', {
-    'data': {'type': 'profiles', 'attributes': {
-        'name': f'MirrorMind Distribution {today}',
-        'profileType': 'IOS_APP_STORE'},
-        'relationships': {
-            'bundleId': {'data': {'type': 'bundleIds', 'id': bid}},
-            'certificates': {'data': [{'type': 'certificates', 'id': cert_id}]}}}})
-prof_content = prof['data']['attributes']['profileContent']
-print(f'Profile created: {prof["data"]["id"]}')
-with open('/tmp/profile.mobileprovision', 'w') as f: f.write(prof_content)
+print('=== Profile ===')
+p=api('POST','/profiles',{'data':{'type':'profiles','attributes':{'name':'MM Dist '+str(int(time.time())),'profileType':'IOS_APP_STORE'},'relationships':{'bundleId':{'data':{'type':'bundleIds','id':bid}},'certificates':{'data':[{'type':'certificates','id':cid}]}}}})
+with open('/tmp/profile.mobileprovision','w') as f: f.write(p['data']['attributes']['profileContent'])
+print('Profile OK')
 
-print('=== Step 5: Export .p12 ===')
-p12_pw = 'ci-p12-' + uuid.uuid4().hex[:24]
-with open('/tmp/key.pem') as f: pkey = f.read()
-with open('/tmp/dist.cer') as f: cert = f.read()
-with open('/tmp/combined.pem', 'w') as f: f.write(pkey + '\n' + cert)
-subprocess.run(['openssl', 'pkcs12', '-export', '-in', '/tmp/combined.pem',
-    '-out', '/tmp/dist.p12', '-passout', f'pass:{p12_pw}',
-    '-name', 'iOS Distribution'], check=True)
-
-print('=== Step 6: Set GitHub Secrets ===')
-with open('/tmp/dist.p12', 'rb') as f:
-    cert_b64 = base64.b64encode(f.read()).decode()
-with open('/tmp/profile.mobileprovision', 'rb') as f:
-    prof_b64 = base64.b64encode(f.read()).decode()
-
-for name, val in [('IOS_DISTRIBUTION_CERT_BASE64', cert_b64),
-                   ('IOS_PROVISION_PROFILE_BASE64', prof_b64),
-                   ('IOS_P12_PASSWORD', p12_pw)]:
-    subprocess.run(['gh', 'secret', 'set', name, '--body', val,
-        '--repo', 'zt444888-hub/mirror_mind'], check=True)
-    print(f'  Set {name}')
-
-print('\nAll 3 secrets set successfully!')
-PYEOF
+print('=== P12 ===')
+pw='ci-p12-'+uuid.uuid4().hex[:24]
+with open('/tmp/key.pem') as f: k=f.read()
+with open('/tmp/dist.cer') as f: c=f.read()
+with open('/tmp/c.pem','w') as f: f.write(k+chr(10)+c)
+subprocess.run(['openssl','pkcs12','-export','-in','/tmp/c.pem','-out','/tmp/dist.p12','-passout','pass:'+pw,'-name','iOS Distribution'], check=True)
+with open('/tmp/dist.p12','rb') as f: cb=base64.b64encode(f.read()).decode()
+with open('/tmp/profile.mobileprovision','rb') as f: pb=base64.b64encode(f.read()).decode()
+for n,v in [('IOS_DISTRIBUTION_CERT_BASE64',cb),('IOS_PROVISION_PROFILE_BASE64',pb),('IOS_P12_PASSWORD',pw)]:
+    subprocess.run(['gh','secret','set',n,'--body',v,'--repo','zt444888-hub/mirror_mind'], check=True)
+    print('Set',n)
+print('All 3 secrets set!')
+"
