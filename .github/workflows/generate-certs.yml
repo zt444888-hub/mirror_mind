@@ -1,4 +1,3 @@
-
 name: Generate iOS Certificates
 on: workflow_dispatch
 jobs:
@@ -6,9 +5,6 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest
       - name: Generate certs
         env:
           ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
@@ -19,25 +15,32 @@ jobs:
           GH_TOKEN: ${{ secrets.MY_PAT }}
         run: |
           set -e
-          mkdir -p ~/private_keys ./output
-          # Decode API key (macOS: use -d not --decode)
-          echo "$ASC_KEY" | base64 -d > ~/private_keys/AuthKey_$ASC_KEY_ID.p8
-          # Install fastlane
+          mkdir -p ./output
+          echo "$ASC_KEY" | base64 -d > ./output/key.p8
+          python3 -c "
+import json
+with open('./output/key.p8') as f:
+    key = f.read()
+with open('./output/api_key.json', 'w') as f:
+    json.dump({'key_id': '$ASC_KEY_ID', 'issuer_id': '$ASC_ISSUER_ID', 'key': key}, f)
+"
           gem install fastlane --no-document --quiet
-          # Generate distribution cert
-          fastlane cert --development false --output_path ./output --team_id "$TEAM_ID" --api_key_path ~/private_keys/AuthKey_$ASC_KEY_ID.p8
-          # Generate provisioning profile
-          fastlane sigh --app_identifier "$BUNDLE_ID" --output_path ./output --team_id "$TEAM_ID" --api_key_path ~/private_keys/AuthKey_$ASC_KEY_ID.p8 --skip_install
-          # Export cert as p12
+          fastlane cert --development false --output_path ./output \
+            --team_id "$TEAM_ID" --api_key_path ./output/api_key.json
+          fastlane sigh --app_identifier "$BUNDLE_ID" --output_path ./output \
+            --team_id "$TEAM_ID" --api_key_path ./output/api_key.json --skip_install
           P12_PW="ci-p12-$(openssl rand -hex 12)"
-          CERT_HASH=$(security find-identity -v -p basic | grep "Apple Distribution" | head -1 | awk '{print $2}')
-          security export -k login.keychain -t identities -f pkcs12 -P "$P12_PW" -o ./output/dist.p12 "$CERT_HASH"
-          # Base64 encode
+          CERT_HASH=$(security find-identity -v -p basic | \
+            grep "Apple Distribution" | head -1 | awk '{print $2}')
+          security export -k login.keychain -t identities -f pkcs12 \
+            -P "$P12_PW" -o ./output/dist.p12 "$CERT_HASH"
           CERT_B64=$(base64 -i ./output/dist.p12 | tr -d '\n')
           PROFILE_B64=$(base64 -i ./output/*.mobileprovision | tr -d '\n')
-          # Set GitHub secrets via gh CLI
           echo "$GH_TOKEN" | gh auth login --with-token
-          gh secret set IOS_DISTRIBUTION_CERT_BASE64 --body "$CERT_B64" --repo zt444888-hub/mirror_mind
-          gh secret set IOS_PROVISION_PROFILE_BASE64 --body "$PROFILE_B64" --repo zt444888-hub/mirror_mind
-          gh secret set IOS_P12_PASSWORD --body "$P12_PW" --repo zt444888-hub/mirror_mind
+          gh secret set IOS_DISTRIBUTION_CERT_BASE64 --body "$CERT_B64" \
+            --repo zt444888-hub/mirror_mind
+          gh secret set IOS_PROVISION_PROFILE_BASE64 --body "$PROFILE_B64" \
+            --repo zt444888-hub/mirror_mind
+          gh secret set IOS_P12_PASSWORD --body "$P12_PW" \
+            --repo zt444888-hub/mirror_mind
           echo "All 3 secrets set successfully"
