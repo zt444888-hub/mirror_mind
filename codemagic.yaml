@@ -18,7 +18,7 @@ workflows:
       - |
         set -e
         echo "===== 0. Install Python deps ====="
-        pip3 install requests pyjwt --quiet
+        pip3 install --upgrade cryptography pyjwt requests --quiet
 
         echo "===== 0.5 Generate Certificate ====="
         python3 -c "
