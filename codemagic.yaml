@@ -16,16 +16,33 @@ workflows:
       - |
         set -e
         echo "===== 1. Force pub get ====="
-        rm -f ios/Flutter/Generated.xcconfig ios/Flutter/ephemeral/Flutter-Generated.xcconfig
+        rm -f ios/Flutter/Generated.xcconfig
         flutter pub get
-        echo "===== 2. One-time Flutter precache ====="
         flutter precache --ios
+
+        echo "===== 2. Create ExportOptions.plist ====="
+        cat > ios/ExportOptions.plist << 'PLIST'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>compileBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+        </dict>
+        </plist>
+        PLIST
+        echo "ExportOptions.plist created"
+
         echo "===== 3. pod install ====="
-        cd ios
-        pod install --repo-update
-        cd ..
+        cd ios && pod install && cd ..
+
         echo "===== 4. build IPA ====="
         flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+
         echo "===== 5. upload ====="
         xcrun altool --upload-app -f $(find build/ios/ipa -name "*.ipa" | head -1) -t ios --apiKey $APP_STORE_CONNECT_KEY_ID --apiIssuer $APP_STORE_CONNECT_ISSUER_ID
     artifacts:
