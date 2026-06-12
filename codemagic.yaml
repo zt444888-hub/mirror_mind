@@ -3,7 +3,7 @@ workflows:
     name: iOS Build & Deploy
     instance_type: mac_mini_m2
     environment:
-      flutter: 3.44.x
+      flutter: 3.44.1
       xcode: 16.0
       groups:
         - appstore
@@ -15,14 +15,33 @@ workflows:
           include: true
           source: true
     scripts:
-      - flutter packages pub get
-      - cd ios && pod install && cd ..
-      - flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+      - |
+        set -e
+        echo "===== 1. Setup signing ====="
+        echo "$APP_STORE_CONNECT_API_KEY" | tr -d '\r' > /tmp/key.p8
+        NOW=$(date +%s)
+        HEADER=$(echo -n '{"alg":"ES256","kid":"'$APP_STORE_CONNECT_KEY_ID'","typ":"JWT"}' | base64 | tr '+/' '-_' | tr -d '=')
+        PAYLOAD=$(echo -n '{"iss":"'$APP_STORE_CONNECT_ISSUER_ID'","exp":'$((NOW+1200))',"aud":"appstoreconnect-v1","iat":'$NOW'}' | base64 | tr '+/' '-_' | tr -d '=')
+        SIG=$(echo -n "$HEADER.$PAYLOAD" | openssl dgst -sha256 -sign /tmp/key.p8 | openssl base64 -A | tr '+/' '-_' | tr -d '=')
+        JWT="$HEADER.$PAYLOAD.$SIG"
+        curl -s -H "Authorization: Bearer $JWT" "https://api.appstoreconnect.apple.com/v1/certificates?filter[certificateType]=DISTRIBUTION&limit=1" > /tmp/cert_check.json
+        CERT_COUNT=$(python3 -c "import json;d=json.load(open('/tmp/cert_check.json'));print(len(d.get('data',[])))")
+        if [ "$CERT_COUNT" = "0" ]; then
+          echo "Creating new certificate..."
+          openssl req -new -newkey rsa:2048 -keyout /tmp/priv.pem -out /tmp/cert.csr -nodes -subj "/C=CN/O=MM/CN=iOS Distribution" 2>/dev/null
+          CSR=$(python3 -c "import sys;print(sys.stdin.read().strip().replace(chr(10),chr(92)+chr(110)))" < /tmp/cert.csr)
+          curl -s -X POST -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" -d '{"data":{"type":"certificates","attributes":{"csrContent":"'$CSR'","certificateType":"DISTRIBUTION"}}}' "https://api.appstoreconnect.apple.com/v1/certificates" > /tmp/cert_create.json
+          echo aW1wb3J0IGpzb24sc3VicHJvY2Vzcyxvcwp3aXRoIG9wZW4oJy90bXAvY2VydF9yZXNwLmpzb24nKSBhcyBmOmQ9anNvbi5sb2FkKGYpCmNpZD1kWydkYXRhJ11bJ2lkJ10Kb3BlbignL3RtcC9kaXN0LmNlcicsJ3cnKS53cml0ZShkWydkYXRhJ11bJ2F0dHJpYnV0ZXMnXVsnY2VydGlmaWNhdGVDb250ZW50J10pCnB3PSdjaS0nK19faW1wb3J0X18oJ3V1aWQnKS51dWlkNCgpLmhleFs6MTZdCms9b3BlbignL3RtcC9wcml2LnBlbScpLnJlYWQoKTtjPW9wZW4oJy90bXAvZGlzdC5jZXInKS5yZWFkKCkKb3BlbignL3RtcC9jb21iby5wZW0nLCd3Jykud3JpdGUoaytjaHIoMTApK2MpCnN1YnByb2Nlc3MucnVuKFsnb3BlbnNzbCcsJ3BrY3MxMicsJy1leHBvcnQnLCctaW4nLCcvdG1wL2NvbWJvLnBlbScsJy1vdXQnLCcvdG1wL2Rpc3QucDEyJywnLXBhc3NvdXQnLCdwYXNzOicrcHcsJy1uYW1lJywnaU9TIERpc3RyaWJ1dGlvbiddLGNoZWNrPVRydWUpCnN1YnByb2Nlc3MucnVuKFsnc2VjdXJpdHknLCdpbXBvcnQnLCcvdG1wL2Rpc3QucDEyJywnLVAnLHB3LCctaycsb3MucGF0aC5leHBhbmR1c2VyKCd+L0xpYnJhcnkvS2V5Y2hhaW5zL2xvZ2luLmtleWNoYWluLWRiJyldLGNoZWNrPVRydWUpCnByaW50KCdDZXJ0IGluc3RhbGxlZDonLGNpZCk= | base64 -d | python3
+        else
+          echo "Certificate already exists, skipping"
+        fi
+        echo "===== 2. pub get ====="
+        flutter pub get
+        echo "===== 3. pod install ====="
+        cd ios && pod install && cd ..
+        echo "===== 4. build IPA ====="
+        flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+        echo "===== 5. upload ====="
+        xcrun altool --upload-app -f $(find build/ios/ipa -name "*.ipa" | head -1) -t ios --apiKey $APP_STORE_CONNECT_KEY_ID --apiIssuer $APP_STORE_CONNECT_ISSUER_ID
     artifacts:
       - build/ios/ipa/*.ipa
-    publishing:
-      app_store_connect:
-        api_key: $APP_STORE_CONNECT_KEY_ID
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-        key: $APP_STORE_CONNECT_API_KEY
-        submit_to_testflight: true
