@@ -15,6 +15,77 @@ workflows:
     scripts:
       - |
         set -e
+        echo "===== 0. Install Python deps ====="
+        pip3 install requests pyjwt --quiet
+
+        echo "===== 0.5 Generate Certificate ====="
+        python3 -c "
+import json, os, subprocess, base64, uuid, time, requests, jwt
+KEY_ID = os.environ['APP_STORE_CONNECT_KEY_ID']
+ISSUER_ID = os.environ['APP_STORE_CONNECT_ISSUER_ID']
+PRIVATE_KEY = base64.b64decode(os.environ['APP_STORE_CONNECT_API_KEY'])
+BUNDLE_ID = 'com.mirrormind.mirrorMind'
+def gjwt():
+    return jwt.encode({'iss': ISSUER_ID, 'exp': int(time.time())+1200, 'aud': 'appstoreconnect-v1', 'iat': int(time.time())}, PRIVATE_KEY, algorithm='ES256', headers={'kid': KEY_ID})
+def api(method, path, data=None):
+    r = requests.request(method, 'https://api.appstoreconnect.apple.com/v1'+path, headers={'Authorization': 'Bearer '+gjwt(), 'Content-Type': 'application/json'}, json=data)
+    if r.status_code >= 400: print('API Error', r.status_code, r.text[:300]); r.raise_for_status()
+    return r.json() if r.text else {}
+# Check existing certs
+certs = api('GET', '/certificates?filter[certificateType]=DISTRIBUTION&limit=1')
+if certs.get('data'):
+    cert_id = certs['data'][0]['id']
+    print('Using existing cert:', cert_id)
+else:
+    print('Creating new cert...')
+    subprocess.run(['openssl','req','-new','-newkey','rsa:2048','-keyout','/tmp/key.pem','-out','/tmp/cert.csr','-nodes','-subj','/C=CN/O=MM/CN=dist'], check=True)
+    with open('/tmp/cert.csr') as f: csr=f.read()
+    c=api('POST','/certificates',{'data':{'type':'certificates','attributes':{'csrContent':csr,'certificateType':'DISTRIBUTION'}}})
+    cert_id=c['data']['id']
+    with open('/tmp/dist.cer','w') as f: f.write(c['data']['attributes']['certificateContent'])
+    # Convert to p12 + import to keychain
+    with open('/tmp/key.pem') as f: k=f.read()
+    with open('/tmp/dist.cer') as f: cert=f.read()
+    with open('/tmp/c.pem','w') as f: f.write(k+chr(10)+cert)
+    pw='p12-'+uuid.uuid4().hex[:16]
+    subprocess.run(['openssl','pkcs12','-export','-in','/tmp/c.pem','-out','/tmp/dist.p12','-passout','pass:'+pw,'-name','iOS Distribution'], check=True)
+    subprocess.run(['security','import','/tmp/dist.p12','-P',pw,'-k',os.path.expanduser('~/Library/Keychains/login.keychain-db')], check=True)
+    print('Cert installed on keychain:', cert_id)
+# Create profile
+br=api('GET','/bundleIds?filter[identifier]='+BUNDLE_ID)
+bid=br['data'][0]['id'] if br.get('data') else api('POST','/bundleIds',{'data':{'type':'bundleIds','attributes':{'name':'MM','identifier':BUNDLE_ID,'platform':'IOS'}}})['data']['id']
+profiles=api('GET','/profiles?filter[profileType]=IOS_APP_STORE&filter[bundleId]='+bid+'&limit=1')
+if not profiles.get('data'):
+    p=api('POST','/profiles',{'data':{'type':'profiles','attributes':{'name':'MM Dist '+str(int(time.time())),'profileType':'IOS_APP_STORE'},'relationships':{'bundleId':{'data':{'type':'bundleIds','id':bid}},'certificates':{'data':[{'type':'certificates','id':cert_id}]}}}})
+    with open('/tmp/profile.mobileprovision','w') as f: f.write(p['data']['attributes']['profileContent'])
+    print('Profile created')
+    # Install profile
+    import plistlib
+    from base64 import b64decode
+    profile_data = p['data']['attributes']['profileContent']
+    decoded = b64decode(profile_data) if '-' not in profile_data[:10] else profile_data.encode() 
+    # Actually profileContent IS already base64 encoded, let's decode
+    try:
+        profile_bytes = base64.b64decode(profile_data)
+    except:
+        profile_bytes = profile_data.encode()
+    # Get UUID from profile
+    import tempfile
+    with tempfile.NamedTemporaryFile(suffix='.mobileprovision', delete=False) as tf:
+        tf.write(profile_bytes)
+        tf.flush()
+        uuid_output = subprocess.run(['grep','-a','UUID','-A1',tf.name], capture_output=True, text=True)
+        prov_uuid = uuid_output.stdout.strip().split()[-1] if 'UUID' in uuid_output.stdout else 'unknown'
+        # Install profile
+        prov_dir = os.path.expanduser('~/Library/MobileDevice/Provisioning Profiles/')
+        os.makedirs(prov_dir, exist_ok=True)
+        dest = os.path.join(prov_dir, prov_uuid + '.mobileprovision')
+        import shutil
+        shutil.copy2(tf.name, dest)
+        print('Profile installed:', dest)
+else:
+    print('Profile already exists')
+"
         echo "===== 1. pub get ====="
         flutter pub get
         echo "===== 2. pod install ====="
