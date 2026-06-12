@@ -5,30 +5,40 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Generate certs
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.0'
+
+      - name: Install fastlane
+        run: gem install fastlane --no-document --quiet
+
+      - name: Generate Distribution Certificate
         env:
-          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          ASC_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+          FASTLANE_USER: ${{ secrets.APPLE_ID }}
+          FASTLANE_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+        run: |
+          mkdir -p ./output
+          fastlane cert --development false --output_path ./output \
+            --team_id "$TEAM_ID" --username "$FASTLANE_USER"
+
+      - name: Generate Provisioning Profile
+        env:
+          FASTLANE_USER: ${{ secrets.APPLE_ID }}
+          FASTLANE_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
           TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
           BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
+        run: |
+          fastlane sigh --app_identifier "$BUNDLE_ID" --output_path ./output \
+            --team_id "$TEAM_ID" --username "$FASTLANE_USER" --skip_install
+
+      - name: Export Certificate and Set Secrets
+        env:
           GH_TOKEN: ${{ secrets.MY_PAT }}
         run: |
           set -e
-          mkdir -p ./output
-          echo "$ASC_KEY" | base64 -d > ./output/key.p8
-          python3 -c "
-import json
-with open('./output/key.p8') as f:
-    key = f.read()
-with open('./output/api_key.json', 'w') as f:
-    json.dump({'key_id': '$ASC_KEY_ID', 'issuer_id': '$ASC_ISSUER_ID', 'key': key}, f)
-"
-          gem install fastlane --no-document --quiet
-          fastlane cert --development false --output_path ./output \
-            --team_id "$TEAM_ID" --api_key_path ./output/api_key.json
-          fastlane sigh --app_identifier "$BUNDLE_ID" --output_path ./output \
-            --team_id "$TEAM_ID" --api_key_path ./output/api_key.json --skip_install
           P12_PW="ci-p12-$(openssl rand -hex 12)"
           CERT_HASH=$(security find-identity -v -p basic | \
             grep "Apple Distribution" | head -1 | awk '{print $2}')
