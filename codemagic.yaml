@@ -13,9 +13,17 @@ workflows:
           include: true
           source: true
     scripts:
-      - echo "===== Step 1: pub get =====" && flutter pub get
-      - echo "===== Step 2: pod install =====" && cd ios && pod install
-      - echo "===== Step 3: build IPA =====" && cd .. && flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
-      - echo "===== Step 4: upload =====" && xcrun altool --upload-app -f $(find build/ios/ipa -name "*.ipa" | head -1) -t ios --apiKey $APP_STORE_CONNECT_KEY_ID --apiIssuer $APP_STORE_CONNECT_ISSUER_ID
+      - | 
+        set -e
+        echo "===== pub get ====="
+        flutter pub get
+        echo "===== pod install ====="
+        cd ios
+        pod install
+        cd ..
+        echo "===== build IPA ====="
+        flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+        echo "===== upload ====="
+        xcrun altool --upload-app -f $(find build/ios/ipa -name "*.ipa" | head -1) -t ios --apiKey $APP_STORE_CONNECT_KEY_ID --apiIssuer $APP_STORE_CONNECT_ISSUER_ID
     artifacts:
       - build/ios/ipa/*.ipa
