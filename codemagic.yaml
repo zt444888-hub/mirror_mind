@@ -20,11 +20,7 @@ workflows:
       - name: Build IPA
         script: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
       - name: Upload to App Store Connect
-        script: |
-          xcrun altool --upload-app \
-            -f \ \
-            -t ios \
-            --apiKey \ \
-            --apiIssuer \
+        script: | 
+          xcrun altool --upload-app -f $(find build/ios/ipa -name "*.ipa" | head -1) -t ios --apiKey $APP_STORE_CONNECT_KEY_ID --apiIssuer $APP_STORE_CONNECT_ISSUER_ID
     artifacts:
       - build/ios/ipa/*.ipa
