@@ -3,7 +3,7 @@ workflows:
     name: iOS Build & Deploy
     instance_type: mac_mini_m2
     environment:
-      flutter: 3.44.1
+      flutter: 3.44.x
       xcode: 16.0
       groups:
         - appstore
@@ -15,50 +15,14 @@ workflows:
           include: true
           source: true
     scripts:
-      - |
-        set -e
-        echo "===== 0. Install Python deps ====="
-        pip3 install --upgrade cryptography pyjwt requests --quiet
-
-        echo "===== 0.5 Generate Certificate ====="
-        echo "" > /tmp/key.p8
-        NOW=$(date +%s)
-        HEADER=$(echo -n '{"alg":"ES256","kid":"'$APP_STORE_CONNECT_KEY_ID'","typ":"JWT"}' | base64 | tr '+/' '-_' | tr -d '=')
-        PAYLOAD=$(echo -n '{"iss":"'$APP_STORE_CONNECT_ISSUER_ID'","exp":'$((NOW+1200))',"aud":"appstoreconnect-v1","iat":'$NOW'}' | base64 | tr '+/' '-_' | tr -d '=')
-        SIG=$(echo -n "$HEADER.$PAYLOAD" | openssl dgst -sha256 -sign /tmp/key.p8 | openssl base64 -A | tr '+/' '-_' | tr -d '=')
-        JWT="$HEADER.$PAYLOAD.$SIG"
-        echo "JWT generated - testing API..."
-        curl -s -H "Authorization: Bearer $JWT" "https://api.appstoreconnect.apple.com/v1/certificates?filter[certificateType]=DISTRIBUTION&limit=1" > /tmp/result.json
-        if python3 -c "import json;d=json.load(open('/tmp/result.json'));exit(0 if d.get('data') else 1)" 2>/dev/null; then
-            echo "Certificate exists, skipping creation"
-        else
-            echo "Creating new distribution certificate..."
-            openssl req -new -newkey rsa:2048 -keyout /tmp/priv.pem -out /tmp/cert.csr -nodes -subj "/C=CN/O=MM/CN=iOS Dist" 2>/dev/null
-            CSR=$(python3 -c "import sys;print(sys.stdin.read().strip().replace(chr(10),chr(92)+chr(110)))" < /tmp/cert.csr)
-            curl -s -X POST -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" -d '{"data":{"type":"certificates","attributes":{"csrContent":"'"$CSR"'","certificateType":"DISTRIBUTION"}}}' "https://api.appstoreconnect.apple.com/v1/certificates" > /tmp/cert_resp.json
-            python3 << 'PYEOF'
-import json, subprocess, os
-with open('/tmp/cert_resp.json') as f: d=json.load(f)
-cid=d['data']['id']
-with open('/tmp/dist.cer','w') as f: f.write(d['data']['attributes']['certificateContent'])
-pw='ci-'+__import__('uuid').uuid4().hex[:16] if 'uuid' in dir() else 'ci-' + str(__import__('os').urandom(8).hex())
-with open('/tmp/priv.pem') as f: k=f.read()
-with open('/tmp/dist.cer') as f: c=f.read()
-with open('/tmp/combo.pem','w') as f: f.write(k+chr(10)+c)
-subprocess.run(['openssl','pkcs12','-export','-in','/tmp/combo.pem','-out','/tmp/dist.p12','-passout','pass:'+pw,'-name','iOS Distribution'],check=True)
-subprocess.run(['security','import','/tmp/dist.p12','-P',pw,'-k',os.path.expanduser('~/Library/Keychains/login.keychain-db')],check=True)
-print('Cert installed:',cid)
-PYEOF
-        && echo "Certificate created and installed" || echo "Certificate already exists"
-        fi
-        echo "===== Signing ready ====="
-echo "===== 1. pub get ====="
-        flutter pub get
-        echo "===== 2. pod install ====="
-        cd ios && pod install && cd ..
-        echo "===== 3. build IPA ====="
-        flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
-        echo "===== 4. upload ====="
-        xcrun altool --upload-app -f $(find build/ios/ipa -name "*.ipa" | head -1) -t ios --apiKey $APP_STORE_CONNECT_KEY_ID --apiIssuer $APP_STORE_CONNECT_ISSUER_ID
+      - flutter packages pub get
+      - cd ios && pod install && cd ..
+      - flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
     artifacts:
       - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_KEY_ID
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        key: $APP_STORE_CONNECT_API_KEY
+        submit_to_testflight: true
