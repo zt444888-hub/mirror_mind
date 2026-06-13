@@ -23,7 +23,7 @@ workflows:
         HEADER=$(printf '{"alg":"ES256","kid":"I3C4V5K7JFUQ","typ":"JWT"}' | base64 | tr '+/' '-_' | tr -d '=')
         echo "header done"
         NOW=$(date +%s)
-        PAYLOAD=$(printf '{"iss":"sjva-eohu-bxft-otpe","exp":%s,"aud":"appstoreconnect-v1","iat":%s}' "$((NOW+1200))" "$NOW" | base64 | tr '+/' '-_' | tr -d '=')
+        PAYLOAD=$(printf '{"iss":"85ae2584-87e7-4297-8720-960978e48a55","exp":%s,"aud":"appstoreconnect-v1","iat":%s}' "$((NOW+1200))" "$NOW" | base64 | tr '+/' '-_' | tr -d '=')
         echo "payload done"
         SIG=$(printf '%s.%s' "$HEADER" "$PAYLOAD" | openssl dgst -sha256 -sign /tmp/key.p8 | python3 -c "import sys,base64;d=sys.stdin.buffer.read();rl=d[3];r=d[4:4+rl];sl=d[5+rl];s=d[6+rl:6+rl+sl];print(base64.urlsafe_b64encode(r+s).decode().rstrip('='))")
         echo "sig done"
@@ -48,8 +48,7 @@ workflows:
         IPA_FILE=$(find build/ios/ipa -name "*.ipa" | head -1)
         echo "IPA: $IPA_FILE"
         if [ -n "$IPA_FILE" ]; then
-          xcrun altool --upload-app -f "$IPA_FILE" --type ios --apiKey I3C4V5K7JFUQ --apiIssuer sjva-eohu-bxft-otpe
+          xcrun altool --upload-app -f "$IPA_FILE" --type ios --apiKey I3C4V5K7JFUQ --apiIssuer 85ae2584-87e7-4297-8720-960978e48a55
         fi
     artifacts:
       - build/ios/ipa/*.ipa
-
