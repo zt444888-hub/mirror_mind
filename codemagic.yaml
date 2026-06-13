@@ -5,8 +5,8 @@ workflows:
     environment:
       flutter: 3.44.1
       xcode: 16.0
-      groups:
-        - appstore
+      # groups:
+        # - appstore
     triggering:
       events:
         - push
