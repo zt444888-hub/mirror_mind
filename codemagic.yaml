@@ -20,11 +20,8 @@ workflows:
         echo 'PhuvJ5grCtGsr2NtIJcmoMRxUgDRJUon1+WHMKCHUwliClwiIuKxrtuoAsu3kI0q' >> /tmp/key.p8
         echo 'xKjFgtC9' >> /tmp/key.p8
         echo '-----END PRIVATE KEY-----' >> /tmp/key.p8
-        HEADER=$(printf '{"alg":"ES256","kid":"JQ5TY68783","typ":"JWT"}' | base64 | tr -d '\n' | tr '+/' '-_' | tr -d '=')
-        NOW=$(date +%s)
-        PAYLOAD=$(printf '{"iss":"85ae2584-87e7-4297-8720-960978e48a55","exp":%s,"aud":"appstoreconnect-v1","iat":%s}' "$((NOW+1200))" "$NOW" | base64 | tr -d '\n' | tr '+/' '-_' | tr -d '=')
-        SIG=$(printf '%s.%s' "$HEADER" "$PAYLOAD" | openssl dgst -sha256 -sign /tmp/key.p8 | openssl base64 -A | tr -d '\n' | tr '+/' '-_' | tr -d '=')
-        JWT="$HEADER.$PAYLOAD.$SIG"
+        pip3 install pyjwt cryptography --quiet
+        JWT=$(python3 -c "import jwt,time;print(jwt.encode({'iss':'85ae2584-87e7-4297-8720-960978e48a55','exp':int(time.time())+1200,'aud':'appstoreconnect-v1','iat':int(time.time())},open('/tmp/key.p8').read(),algorithm='ES256',headers={'kid':'JQ5TY68783'}))")
         curl -s -H "Authorization: Bearer $JWT" "https://api.appstoreconnect.apple.com/v1/certificates?filter[certificateType]=DISTRIBUTION&limit=1" > /tmp/cert_check.json
         cat /tmp/cert_check.json
         if python3 -c "import json;d=json.load(open('/tmp/cert_check.json'));exit(0 if d.get('data') else 1)" 2>/dev/null; then
