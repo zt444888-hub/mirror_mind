@@ -1,4 +1,4 @@
-workflows:
+orkflows:
   ios-build:
     name: iOS Build & Deploy
     instance_type: mac_mini_m2
@@ -15,13 +15,11 @@ workflows:
     scripts:
       - |
         set -e
-        cat > /tmp/key.p8 << 'ENDOFFILE'
------BEGIN PRIVATE KEY-----
-MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgZ+pQOY5mgxKrYiKD
-HWt1AwmyKGnmXXmtdrMeF2Ve/u6hRANCAASAsnntVQQyRTrRcpghZVVAmaSrDOiT
-cfH8qMC2cRDCZpMrPAgIpCwDRHqHPJBEw6pTM0Q9iFPDqXnsAIMoVELB
------END PRIVATE KEY-----
-ENDOFFILE
+        echo '-----BEGIN PRIVATE KEY-----' > /tmp/key.p8
+        echo 'MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgZ+pQOY5mgxKrYiKD' >> /tmp/key.p8
+        echo 'HWt1AwmyKGnmXXmtdrMeF2Ve/u6hRANCAASAsnntVQQyRTrRcpghZVVAmaSrDOiT' >> /tmp/key.p8
+        echo 'cfH8qMC2cRDCZpMrPAgIpCwDRHqHPJBEw6pTM0Q9iFPDqXnsAIMoVELB' >> /tmp/key.p8
+        echo '-----END PRIVATE KEY-----' >> /tmp/key.p8
         NOW=$(date +%s)
         HEADER=$(printf '{"alg":"ES256","kid":"I3C4V5K7JFUQ","typ":"JWT"}' | base64 | tr '+/' '-_' | tr -d '=')
         PAYLOAD=$(printf '{"iss":"sjva-eohu-bxft-otpe","exp":%s,"aud":"appstoreconnect-v1","iat":%s}' "$((NOW+1200))" "$NOW" | base64 | tr '+/' '-_' | tr -d '=')
@@ -32,7 +30,7 @@ ENDOFFILE
         if [ "$CERT_COUNT" = "0" ]; then
           openssl req -new -newkey rsa:2048 -keyout /tmp/priv.pem -out /tmp/cert.csr -nodes -subj "/C=CN/O=MM/CN=iOS Distribution" 2>/dev/null
           CSR=$(python3 -c "import sys;print(sys.stdin.read().strip().replace(chr(10),chr(92)+chr(110)))" < /tmp/cert.csr)
-          curl -s -X POST -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" -d "{"data":{"type":"certificates","attributes":{"csrContent":"$CSR","certificateType":"DISTRIBUTION"}}}" "https://api.appstoreconnect.apple.com/v1/certificates" > /tmp/cert_create.json
+          curl -s -X POST -H "Authorization: Bearer $JWT" -H "Content-Type: application/json"             -d '{"data":{"type":"certificates","attributes":{"csrContent":"'"$CSR"'","certificateType":"DISTRIBUTION"}}}'             "https://api.appstoreconnect.apple.com/v1/certificates" > /tmp/cert_create.json
           python3 << 'EOF'
 import json, subprocess, os
 with open('/tmp/cert_create.json') as f: d=json.load(f)
@@ -58,5 +56,3 @@ EOF
         fi
     artifacts:
       - build/ios/ipa/*.ipa
-
-      
