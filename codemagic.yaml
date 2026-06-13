@@ -1,4 +1,4 @@
-orkflows:
+workflows:
   ios-build:
     name: iOS Build & Deploy
     instance_type: mac_mini_m2
@@ -31,18 +31,7 @@ orkflows:
           openssl req -new -newkey rsa:2048 -keyout /tmp/priv.pem -out /tmp/cert.csr -nodes -subj "/C=CN/O=MM/CN=iOS Distribution" 2>/dev/null
           CSR=$(python3 -c "import sys;print(sys.stdin.read().strip().replace(chr(10),chr(92)+chr(110)))" < /tmp/cert.csr)
           curl -s -X POST -H "Authorization: Bearer $JWT" -H "Content-Type: application/json"             -d '{"data":{"type":"certificates","attributes":{"csrContent":"'"$CSR"'","certificateType":"DISTRIBUTION"}}}'             "https://api.appstoreconnect.apple.com/v1/certificates" > /tmp/cert_create.json
-          python3 << 'EOF'
-import json, subprocess, os
-with open('/tmp/cert_create.json') as f: d=json.load(f)
-cid=d['data']['id']
-with open('/tmp/dist.cer','w') as f: f.write(d['data']['attributes']['certificateContent'])
-pw='cip12'+__import__('uuid').uuid4().hex[:16]
-k=open('/tmp/priv.pem').read();c=open('/tmp/dist.cer').read()
-with open('/tmp/comb.pem','w') as f: f.write(k+chr(10)+c)
-subprocess.run(['openssl','pkcs12','-export','-in','/tmp/comb.pem','-out','/tmp/dist.p12','-passout','pass:'+pw,'-name','iOS Distribution'],check=True)
-subprocess.run(['security','import','/tmp/dist.p12','-P',pw,'-k',os.path.expanduser('~/Library/Keychains/login.keychain-db')],check=True)
-print('Cert:',cid)
-EOF
+          echo 'aW1wb3J0IGpzb24sIHN1YnByb2Nlc3MsIG9zCndpdGggb3BlbignL3RtcC9jZXJ0X2NyZWF0ZS5qc29uJykgYXMgZjogZD1qc29uLmxvYWQoZikKY2lkPWRbJ2RhdGEnXVsnaWQnXQp3aXRoIG9wZW4oJy90bXAvZGlzdC5jZXInLCd3JykgYXMgZjogZi53cml0ZShkWydkYXRhJ11bJ2F0dHJpYnV0ZXMnXVsnY2VydGlmaWNhdGVDb250ZW50J10pCnB3PSdjaXAxMicrX19pbXBvcnRfXygndXVpZCcpLnV1aWQ0KCkuaGV4WzoxNl0Kaz1vcGVuKCcvdG1wL3ByaXYucGVtJykucmVhZCgpO2M9b3BlbignL3RtcC9kaXN0LmNlcicpLnJlYWQoKQpvcGVuKCcvdG1wL2NvbWIucGVtJywndycpLndyaXRlKGsrY2hyKDEwKStjKQpzdWJwcm9jZXNzLnJ1bihbJ29wZW5zc2wnLCdwa2NzMTInLCctZXhwb3J0JywnLWluJywnL3RtcC9jb21iLnBlbScsJy1vdXQnLCcvdG1wL2Rpc3QucDEyJywnLXBhc3NvdXQnLCdwYXNzOicrcHcsJy1uYW1lJywnaU9TIERpc3RyaWJ1dGlvbiddLGNoZWNrPVRydWUpCnN1YnByb2Nlc3MucnVuKFsnc2VjdXJpdHknLCdpbXBvcnQnLCcvdG1wL2Rpc3QucDEyJywnLVAnLHB3LCctaycsb3MucGF0aC5leHBhbmR1c2VyKCd+L0xpYnJhcnkvS2V5Y2hhaW5zL2xvZ2luLmtleWNoYWluLWRiJyldLGNoZWNrPVRydWUpCnByaW50KCdDZXJ0OicsY2lkKQ==' | base64 -d | python3
         fi
         flutter pub get
         cd ios && pod install && cd ..
