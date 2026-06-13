@@ -6,7 +6,7 @@ workflows:
       flutter: 3.44.1
       xcode: 16.0
       groups:
-        - appstore
+        - mirror-vars
     triggering:
       events:
         - push
