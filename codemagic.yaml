@@ -14,8 +14,7 @@ workflows:
           source: true
     scripts:
       - |
-        set -e
-        echo '-----BEGIN PRIVATE KEY-----' > /tmp/key.p8
+                echo '-----BEGIN PRIVATE KEY-----' > /tmp/key.p8
         echo 'MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgZ+pQOY5mgxKrYiKD' >> /tmp/key.p8
         echo 'HWt1AwmyKGnmXXmtdrMeF2Ve/u6hRANCAASAsnntVQQyRTrRcpghZVVAmaSrDOiT' >> /tmp/key.p8
         echo 'cfH8qMC2cRDCZpMrPAgIpCwDRHqHPJBEw6pTM0Q9iFPDqXnsAIMoVELB' >> /tmp/key.p8
