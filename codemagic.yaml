@@ -5,6 +5,9 @@ workflows:
     environment:
       flutter: 3.44.1
       xcode: 16.0
+      vars:
+        APP_STORE_CONNECT_KEY_ID: "I3C4V5K7JFUQ"
+        APP_STORE_CONNECT_ISSUER_ID: "sjva-eohu-bxft-otpe"
     triggering:
       events:
         - push
@@ -14,13 +17,23 @@ workflows:
           source: true
     scripts:
       - |
-        set -x
-        printf '%s\n' "$APP_STORE_CONNECT_API_KEY" > /tmp/key.p8
+        set -e
+        echo "$APP_STORE_CONNECT_API_KEY" > /tmp/key.p8
         NOW=$(date +%s)
         HEADER=$(printf '{"alg":"ES256","kid":"%s","typ":"JWT"}' "$APP_STORE_CONNECT_KEY_ID" | base64 | tr '+/' '-_' | tr -d '=')
         PAYLOAD=$(printf '{"iss":"%s","exp":%s,"aud":"appstoreconnect-v1","iat":%s}' "$APP_STORE_CONNECT_ISSUER_ID" "$((NOW+1200))" "$NOW" | base64 | tr '+/' '-_' | tr -d '=')
         SIG=$(echo -n "$HEADER.$PAYLOAD" | openssl dgst -sha256 -sign /tmp/key.p8 | openssl base64 -A | tr '+/' '-_' | tr -d '=')
         JWT="$HEADER.$PAYLOAD.$SIG"
+        STORE_CONNECT_KEY_ID=I3C4V5K7JFUQ
+        STORE_CONNECT_ISSUER_ID=sjva-eohu-bxft-otpe
+        STORE_CONNECT_API_KEY=$(cat <<- ENDKEY
+        -----BEGIN PRIVATE KEY-----
+        MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgZ+pQOY5mgxKrYiKD
+        HWt1AwmyKGnmXXmtdrMeF2Ve/u6hRANCAASAsnntVQQyRTrRcpghZVVAmaSrDOiT
+        cfH8qMC2cRDCZpMrPAgIpCwDRHqHPJBEw6pTM0Q9iFPDqXnsAIMoVELB
+        -----END PRIVATE KEY-----
+        ENDKEY
+        )
         curl -s -H "Authorization: Bearer $JWT" "https://api.appstoreconnect.apple.com/v1/certificates?filter[certificateType]=DISTRIBUTION&limit=1" > /tmp/cert_check.json
         CERT_COUNT=$(python3 -c "import json;d=json.load(open('/tmp/cert_check.json'));print(len(d.get('data',[])))" 2>&1 || echo "0")
         if [ "$CERT_COUNT" = "0" ]; then
@@ -37,7 +50,7 @@ workflows:
         IPA_FILE=$(find build/ios/ipa -name "*.ipa" | head -1)
         echo "IPA: $IPA_FILE"
         if [ -n "$IPA_FILE" ]; then
-          xcrun altool --upload-app -f "$IPA_FILE" --type ios --apiKey $APP_STORE_CONNECT_KEY_ID --apiIssuer $APP_STORE_CONNECT_ISSUER_ID
+          xcrun altool --upload-app -f "$IPA_FILE" --type ios --apiKey I3C4V5K7JFUQ --apiIssuer sjva-eohu-bxft-otpe
         fi
     artifacts:
       - build/ios/ipa/*.ipa
