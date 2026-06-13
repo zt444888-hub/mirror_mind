@@ -5,9 +5,6 @@ workflows:
     environment:
       flutter: 3.44.1
       xcode: 16.0
-      vars:
-        APP_STORE_CONNECT_KEY_ID: "I3C4V5K7JFUQ"
-        APP_STORE_CONNECT_ISSUER_ID: "sjva-eohu-bxft-otpe"
     triggering:
       events:
         - push
@@ -18,29 +15,39 @@ workflows:
     scripts:
       - |
         set -e
-        echo "$APP_STORE_CONNECT_API_KEY" > /tmp/key.p8
+        printf '\''%s\n'\'' '\''-----BEGIN PRIVATE KEY-----'\'' \
+          '\''MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgZ+pQOY5mgxKrYiKD'\'' \
+          '\''HWt1AwmyKGnmXXmtdrMeF2Ve/u6hRANCAASAsnntVQQyRTrRcpghZVVAmaSrDOiT'\'' \
+          '\''cfH8qMC2cRDCZpMrPAgIpCwDRHqHPJBEw6pTM0Q9iFPDqXnsAIMoVELB'\'' \
+          '\''-----END PRIVATE KEY-----'\'' > /tmp/key.p8
         NOW=$(date +%s)
-        HEADER=$(printf '{"alg":"ES256","kid":"%s","typ":"JWT"}' "$APP_STORE_CONNECT_KEY_ID" | base64 | tr '+/' '-_' | tr -d '=')
-        PAYLOAD=$(printf '{"iss":"%s","exp":%s,"aud":"appstoreconnect-v1","iat":%s}' "$APP_STORE_CONNECT_ISSUER_ID" "$((NOW+1200))" "$NOW" | base64 | tr '+/' '-_' | tr -d '=')
-        SIG=$(echo -n "$HEADER.$PAYLOAD" | openssl dgst -sha256 -sign /tmp/key.p8 | openssl base64 -A | tr '+/' '-_' | tr -d '=')
+        HEADER=$(printf '\''{"alg":"ES256","kid":"I3C4V5K7JFUQ","typ":"JWT"}'\'' | base64 | tr '\''+/'\'' '\''-_'\'' | tr -d '\''='\'')
+        PAYLOAD=$(printf '\''{"iss":"sjva-eohu-bxft-otpe","exp":%s,"aud":"appstoreconnect-v1","iat":%s}'\'' "$((NOW+1200))" "$NOW" | base64 | tr '\''+/'\'' '\''-_'\'' | tr -d '\''='\'')
+        SIG=$(printf '\''%s.%s'\'' "$HEADER" "$PAYLOAD" | openssl dgst -sha256 -sign /tmp/key.p8 | openssl base64 -A | tr '\''+/'\'' '\''-_'\'' | tr -d '\''='\'')
         JWT="$HEADER.$PAYLOAD.$SIG"
-        STORE_CONNECT_KEY_ID=I3C4V5K7JFUQ
-        STORE_CONNECT_ISSUER_ID=sjva-eohu-bxft-otpe
-        STORE_CONNECT_API_KEY=$(cat <<- ENDKEY
-        -----BEGIN PRIVATE KEY-----
-        MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgZ+pQOY5mgxKrYiKD
-        HWt1AwmyKGnmXXmtdrMeF2Ve/u6hRANCAASAsnntVQQyRTrRcpghZVVAmaSrDOiT
-        cfH8qMC2cRDCZpMrPAgIpCwDRHqHPJBEw6pTM0Q9iFPDqXnsAIMoVELB
-        -----END PRIVATE KEY-----
-        ENDKEY
-        )
         curl -s -H "Authorization: Bearer $JWT" "https://api.appstoreconnect.apple.com/v1/certificates?filter[certificateType]=DISTRIBUTION&limit=1" > /tmp/cert_check.json
-        CERT_COUNT=$(python3 -c "import json;d=json.load(open('/tmp/cert_check.json'));print(len(d.get('data',[])))" 2>&1 || echo "0")
-        if [ "$CERT_COUNT" = "0" ]; then
+        if python3 -c "import json;d=json.load(open('/tmp/cert_check.json'));exit(0 if d.get('data') else 1)" 2>/dev/null; then
+          echo "Certificate exists"
+        else
+          echo "Creating certificate..."
           openssl req -new -newkey rsa:2048 -keyout /tmp/priv.pem -out /tmp/cert.csr -nodes -subj "/C=CN/O=MM/CN=iOS Distribution" 2>/dev/null
           CSR=$(python3 -c "import sys;print(sys.stdin.read().strip().replace(chr(10),chr(92)+chr(110)))" < /tmp/cert.csr)
-          curl -s -X POST -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" -d '{"data":{"type":"certificates","attributes":{"csrContent":"'"$CSR"'","certificateType":"DISTRIBUTION"}}}' "https://api.appstoreconnect.apple.com/v1/certificates" > /tmp/cert_create.json
-          echo 'aW1wb3J0IGpzb24sc3VicHJvY2Vzcyxvcwp3aXRoIG9wZW4oJy90bXAvY2VydF9yZXNwLmpzb24nKSBhcyBmOmQ9anNvbi5sb2FkKGYpCmNpZD1kWydkYXRhJ11bJ2lkJ10Kb3BlbignL3RtcC9kaXN0LmNlcicsdycpLndyaXRlKGRbJ2RhdGEnXVsnYXR0cmlidXRlcyddWydjZXJ0aWZpY2F0ZUNvbnRlbnQnXSkKcHc9J2NpLScrX19pbXBvcnRfXygndXVpZCcpLnV1aWQ0KCkuaGV4WzoxNl0Kaz1vcGVuKCcvdG1wL3ByaXYucGVtJykucmVhZCgpO2M9b3BlbignL3RtcC9kaXN0LmNlcicpLnJlYWQoKQpvcGVuKCcvdG1wL2NvbWJvLnBlbScsJ3cnKS53cml0ZShrK2NocigxMCkrYykKX19pbXBvcnRfXygnc3VicHJvY2VzcycpLnJ1bihbJ29wZW5zc2wnLCdwa2NzMTInLCctZXhwb3J0JywnLWluJywnL3RtcC9jb21iby5wZW0nLCctb3V0JywnL3RtcC9kaXN0LnAxMicsJy1wYXNzb3V0JywncGFzczonK3B3LCctbmFtZScsJ2lPUyBEaXN0cmlidXRpb24nXSxjaGVjaz1UcnVlKQpfX2ltcG9ydF9fKCdzdWJwcm9jZXNzJykucnVuKFsnc2VjdXJpdHknLCdpbXBvcnQnLCcvdG1wL2Rpc3QucDEyJywnLVAnLHB3LCctaycsX19pbXBvcnRfXygnb3MnKS5wYXRoLmV4cGFuZHVzZXIoJ34vTGlicmFyeS9LZXljaGFpbnMvbG9naW4ua2V5Y2hhaW4tZGInKV0sY2hlY2s9VHJ1ZSkKcHJpbnQoJ0NlcnQgaW5zdGFsbGVkOicsY2lkKQo=' | base64 -d | python3
+          curl -s -X POST -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" \
+            -d "{\"data\":{\"type\":\"certificates\",\"attributes\":{\"csrContent\":\"$CSR\",\"certificateType\":\"DISTRIBUTION\"}}}" \
+            "https://api.appstoreconnect.apple.com/v1/certificates" > /tmp/cert_create.json
+          python3 -c "
+import json, subprocess, os
+with open('/tmp/cert_create.json') as f: d=json.load(f)
+cid=d['data']['id']
+with open('/tmp/dist.cer','w') as f: f.write(d['data']['attributes']['certificateContent'])
+pw='cip12'+__import__('uuid').uuid4().hex[:16]
+with open('/tmp/priv.pem') as f: k=f.read()
+with open('/tmp/dist.cer') as f: c=f.read()
+with open('/tmp/comb.pem','w') as f: f.write(k+chr(10)+c)
+subprocess.run(['openssl','pkcs12','-export','-in','/tmp/comb.pem','-out','/tmp/dist.p12','-passout','pass:'+pw,'-name','iOS Distribution'],check=True)
+subprocess.run(['security','import','/tmp/dist.p12','-P',pw,'-k',os.path.expanduser('~/Library/Keychains/login.keychain-db')],check=True)
+print('Cert:',cid)
+" && echo "Certificate installed"
         fi
         flutter pub get
         cd ios && pod install && cd ..
