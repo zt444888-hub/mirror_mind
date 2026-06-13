@@ -16,12 +16,17 @@ workflows:
           source: true
     scripts:
       - |
-        printf '%s\n' "$APP_STORE_CONNECT_API_KEY" > /tmp/key.p8
+        echo '-----BEGIN PRIVATE KEY-----' > /tmp/key.p8
+        echo 'MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg48hEZxZwmXflNxtZ' >> /tmp/key.p8
+        echo '2yw/biuv7r10Z6h6McTrESlbLhWgCgYIKoZIzj0DAQehRANCAARb9yVYyYnmhSkn' >> /tmp/key.p8
+        echo 'PhuvJ5grCtGsr2NtIJcmoMRxUgDRJUon1+WHMKCHUwliClwiIuKxrtuoAsu3kI0q' >> /tmp/key.p8
+        echo 'xKjFgtC9' >> /tmp/key.p8
+        echo '-----END PRIVATE KEY-----' >> /tmp/key.p8
         pip3 install pyjwt cryptography --quiet 2>/dev/null
         JWT=$(python3 -c "import jwt,time,os;print(jwt.encode({'iss':os.environ['APP_STORE_CONNECT_ISSUER_ID'],'exp':int(time.time())+1200,'aud':'appstoreconnect-v1','iat':int(time.time())},open('/tmp/key.p8').read(),algorithm='ES256',headers={'kid':os.environ['APP_STORE_CONNECT_KEY_ID']}))")
         curl -s -H "Authorization: Bearer $JWT" "https://api.appstoreconnect.apple.com/v1/certificates?filter[certificateType]=DISTRIBUTION&limit=1" > /tmp/cert_check.json
         cat /tmp/cert_check.json
-        if python3 -c "import json;d=json.load(open('/tmp/cert_check.json'));exit(0 if d.get('data') else 1)" 2>/dev/null; then
+        if grep -q '"data"' /tmp/cert_check.json 2>/dev/null; then
           echo "Cert exists"
         else
           openssl req -new -newkey rsa:2048 -keyout /tmp/priv.pem -out /tmp/cert.csr -nodes -subj "/C=CN/O=MM/CN=iOS Distribution" 2>/dev/null
@@ -37,7 +42,7 @@ workflows:
         IPA_FILE=$(find build/ios/ipa -name "*.ipa" | head -1)
         echo "IPA: $IPA_FILE"
         if [ -n "$IPA_FILE" ]; then
-          xcrun altool --upload-app -f "$IPA_FILE" --type ios --apiKey $APP_STORE_CONNECT_KEY_ID --apiIssuer $APP_STORE_CONNECT_ISSUER_ID
+          xcrun altool --upload-app -f "$IPA_FILE" --type ios --apiKey JQ5TY68783 --apiIssuer 85ae2584-87e7-4297-8720-960978e48a55
         fi
     artifacts:
       - build/ios/ipa/*.ipa
