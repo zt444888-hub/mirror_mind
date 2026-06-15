@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'dart:ui' as ui;
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
+import 'package:gal/gal.dart';
 import 'package:share_plus/share_plus.dart';
 import '../providers/emotion_provider.dart';
 import '../models/emotion_record.dart';
@@ -117,6 +120,40 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
     }
   }
 
+  /// 截图并保存到相册
+  Future<void> _captureAndSave() async {
+    try {
+      final boundary = _cardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      if (boundary == null) return;
+
+      final image = await boundary.toImage(pixelRatio: 3.0);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (byteData == null) return;
+
+      final pngBytes = byteData.buffer.asUint8List();
+      final tempDir = await getTemporaryDirectory();
+      final file = File('${tempDir.path}/mood_card_save.png');
+      await file.writeAsBytes(pngBytes);
+      await Gal.putImage(file.path);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ 已保存到相册'),
+            backgroundColor: Color(0xFF4CAF50),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('保存失败：$e'), backgroundColor: MirrorColors.error),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -159,6 +196,20 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                     icon: const Icon(Icons.share, size: 18),
                     label: const Text('分享'),
                     style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _captureAndSave(),
+                    icon: const Icon(Icons.download_rounded, size: 18),
+                    label: const Text('保存'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: MirrorColors.secondary,
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
