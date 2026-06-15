@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -149,7 +149,7 @@ class PdfService {
                 children: [
                   _buildMiniStat('记录天数', '${records.map((r) => r.date.day).toSet().length}'),
                   _buildMiniStat('总记录数', '${records.length}'),
-                  _buildMiniStat('平均评分', '${_avgScore(records)}'),
+                  _buildMiniStat('平均评分', _avgScore(records)),
                 ],
               ),
             ),
@@ -166,7 +166,7 @@ class PdfService {
       ),
     );
 
-    return await _savePdf(pdf, '心镜月报_${year}年${month}月.pdf');
+    return await _savePdf(pdf, '心镜月报_$year年$month月.pdf');
   }
 
   pw.Widget _buildHeader(String title, String subtitle) {
@@ -502,7 +502,7 @@ class PdfService {
       ),
     );
 
-    return await _savePdf(pdf, '心镜年报_${year}年.pdf');
+    return await _savePdf(pdf, '心镜年报_$year年.pdf');
   }
 
   /// 月度趋势表格
@@ -512,7 +512,7 @@ class PdfService {
       border: pw.TableBorder.all(color: _lightBgColor, width: 1),
       children: [
         pw.TableRow(
-          decoration: pw.BoxDecoration(color: _lightBgColor),
+          decoration: const pw.BoxDecoration(color: _lightBgColor),
           children: [
             ...months.map((m) => pw.Padding(
               padding: const pw.EdgeInsets.all(4),
@@ -543,7 +543,7 @@ class PdfService {
       border: pw.TableBorder.all(color: _lightBgColor, width: 1),
       children: [
         pw.TableRow(
-          decoration: pw.BoxDecoration(color: _lightBgColor),
+          decoration: const pw.BoxDecoration(color: _lightBgColor),
           children: [
             pw.Padding(padding: const pw.EdgeInsets.all(4), child: pw.Text('月份', style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold, color: _textColor), textAlign: pw.TextAlign.center)),
             pw.Padding(padding: const pw.EdgeInsets.all(4), child: pw.Text('最佳日', style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold, color: _textColor), textAlign: pw.TextAlign.center)),
@@ -553,7 +553,7 @@ class PdfService {
         for (int m = 1; m <= 12; m++)
           pw.TableRow(
             children: [
-              pw.Padding(padding: const pw.EdgeInsets.all(4), child: pw.Text('${m}月', style: const pw.TextStyle(fontSize: 8, color: _textColor), textAlign: pw.TextAlign.center)),
+              pw.Padding(padding: const pw.EdgeInsets.all(4), child: pw.Text('$m月', style: const pw.TextStyle(fontSize: 8, color: _textColor), textAlign: pw.TextAlign.center)),
               pw.Padding(padding: const pw.EdgeInsets.all(4), child: pw.Text(best[m] ?? '-', style: const pw.TextStyle(fontSize: 8, color: _textColor), textAlign: pw.TextAlign.center)),
               pw.Padding(padding: const pw.EdgeInsets.all(4), child: pw.Text(worst[m] ?? '-', style: const pw.TextStyle(fontSize: 8, color: _textColor), textAlign: pw.TextAlign.center)),
             ],

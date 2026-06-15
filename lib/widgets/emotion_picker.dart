@@ -14,7 +14,7 @@ class EmotionPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final emotions = EmotionType.values;
+    const emotions = EmotionType.values;
     return SizedBox(
       height: 44,
       child: ListView.separated(

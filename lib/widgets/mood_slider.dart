@@ -15,11 +15,21 @@ class MoodSlider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
-          height: 80,
-          child: CustomPaint(
-            size: const Size(double.infinity, 80),
-            painter: _MoodSliderPainter(value: value),
+        GestureDetector(
+          onTapDown: (details) => _updateValue(details.localPosition.dx, context),
+          onHorizontalDragStart: (details) => _updateValue(details.localPosition.dx, context),
+          onHorizontalDragUpdate: (details) => _updateValue(details.localPosition.dx, context),
+          child: SizedBox(
+            height: 80,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final totalWidth = constraints.maxWidth;
+                return CustomPaint(
+                  size: Size(totalWidth, 80),
+                  painter: _MoodSliderPainter(value: value),
+                );
+              },
+            ),
           ),
         ),
         const SizedBox(height: 4),
@@ -43,6 +53,21 @@ class MoodSlider extends StatelessWidget {
       ],
     );
   }
+
+  void _updateValue(double dx, BuildContext context) {
+    final totalWidth = context.findRenderObject() is RenderBox
+        ? (context.findRenderObject() as RenderBox).size.width
+        : MediaQuery.of(context).size.width - 60;
+    const startX = 30.0;
+    final endX = totalWidth - 30.0;
+    if (endX <= startX) return;
+    final step = (endX - startX) / 9;
+    final rawValue = ((dx - startX) / step).round() + 1;
+    final clamped = rawValue.clamp(1, 10);
+    if (clamped != value) {
+      onChanged(clamped);
+    }
+  }
 }
 
 class _MoodSliderPainter extends CustomPainter {
@@ -64,7 +89,7 @@ class _MoodSliderPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final y = size.height / 2;
-    final startX = 30.0;
+    const startX = 30.0;
     final endX = size.width - 30.0;
 
     // 轨道

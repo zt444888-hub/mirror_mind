@@ -162,7 +162,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildStatItem('记录天数', '${records.length}', MirrorColors.primary),
-                _buildStatItem('平均评分', '${_avgScore(records)}', MirrorColors.secondary),
+                _buildStatItem('平均评分', _avgScore(records), MirrorColors.secondary),
               ],
             ),
           ],

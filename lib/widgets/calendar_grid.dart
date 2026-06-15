@@ -33,7 +33,7 @@ class CalendarGrid extends StatelessWidget {
           children: const ['日', '一', '二', '三', '四', '五', '六']
               .map((d) => Expanded(
                     child: Center(
-                      child: Text(d, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: MirrorColors.textSecondary)),
+                      child: Text(d, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: MirrorColors.textSecondary)),
                     ),
                   ))
               .toList(),

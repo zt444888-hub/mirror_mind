@@ -29,7 +29,7 @@ class _EmotionChallengeScreenState extends State<EmotionChallengeScreen> {
 
   // 挑战主题
   static final List<_Challenge> _challenges = [
-    _Challenge(
+    const _Challenge(
       title: '7天积极发现',
       description: '每天找一个让自己开心的小事，记录并感受它带来的快乐',
       icon: '🔍',
@@ -47,7 +47,7 @@ class _EmotionChallengeScreenState extends State<EmotionChallengeScreen> {
       badge: '🏆',
       badgeName: '积极发现者',
     ),
-    _Challenge(
+    const _Challenge(
       title: '7天情绪觉察',
       description: '每天在早、中、晚三个时间点记录情绪，提升情绪感知力',
       icon: '🧘',
@@ -65,7 +65,7 @@ class _EmotionChallengeScreenState extends State<EmotionChallengeScreen> {
       badge: '🧠',
       badgeName: '情绪观察家',
     ),
-    _Challenge(
+    const _Challenge(
       title: '7天自我关怀',
       description: '每天做一件照顾自己的事，学会温柔对待自己',
       icon: '💝',

@@ -181,22 +181,22 @@ class _HomeScreenState extends State<HomeScreen> {
   /// 根据连续天数 / 总天数返回成就徽章
   _BadgeInfo? _getBadge(int consecutiveDays, int totalDays) {
     if (totalDays >= 365) {
-      return _BadgeInfo('👑', '王者', const Color(0xFFD4A017));
+      return const _BadgeInfo('👑', '王者', Color(0xFFD4A017));
     }
     if (consecutiveDays >= 100) {
-      return _BadgeInfo('🌟', '闪耀', const Color(0xFFE8A838));
+      return const _BadgeInfo('🌟', '闪耀', Color(0xFFE8A838));
     }
     if (consecutiveDays >= 60) {
-      return _BadgeInfo('🌸', '绽放', const Color(0xFFE891A0));
+      return const _BadgeInfo('🌸', '绽放', Color(0xFFE891A0));
     }
     if (consecutiveDays >= 21) {
-      return _BadgeInfo('🌳', '稳固', MirrorColors.secondary);
+      return const _BadgeInfo('🌳', '稳固', MirrorColors.secondary);
     }
     if (consecutiveDays >= 7) {
-      return _BadgeInfo('🌿', '成长', MirrorColors.primary);
+      return const _BadgeInfo('🌿', '成长', MirrorColors.primary);
     }
     if (consecutiveDays >= 1 || totalDays >= 1) {
-      return _BadgeInfo('🌱', '新芽', const Color(0xFF8DB580));
+      return const _BadgeInfo('🌱', '新芽', Color(0xFF8DB580));
     }
     return null;
   }

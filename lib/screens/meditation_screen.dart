@@ -25,7 +25,7 @@ class _MeditationScreenState extends State<MeditationScreen>
 
   // 冥想模式定义
   static final List<_MeditationMode> _modes = [
-    _MeditationMode(
+    const _MeditationMode(
       title: '晨间唤醒',
       description: '开启美好一天',
       icon: Icons.wb_sunny_outlined,
@@ -40,7 +40,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '慢慢睁开眼睛，带着平静开始新的一天',
       ],
     ),
-    _MeditationMode(
+    const _MeditationMode(
       title: '午间小憩',
       description: '为下午充电',
       icon: Icons.wb_cloudy_outlined,
@@ -59,7 +59,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '慢慢地回到当下，带着清醒与能量',
       ],
     ),
-    _MeditationMode(
+    const _MeditationMode(
       title: '睡前放松',
       description: '温柔入睡',
       icon: Icons.nightlight_round,
@@ -78,7 +78,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '安心地进入梦乡',
       ],
     ),
-    _MeditationMode(
+    const _MeditationMode(
       title: '焦虑缓解',
       description: '平复紧张情绪',
       icon: Icons.wind_power,
@@ -97,7 +97,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '当准备好时，慢慢睁开眼睛',
       ],
     ),
-    _MeditationMode(
+    const _MeditationMode(
       title: '压力释放',
       description: '卸下身心负担',
       icon: Icons.anchor,
@@ -116,7 +116,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '感谢自己释放了这些负担',
       ],
     ),
-    _MeditationMode(
+    const _MeditationMode(
       title: '感恩冥想',
       description: '培养感恩之心',
       icon: Icons.favorite_outline,
@@ -136,7 +136,7 @@ class _MeditationScreenState extends State<MeditationScreen>
       ],
     ),
     // --- Pro 模式 ---
-    _MeditationMode(
+    const _MeditationMode(
       title: '专注力训练',
       description: '深度聚焦',
       icon: Icons.center_focus_strong,
@@ -156,7 +156,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '慢慢睁开眼睛，带着这份清明回到当下',
       ],
     ),
-    _MeditationMode(
+    const _MeditationMode(
       title: '身体扫描',
       description: '深度放松',
       icon: Icons.accessibility_new,
@@ -178,7 +178,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '慢慢活动手指脚趾，带着觉察回到当下',
       ],
     ),
-    _MeditationMode(
+    const _MeditationMode(
       title: '慈悲冥想',
       description: '滋养心灵',
       icon: Icons.volunteer_activism,
@@ -198,7 +198,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '慢慢睁开眼睛，带着这份慈悲回到日常',
       ],
     ),
-    _MeditationMode(
+    const _MeditationMode(
       title: '自我关爱',
       description: '接纳与善待自己',
       icon: Icons.self_improvement,
@@ -218,7 +218,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '慢慢睁开眼睛，带着这份爱继续前行',
       ],
     ),
-    _MeditationMode(
+    const _MeditationMode(
       title: '正念呼吸',
       description: '活在当下',
       icon: Icons.air_outlined,
@@ -238,7 +238,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '慢慢睁开眼睛，保持这份觉察',
       ],
     ),
-    _MeditationMode(
+    const _MeditationMode(
       title: '情绪平衡',
       description: '找回内心平静',
       icon: Icons.balance,

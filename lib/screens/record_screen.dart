@@ -192,7 +192,7 @@ class _RecordScreenState extends State<RecordScreen>
     );
 
     Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) Navigator.of(context).pop();
+      if (mounted) Navigator.of(context, rootNavigator: true).pop();
       _resetForm();
     });
   }
@@ -607,7 +607,7 @@ class _RecordScreenState extends State<RecordScreen>
   }
 
   Widget _buildTagSection(bool isDark) {
-    final tags = TagType.values;
+    const tags = TagType.values;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

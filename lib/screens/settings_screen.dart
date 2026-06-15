@@ -372,10 +372,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Card(
             child: Column(
               children: [
-                ListTile(
-                  leading: const Icon(Icons.info_outline, color: MirrorColors.primary),
-                  title: const Text('心镜 MirrorMind'),
-                  subtitle: const Text('版本 1.0.0'),
+                const ListTile(
+                  leading: Icon(Icons.info_outline, color: MirrorColors.primary),
+                  title: Text('心镜 MirrorMind'),
+                  subtitle: Text('版本 1.0.0'),
                 ),
                 const Divider(height: 1, indent: 72),
                 ListTile(
@@ -385,10 +385,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onTap: () => _showPrivacyPolicy(context),
                 ),
                 const Divider(height: 1, indent: 72),
-                ListTile(
-                  leading: const Icon(Icons.copyright, color: MirrorColors.primary),
-                  title: const Text('开发者'),
-                  subtitle: const Text('MirrorMind Team'),
+                const ListTile(
+                  leading: Icon(Icons.copyright, color: MirrorColors.primary),
+                  title: Text('开发者'),
+                  subtitle: Text('MirrorMind Team'),
                 ),
               ],
             ),
@@ -660,11 +660,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('隐私政策'),
-        content: SingleChildScrollView(
+        content: const SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
-            children: const [
+            children: [
               Text('数据收集声明', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               SizedBox(height: 8),
               Text('心镜仅存储您主动输入的情绪记录文字。'),

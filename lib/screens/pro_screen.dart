@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../services/purchase_service.dart';
 import '../constants/colors.dart';
 
@@ -90,9 +90,9 @@ class _ProScreenState extends State<ProScreen> {
               Container(
                 width: 80,
                 height: 80,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                     colors: [MirrorColors.primaryLight, MirrorColors.primary],
                   ),
                 ),
@@ -136,15 +136,15 @@ class _ProScreenState extends State<ProScreen> {
       return Scaffold(
         backgroundColor: isDark ? MirrorColors.darkBackground : MirrorColors.background,
         appBar: AppBar(title: const Text('心镜 Pro')),
-        body: Center(
+        body: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.verified, size: 64, color: MirrorColors.secondary),
-              const SizedBox(height: 16),
-              const Text('心镜 Pro · 已解锁', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-              const SizedBox(height: 8),
-              const Text('感谢你的支持', style: TextStyle(fontSize: 14, color: MirrorColors.textSecondary)),
+              Icon(Icons.verified, size: 64, color: MirrorColors.secondary),
+              SizedBox(height: 16),
+              Text('心镜 Pro · 已解锁', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+              SizedBox(height: 8),
+              Text('感谢你的支持', style: TextStyle(fontSize: 14, color: MirrorColors.textSecondary)),
             ],
           ),
         ),

@@ -1,4 +1,4 @@
-﻿import 'dart:ui' as ui;
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
@@ -318,7 +318,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              EmotionType.fromLabel(_displayEmotion).emoji + ' ' + _displayEmotion,
+              '${EmotionType.fromLabel(_displayEmotion).emoji} $_displayEmotion',
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: MirrorColors.primaryDark),
             ),
           ),
@@ -382,7 +382,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              EmotionType.fromLabel(_displayEmotion).emoji + ' ' + _displayEmotion,
+              '${EmotionType.fromLabel(_displayEmotion).emoji} $_displayEmotion',
               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: fg),
             ),
           ),
@@ -424,7 +424,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           ),
           const SizedBox(height: 32),
           Text(
-            EmotionType.fromLabel(_displayEmotion).emoji + ' ' + _displayEmotion,
+            '${EmotionType.fromLabel(_displayEmotion).emoji} $_displayEmotion',
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300, color: fg.withValues(alpha: 0.6), letterSpacing: 2),
           ),
           const SizedBox(height: 24),
@@ -471,7 +471,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           ),
           const SizedBox(height: 12),
           Text(
-            EmotionType.fromLabel(_displayEmotion).emoji + ' ' + _displayEmotion,
+            '${EmotionType.fromLabel(_displayEmotion).emoji} $_displayEmotion',
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: fg, fontStyle: FontStyle.italic),
           ),
           const SizedBox(height: 20),
@@ -523,7 +523,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           ),
           const SizedBox(height: 32),
           Text(
-            EmotionType.fromLabel(_displayEmotion).emoji + ' ' + _displayEmotion,
+            '${EmotionType.fromLabel(_displayEmotion).emoji} $_displayEmotion',
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: fg.withValues(alpha: 0.7), letterSpacing: 3),
           ),
           const SizedBox(height: 28),

@@ -231,7 +231,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                                   const SizedBox(width: 8),
                                   Text(
                                     '${record.score}/10',
-                                    style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary),
+                                    style: const TextStyle(fontSize: 12, color: MirrorColors.textSecondary),
                                   ),
                                 ],
                               ),

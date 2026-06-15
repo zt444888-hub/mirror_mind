@@ -134,11 +134,11 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           children: [
-            const Icon(Icons.healing, color: MirrorColors.accentDark, size: 20),
-            const SizedBox(width: 6),
-            const Text(
+            Icon(Icons.healing, color: MirrorColors.accentDark, size: 20),
+            SizedBox(width: 6),
+            Text(
               '试试这些方法',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
@@ -230,11 +230,11 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
 
   Widget _buildHotlineSection(bool isDark) {
     final hotlines = [
-      _Hotline('全国心理援助热线', '12320-5'),
-      _Hotline('希望24热线', '400-161-9995'),
-      _Hotline('北京心理危机研究与干预中心', '010-82951332'),
-      _Hotline('生命热线', '400-821-1215'),
-      _Hotline('青少年心理援助热线', '12355'),
+      const _Hotline('全国心理援助热线', '12320-5'),
+      const _Hotline('希望24热线', '400-161-9995'),
+      const _Hotline('北京心理危机研究与干预中心', '010-82951332'),
+      const _Hotline('生命热线', '400-821-1215'),
+      const _Hotline('青少年心理援助热线', '12355'),
     ];
 
     Future<void> dial(String number) async {
@@ -250,11 +250,11 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
-                const Icon(Icons.support, color: MirrorColors.warning, size: 20),
-                const SizedBox(width: 6),
-                const Expanded(
+                Icon(Icons.support, color: MirrorColors.warning, size: 20),
+                SizedBox(width: 6),
+                Expanded(
                   child: Text(
                     '如果你正在经历困难时刻，请知道——求助是勇敢的表现',
                     style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: MirrorColors.warning),

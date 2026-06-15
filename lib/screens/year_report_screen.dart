@@ -352,12 +352,12 @@ class _YearReportScreenState extends State<YearReportScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
-                const Icon(Icons.auto_awesome,
+                Icon(Icons.auto_awesome,
                     color: MirrorColors.primary, size: 20),
-                const SizedBox(width: 8),
-                const Text('AI 年度情绪分析',
+                SizedBox(width: 8),
+                Text('AI 年度情绪分析',
                     style: TextStyle(
                         fontSize: 18, fontWeight: FontWeight.w600)),
               ],

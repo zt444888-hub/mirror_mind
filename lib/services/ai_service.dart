@@ -129,15 +129,15 @@ class AiService {
         .timeout(const Duration(seconds: 15));
 
     if (response.statusCode == 401) {
-      throw AiConfigException('API Key 无效，请检查设置');
+      throw const AiConfigException('API Key 无效，请检查设置');
     }
     if (response.statusCode == 429) {
       // 限流错误，可重试
-      throw AiRetryException('请求过于频繁，正在重试...');
+      throw const AiRetryException('请求过于频繁，正在重试...');
     }
     if (response.statusCode >= 500) {
       // 服务器错误，可重试
-      throw AiRetryException('服务器暂时不可用，正在重试...');
+      throw const AiRetryException('服务器暂时不可用，正在重试...');
     }
     if (response.statusCode != 200) {
       throw AiConfigException('API 请求失败 (${response.statusCode})');

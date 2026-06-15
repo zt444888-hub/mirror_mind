@@ -89,7 +89,7 @@ class _SleepScreenState extends State<SleepScreen> {
   }
 
   String get _timeDisplay {
-    if (!_isRunning) return '${_selectedMinutes}:00';
+    if (!_isRunning) return '$_selectedMinutes:00';
     final m = (_remainingSeconds ~/ 60).toString().padLeft(2, '0');
     final s = (_remainingSeconds % 60).toString().padLeft(2, '0');
     return '$m:$s';
@@ -182,7 +182,7 @@ class _SleepScreenState extends State<SleepScreen> {
                         children: [
                           Text(
                             ['🌧️', '🌊', '🌲', '☁️'][i],
-                            style: TextStyle(fontSize: 18),
+                            style: const TextStyle(fontSize: 18),
                           ),
                           const SizedBox(width: 6),
                           Text(_sounds[i]['name']!, style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 14)),
@@ -208,7 +208,7 @@ class _SleepScreenState extends State<SleepScreen> {
                           color: _selectedMinutes == m ? Colors.white.withValues(alpha: 0.15) : Colors.white.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Text('$m 分钟', style: TextStyle(color: Colors.white, fontSize: 15)),
+                        child: Text('$m 分钟', style: const TextStyle(color: Colors.white, fontSize: 15)),
                       ),
                     ),
                   )).toList(),
