@@ -44,7 +44,9 @@ class SpeechService {
   Future<bool> openAppSettings() async {
     try {
       return await ph.openAppSettings();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('语音服务异常: \$e');
+    }
       return false;
     }
   }

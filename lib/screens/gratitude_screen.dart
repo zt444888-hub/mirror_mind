@@ -86,7 +86,9 @@ class _GratitudeScreenState extends State<GratitudeScreen> {
     try {
       final list = jsonDecode(jsonStr) as List<dynamic>;
       return list.cast<String>();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('感恩页面异常: \$e');
+    }
       return [jsonStr];
     }
   }

@@ -39,7 +39,7 @@ class MirrorMindApp extends StatelessWidget {
       builder: (context, settings, _) {
         return MaterialApp(
           navigatorKey: navigatorKey,
-          title: '蹇冮暅 MirrorMind',
+          title: '心镜 MirrorMind',
           debugShowCheckedModeBanner: false,
           theme: _buildLightTheme(),
           darkTheme: _buildDarkTheme(),

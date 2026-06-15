@@ -59,7 +59,9 @@ class DatabaseService {
       }
       await oldDb.close();
       await deleteDatabase(oldPath);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('数据库迁移异常: \$e');
+    }
   }
 
   Future<void> _onCreate(Database db, int version) async {
