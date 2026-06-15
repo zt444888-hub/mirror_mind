@@ -120,6 +120,7 @@ class EmotionProvider extends ChangeNotifier {
     await loadLatestRecord();
     // 保存后自动刷新成就数据
     await loadStreak();
+    await loadWeekRecords();
     return id;
   }
 

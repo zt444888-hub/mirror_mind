@@ -48,11 +48,12 @@ class WeeklyChart extends StatelessWidget {
                         '${entry.value}',
                         style: TextStyle(fontSize: 11, color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
+                        
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 600),
                         curve: Curves.easeOutCubic,
-                        height: 80 * heightFactor,
+                        height: 50 * heightFactor,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             begin: Alignment.bottomCenter,
@@ -62,7 +63,7 @@ class WeeklyChart extends StatelessWidget {
                           borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 3),
                       Text(
                         EmotionType.fromLabel(entry.key).emoji,
                         style: const TextStyle(fontSize: 14),
@@ -79,7 +80,7 @@ class WeeklyChart extends StatelessWidget {
             }).toList(),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         Text(
           '本周共记录 $total 次',
           style: TextStyle(fontSize: 12, color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary),

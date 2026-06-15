@@ -31,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final provider = context.read<EmotionProvider>();
       provider.loadLatestRecord();
       provider.loadStreak();
+      provider.loadWeekRecords();
     });
   }
 

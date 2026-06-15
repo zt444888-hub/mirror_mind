@@ -8,6 +8,7 @@ import '../constants/colors.dart';
 import '../constants/emotions.dart';
 import '../widgets/emotion_picker.dart';
 import '../widgets/mood_slider.dart';
+import '../widgets/weekly_chart.dart';
 
 class RecordScreen extends StatefulWidget {
   const RecordScreen({super.key});
@@ -300,6 +301,8 @@ class _RecordScreenState extends State<RecordScreen>
           _buildTagSection(isDark),
           const SizedBox(height: 32),
           _buildSaveButton(isAnalyzing),
+          const SizedBox(height: 20),
+          _buildWeeklyTrend(),
           const SizedBox(height: 40),
         ],
       ),
@@ -638,6 +641,52 @@ class _RecordScreenState extends State<RecordScreen>
           ),
         ),
       ],
+    );
+  }
+
+  /// 本周情绪趋势图
+  Widget _buildWeeklyTrend() {
+    return Consumer<EmotionProvider>(
+      builder: (context, provider, _) {
+        final weekRecords = provider.weekRecords;
+        if (weekRecords.isEmpty) return const SizedBox.shrink();
+
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? MirrorColors.darkCardBackground
+                : MirrorColors.surface,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Text('📊', style: TextStyle(fontSize: 16)),
+                  const SizedBox(width: 8),
+                  Text(
+                    '本周情绪趋势',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? MirrorColors.darkTextPrimary
+                          : MirrorColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 150,
+                child: WeeklyChart(records: weekRecords),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
