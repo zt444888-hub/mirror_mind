@@ -94,6 +94,12 @@ class _EmotionVocabularyScreenState extends State<EmotionVocabularyScreen>
       const _EmotionWord('坚毅', '内心坚定、不为外界动摇的确信感', '虽然前路未知，但内心格外笃定。', '步伐有力，眼神坚定'),
     ],
     '平静': [
+      const _EmotionWord('恬淡', '不追求名利的淡然', '在山间读书品茶，日子恬淡而充实。', '呼吸平缓，心如止水'),
+      const _EmotionWord('从容', '面对变故镇定自若', '面试时虽然紧张，但她十分从容。', '步伐稳健，声音平稳'),
+      const _EmotionWord('平和', '内心安宁与世无争', '心态越来越平和，不再为小事计较。', '眉眼舒展，面带微笑'),
+      const _EmotionWord('宁静', '没有噪音的安谧', '清晨的湖边一片宁静。', '耳朵放松，思绪安静'),
+      const _EmotionWord('泰然', '面对困难沉稳淡定', '无论发生什么他总是一副泰然自若的样子。', '肩膀放松，呼吸均匀'),
+
       const _EmotionWord('安宁', '内心无波澜的平和', '夜晚公园散步，感受久违的安宁。', '呼吸均匀，肩部放松'),
       const _EmotionWord('释然', '放下负担后的轻松', '终于想通了那件事，心中释然。', '长舒一口气，肩头一松'),
       const _EmotionWord('淡然', '看透世事的从容', '经历得多了，面对得失反而淡然了。', '说话语速变慢，表情平静'),

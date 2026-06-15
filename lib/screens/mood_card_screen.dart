@@ -28,7 +28,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
   int _templateIndex = 0; // 0=简约 1=文艺 2=温暖
   bool _useCustomText = false;
 
-  static const List<String> _templateNames = ['简约', '文艺', '温暖', '渐变', '极简', '手写', '胶片'];
+  static const List<String> _templateNames = ['简约', '文艺', '温暖', '渐变', '极简', '手写', '胶片', '糖果', '森林', '暗夜'];
 
   // 模板配色（渐变、文字色）
   // 格式：[背景色1, 背景色2, 文字色, 边框色(可选)]
@@ -40,6 +40,9 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
     [Color(0xFFFFFFFF), Color(0xFFFFFFFF), Color(0xFF2D3436), Color(0xFFDFE6E9)], // 极简
     [Color(0xFFFAF0E6), Color(0xFFFAF0E6), Color(0xFF2C1810), Color(0x00000000)], // 手写
     [Color(0xFF000000), Color(0xFF000000), Color(0xFFFFFFFF), Color(0xFFE17055)], // 胶片
+  [Color(0xFFFFF0F5), Color(0xFFFFD6E0), Color(0xFF6B4E71), Color(0x00000000)], // 糖果
+  [Color(0xFFE8F5E9), Color(0xFFC8E6C9), Color(0xFF1B5E20), Color(0xFF81C784)], // 森林
+  [Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFFE8E8E8), Color(0xFF0F3460)], // 暗夜
   ];
 
   // 自定义配色（Pro 用户可修改）
