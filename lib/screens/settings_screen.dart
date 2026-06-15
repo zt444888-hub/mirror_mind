@@ -118,6 +118,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() => _isExporting = true);
 
     try {
+      if (!mounted) return;
       final provider = context.read<EmotionProvider>();
       final jsonStr = await provider.exportData();
       final fileName = 'mirror_mind_backup_${DateTime.now().toIso8601String().split('T')[0]}.json';
@@ -127,6 +128,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final file = File('${tempDir.path}/$fileName');
       await file.writeAsString(jsonStr);
 
+      if (!mounted) return;
       await Share.shareXFiles(
         [XFile(file.path)],
         text: '心镜数据备份',

@@ -58,6 +58,7 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
     );
 
     if (confirm == true) {
+      if (!mounted) return;
       await context.read<EmotionProvider>().deleteRecord(record.id!);
       _loadDiaries();
     }

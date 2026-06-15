@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/models/emotion_record.dart';
+import 'package:mirror_mind/models/emotion_record.dart';
 
 void main() {
   group('EmotionRecord', () {
