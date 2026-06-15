@@ -10,6 +10,7 @@ import 'screens/emergency_screen.dart';
 import 'screens/weekly_report_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/sleep_screen.dart';
+import 'screens/horoscope_screen.dart';
 import 'screens/meditation_screen.dart';
 import 'screens/daily_question_screen.dart';
 import 'screens/diary_list_screen.dart';
@@ -60,6 +61,7 @@ class MirrorMindApp extends StatelessWidget {
             '/calendar': (_) => const CalendarScreen(),
             '/year_report': (_) => const YearReportScreen(),
         '/sleep': (_) => const SleepScreen(),
+        '/horoscope': (_) => const HoroscopeScreen(),
             '/settings': (_) => const SettingsScreen(),
             '/pro': (context) => Builder(
               builder: (context) {
