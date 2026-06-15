@@ -229,7 +229,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
 
   /// 模板选择器（Pro 用户显示全部 7 个，免费用户仅显示前 3 个 + 锁定提示）
   Widget _buildTemplateSelector(bool isDark) {
-    final isPro = true; // 临时打开看全部内容
+    final isPro = PurchaseService().isPro;
     final displayCount = isPro ? _templateNames.length : 3;
 
     return Column(
@@ -311,7 +311,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
 
   /// 根据模板索引渲染不同的卡片内容
   Widget _buildCardContent(List<Color> colors, List<String> decors, bool isDark) {
-    final isPro = true; // 临时打开看全部内容
+    final isPro = PurchaseService().isPro;
 
     // Pro 模板未解锁时显示锁定状态
     if (_templateIndex >= 3 && !isPro) {
@@ -638,7 +638,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
 
   /// 自定义配色按钮（仅 Pro 可见）
   Widget _buildCustomColorButton() {
-    final isPro = true; // 临时打开看全部内容
+    final isPro = PurchaseService().isPro;
     if (!isPro) return const SizedBox.shrink();
 
     return Padding(
@@ -658,7 +658,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
 
   /// 颜色选择器对话框
   void _showColorPicker() {
-    final isPro = true; // 临时打开看全部内容
+    final isPro = PurchaseService().isPro;
     if (!isPro) return;
 
     // 预设色块
