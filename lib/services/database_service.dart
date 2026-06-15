@@ -25,7 +25,6 @@ class DatabaseService {
       version: 4,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
-      onConfigure: _onConfigure,
     );
   }
   
@@ -90,10 +89,6 @@ class DatabaseService {
     }
   }
 
-  Future<void> _onConfigure(Database db) async {
-    await db.execute('PRAGMA journal_mode=WAL');
-    await db.execute('PRAGMA foreign_keys=ON');
-  }
 
   /// 鎻掑叆涓€鏉℃儏缁褰?
   Future<int> insertRecord(EmotionRecord record) async {
