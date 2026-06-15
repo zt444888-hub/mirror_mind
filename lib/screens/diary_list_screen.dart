@@ -158,7 +158,7 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
         padding: const EdgeInsets.only(right: 20),
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: MirrorColors.error.withOpacity(0.1),
+          color: MirrorColors.error.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
         ),
         child: const Icon(Icons.delete_outline, color: MirrorColors.error),
@@ -194,7 +194,7 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                       decoration: BoxDecoration(
-                        color: MirrorColors.primaryLight.withOpacity(0.3),
+                        color: MirrorColors.primaryLight.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
@@ -271,7 +271,7 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
                       height: 4,
                       margin: const EdgeInsets.only(bottom: 20),
                       decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.3),
+                        color: Colors.grey.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -294,7 +294,7 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: MirrorColors.emotionColor(diary.emotion).withOpacity(0.2),
+                          color: MirrorColors.emotionColor(diary.emotion).withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(

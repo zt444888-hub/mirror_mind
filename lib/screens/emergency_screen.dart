@@ -105,7 +105,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: isSelected ? color.withOpacity(0.3) : (isDark ? MirrorColors.darkSurface : MirrorColors.cardBackground),
+              color: isSelected ? color.withValues(alpha: 0.3) : (isDark ? MirrorColors.darkSurface : MirrorColors.cardBackground),
               borderRadius: BorderRadius.circular(20),
               border: isSelected ? Border.all(color: color, width: 1.5) : null,
             ),
@@ -157,7 +157,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: MirrorColors.accent.withOpacity(0.3),
+                      color: MirrorColors.accent.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(icons[index], size: 18, color: MirrorColors.accentDark),
@@ -182,7 +182,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
 
         // 深呼吸快捷入口
         Card(
-          color: MirrorColors.secondaryLight.withOpacity(0.2),
+          color: MirrorColors.secondaryLight.withValues(alpha: 0.2),
           child: InkWell(
             onTap: () => Navigator.pushNamed(context, '/breathing'),
             borderRadius: BorderRadius.circular(16),
@@ -194,7 +194,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: MirrorColors.secondary.withOpacity(0.3),
+                      color: MirrorColors.secondary.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(Icons.air, color: MirrorColors.secondaryDark),

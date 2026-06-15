@@ -109,8 +109,8 @@ class _GratitudeScreenState extends State<GratitudeScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    MirrorColors.accentLight.withOpacity(0.5),
-                    MirrorColors.warmLight.withOpacity(0.3),
+                    MirrorColors.accentLight.withValues(alpha: 0.5),
+                    MirrorColors.warmLight.withValues(alpha: 0.3),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -141,7 +141,7 @@ class _GratitudeScreenState extends State<GratitudeScreen> {
                             width: 28,
                             height: 28,
                             decoration: BoxDecoration(
-                              color: MirrorColors.accent.withOpacity(0.3),
+                              color: MirrorColors.accent.withValues(alpha: 0.3),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Center(
@@ -166,7 +166,7 @@ class _GratitudeScreenState extends State<GratitudeScreen> {
                                 hintText: '第 ${index + 1} 件感恩的事...',
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                                 filled: true,
-                                fillColor: Colors.white.withOpacity(0.6),
+                                fillColor: Colors.white.withValues(alpha: 0.6),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide.none,

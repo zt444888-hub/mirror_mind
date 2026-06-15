@@ -408,8 +408,8 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            categoryColor.withOpacity(0.3),
-            categoryColor.withOpacity(0.08),
+            categoryColor.withValues(alpha: 0.3),
+            categoryColor.withValues(alpha: 0.08),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -417,7 +417,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: categoryColor.withOpacity(0.15),
+            color: categoryColor.withValues(alpha: 0.15),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -429,7 +429,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -459,7 +459,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
               width: 40,
               height: 2,
               decoration: BoxDecoration(
-                color: categoryColor.withOpacity(0.5),
+                color: categoryColor.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(1),
               ),
             ),
@@ -488,8 +488,8 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              MirrorColors.accentLight.withOpacity(0.3),
-              MirrorColors.primaryLight.withOpacity(0.15),
+              MirrorColors.accentLight.withValues(alpha: 0.3),
+              MirrorColors.primaryLight.withValues(alpha: 0.15),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,

@@ -129,7 +129,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: MirrorColors.error.withOpacity(0.1),
+                  color: MirrorColors.error.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(_error!, style: const TextStyle(color: MirrorColors.error)),
@@ -178,7 +178,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
           width: 56,
           height: 56,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.15),
+            color: color.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Center(
@@ -208,8 +208,8 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            MirrorColors.primaryLight.withOpacity(0.5),
-            MirrorColors.accentLight.withOpacity(0.3),
+            MirrorColors.primaryLight.withValues(alpha: 0.5),
+            MirrorColors.accentLight.withValues(alpha: 0.3),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -217,7 +217,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: MirrorColors.primary.withOpacity(0.15),
+            color: MirrorColors.primary.withValues(alpha: 0.15),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -232,7 +232,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.6),
+                  color: Colors.white.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Text(
@@ -251,7 +251,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -260,7 +260,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: MirrorColors.emotionColor(report.dominantEmotion).withOpacity(0.3),
+                      color: MirrorColors.emotionColor(report.dominantEmotion).withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
@@ -301,7 +301,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(

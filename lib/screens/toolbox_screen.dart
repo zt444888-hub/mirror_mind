@@ -63,7 +63,7 @@ class ToolboxScreen extends StatelessWidget {
                 width: 52,
                 height: 52,
                 decoration: BoxDecoration(
-                  color: tool.color.withOpacity(0.18),
+                  color: tool.color.withValues(alpha: 0.18),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(tool.icon, color: tool.color, size: 26),
@@ -100,8 +100,8 @@ class ToolboxScreen extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            MirrorColors.primaryLight.withOpacity(0.3),
-            MirrorColors.accentLight.withOpacity(0.3),
+            MirrorColors.primaryLight.withValues(alpha: 0.3),
+            MirrorColors.accentLight.withValues(alpha: 0.3),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

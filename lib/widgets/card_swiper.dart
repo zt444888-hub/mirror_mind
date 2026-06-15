@@ -33,7 +33,7 @@ class CardSwiper extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: _gradientColors(card.category)[0].withOpacity(isActive ? 0.25 : 0.1),
+              color: _gradientColors(card.category)[0].withValues(alpha: isActive ? 0.25 : 0.1),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -46,7 +46,7 @@ class CardSwiper extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
@@ -75,7 +75,7 @@ class CardSwiper extends StatelessWidget {
                 card.subtitle,
                 style: TextStyle(
                   fontSize: 15,
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   height: 1.5,
                 ),
               ),
@@ -87,7 +87,7 @@ class CardSwiper extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
@@ -105,7 +105,7 @@ class CardSwiper extends StatelessWidget {
             Center(
               child: Icon(
                 Icons.swipe,
-                color: Colors.white.withOpacity(0.4),
+                color: Colors.white.withValues(alpha: 0.4),
                 size: 20,
               ),
             ),

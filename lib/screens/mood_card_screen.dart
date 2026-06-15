@@ -192,7 +192,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? _templateColors[index][0].withOpacity(0.5)
+                        ? _templateColors[index][0].withValues(alpha: 0.5)
                         : (isDark ? MirrorColors.darkSurface : MirrorColors.cardBackground),
                     borderRadius: BorderRadius.circular(12),
                     border: isSelected
@@ -223,7 +223,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: MirrorColors.primaryLight.withOpacity(0.3),
+                  color: MirrorColors.primaryLight.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: const Text(
@@ -242,7 +242,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: MirrorColors.primary.withOpacity(0.15),
+                    color: MirrorColors.primary.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Text('升级', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MirrorColors.primaryDark)),
@@ -289,7 +289,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: colors[0].withOpacity(0.4),
+            color: colors[0].withValues(alpha: 0.4),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -314,7 +314,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.5),
+              color: Colors.white.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -334,7 +334,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
               const Spacer(),
               Text(
                 'MirrorMind · 心镜',
-                style: TextStyle(fontSize: 11, color: MirrorColors.textSecondary.withOpacity(0.6), letterSpacing: 1),
+                style: TextStyle(fontSize: 11, color: MirrorColors.textSecondary.withValues(alpha: 0.6), letterSpacing: 1),
               ),
             ],
           ),
@@ -358,7 +358,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(color: const Color(0xFF1A1A2E).withOpacity(0.5), blurRadius: 24, offset: const Offset(0, 10)),
+          BoxShadow(color: const Color(0xFF1A1A2E).withValues(alpha: 0.5), blurRadius: 24, offset: const Offset(0, 10)),
         ],
       ),
       child: Column(
@@ -372,13 +372,13 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           const SizedBox(height: 20),
           Text(
             _formatDate(_selectedRecord?.date ?? DateTime.now()),
-            style: TextStyle(fontSize: 12, color: fg.withOpacity(0.6), letterSpacing: 2),
+            style: TextStyle(fontSize: 12, color: fg.withValues(alpha: 0.6), letterSpacing: 2),
           ),
           const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
             decoration: BoxDecoration(
-              border: Border.all(color: fg.withOpacity(0.3), width: 1),
+              border: Border.all(color: fg.withValues(alpha: 0.3), width: 1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -395,7 +395,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           Row(children: [
             Text(decors[2], style: const TextStyle(fontSize: 20)),
             const Spacer(),
-            Text('MirrorMind', style: TextStyle(fontSize: 10, color: fg.withOpacity(0.4), letterSpacing: 2)),
+            Text('MirrorMind', style: TextStyle(fontSize: 10, color: fg.withValues(alpha: 0.4), letterSpacing: 2)),
           ]),
         ],
       ),
@@ -420,15 +420,15 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           const SizedBox(height: 8),
           Text(
             _formatDate(_selectedRecord?.date ?? DateTime.now()),
-            style: TextStyle(fontSize: 11, color: fg.withOpacity(0.4), letterSpacing: 3, fontWeight: FontWeight.w300),
+            style: TextStyle(fontSize: 11, color: fg.withValues(alpha: 0.4), letterSpacing: 3, fontWeight: FontWeight.w300),
           ),
           const SizedBox(height: 32),
           Text(
             EmotionType.fromLabel(_displayEmotion).emoji + ' ' + _displayEmotion,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300, color: fg.withOpacity(0.6), letterSpacing: 2),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300, color: fg.withValues(alpha: 0.6), letterSpacing: 2),
           ),
           const SizedBox(height: 24),
-          Container(width: 40, height: 2, color: fg.withOpacity(0.15)),
+          Container(width: 40, height: 2, color: fg.withValues(alpha: 0.15)),
           const SizedBox(height: 24),
           Text(
             _displayText,
@@ -438,7 +438,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           Row(children: [
             Text(decors[0], style: const TextStyle(fontSize: 16)),
             const Spacer(),
-            Text('心镜', style: TextStyle(fontSize: 10, color: fg.withOpacity(0.3), letterSpacing: 4)),
+            Text('心镜', style: TextStyle(fontSize: 10, color: fg.withValues(alpha: 0.3), letterSpacing: 4)),
           ]),
         ],
       ),
@@ -456,18 +456,18 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
         color: bg,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
-          BoxShadow(color: const Color(0xFF2C1810).withOpacity(0.08), blurRadius: 12, offset: const Offset(0, 4)),
+          BoxShadow(color: const Color(0xFF2C1810).withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, 4)),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 装饰线
-          Container(height: 3, width: 60, color: fg.withOpacity(0.3)),
+          Container(height: 3, width: 60, color: fg.withValues(alpha: 0.3)),
           const SizedBox(height: 20),
           Text(
             _formatDate(_selectedRecord?.date ?? DateTime.now()),
-            style: TextStyle(fontSize: 12, color: fg.withOpacity(0.5), fontStyle: FontStyle.italic, letterSpacing: 1),
+            style: TextStyle(fontSize: 12, color: fg.withValues(alpha: 0.5), fontStyle: FontStyle.italic, letterSpacing: 1),
           ),
           const SizedBox(height: 12),
           Text(
@@ -476,19 +476,19 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           ),
           const SizedBox(height: 20),
           // 横线装饰
-          Container(height: 1, width: double.infinity, color: fg.withOpacity(0.1)),
+          Container(height: 1, width: double.infinity, color: fg.withValues(alpha: 0.1)),
           const SizedBox(height: 20),
           Text(
             _displayText,
             style: TextStyle(fontSize: 18, height: 1.8, color: fg, fontStyle: FontStyle.italic, fontWeight: FontWeight.w400),
           ),
           const SizedBox(height: 24),
-          Container(height: 1, width: double.infinity, color: fg.withOpacity(0.1)),
+          Container(height: 1, width: double.infinity, color: fg.withValues(alpha: 0.1)),
           const SizedBox(height: 16),
           Row(children: [
             Text(decors[0], style: const TextStyle(fontSize: 18)),
             const Spacer(),
-            Text('心镜', style: TextStyle(fontSize: 10, color: fg.withOpacity(0.3), fontStyle: FontStyle.italic)),
+            Text('心镜', style: TextStyle(fontSize: 10, color: fg.withValues(alpha: 0.3), fontStyle: FontStyle.italic)),
           ]),
         ],
       ),
@@ -524,7 +524,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           const SizedBox(height: 32),
           Text(
             EmotionType.fromLabel(_displayEmotion).emoji + ' ' + _displayEmotion,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: fg.withOpacity(0.7), letterSpacing: 3),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: fg.withValues(alpha: 0.7), letterSpacing: 3),
           ),
           const SizedBox(height: 28),
           Text(
@@ -535,7 +535,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           Row(children: [
             Text(decors[0], style: const TextStyle(fontSize: 20)),
             const Spacer(),
-            Text('心镜', style: TextStyle(fontSize: 10, color: fg.withOpacity(0.3), letterSpacing: 5)),
+            Text('心镜', style: TextStyle(fontSize: 10, color: fg.withValues(alpha: 0.3), letterSpacing: 5)),
           ]),
         ],
       ),
@@ -552,17 +552,17 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
       decoration: BoxDecoration(
         color: colors[0],
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: MirrorColors.primaryLight.withOpacity(0.4), width: 2),
+        border: Border.all(color: MirrorColors.primaryLight.withValues(alpha: 0.4), width: 2),
       ),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.lock_outline, size: 40, color: colors[2].withOpacity(0.5)),
+            Icon(Icons.lock_outline, size: 40, color: colors[2].withValues(alpha: 0.5)),
             const SizedBox(height: 12),
             Text(
               _templateNames[_templateIndex],
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: colors[2].withOpacity(0.6)),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: colors[2].withValues(alpha: 0.6)),
             ),
             const SizedBox(height: 8),
             GestureDetector(
@@ -570,7 +570,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 decoration: BoxDecoration(
-                  border: Border.all(color: colors[2].withOpacity(0.4)),
+                  border: Border.all(color: colors[2].withValues(alpha: 0.4)),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text('解锁 Pro', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
@@ -644,7 +644,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                           color: c,
                           shape: BoxShape.circle,
                           border: isSelected ? Border.all(color: MirrorColors.primary, width: 3) : null,
-                          boxShadow: isSelected ? [BoxShadow(color: c.withOpacity(0.5), blurRadius: 8)] : [],
+                          boxShadow: isSelected ? [BoxShadow(color: c.withValues(alpha: 0.5), blurRadius: 8)] : [],
                         ),
                       ),
                     );
@@ -666,7 +666,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                           color: c,
                           shape: BoxShape.circle,
                           border: isSelected ? Border.all(color: MirrorColors.primary, width: 3) : null,
-                          boxShadow: isSelected ? [BoxShadow(color: c.withOpacity(0.5), blurRadius: 8)] : [],
+                          boxShadow: isSelected ? [BoxShadow(color: c.withValues(alpha: 0.5), blurRadius: 8)] : [],
                         ),
                       ),
                     );
@@ -738,7 +738,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: _useCustomText
-                      ? MirrorColors.primaryLight.withOpacity(0.3)
+                      ? MirrorColors.primaryLight.withValues(alpha: 0.3)
                       : (isDark ? MirrorColors.darkSurface : MirrorColors.cardBackground),
                   borderRadius: BorderRadius.circular(8),
                 ),

@@ -57,7 +57,7 @@ class WeeklyChart extends StatelessWidget {
                           gradient: LinearGradient(
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,
-                            colors: [color, color.withOpacity(0.3)],
+                            colors: [color, color.withValues(alpha: 0.3)],
                           ),
                           borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
                         ),

@@ -189,7 +189,7 @@ class _BreathingScreenState extends State<BreathingScreen>
                                 ? _holdSeconds
                                 : _exhaleSeconds),
                         strokeWidth: 4,
-                        backgroundColor: _phaseColor.withOpacity(0.15),
+                        backgroundColor: _phaseColor.withValues(alpha: 0.15),
                         valueColor: AlwaysStoppedAnimation(_phaseColor),
                       ),
                     ),
@@ -262,7 +262,7 @@ class _BreathingScreenState extends State<BreathingScreen>
                     color: MirrorColors.primary,
                     boxShadow: [
                       BoxShadow(
-                        color: MirrorColors.primary.withOpacity(0.4),
+                        color: MirrorColors.primary.withValues(alpha: 0.4),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),

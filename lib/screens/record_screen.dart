@@ -210,7 +210,7 @@ class _RecordScreenState extends State<RecordScreen>
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: MirrorColors.emotionColor(_selectedEmotion).withOpacity(0.3),
+                color: MirrorColors.emotionColor(_selectedEmotion).withValues(alpha: 0.3),
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -264,7 +264,7 @@ class _RecordScreenState extends State<RecordScreen>
             child: TabBar(
               controller: _tabController,
               indicator: BoxDecoration(
-                color: MirrorColors.primaryLight.withOpacity(0.4),
+                color: MirrorColors.primaryLight.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(12),
               ),
               indicatorSize: TabBarIndicatorSize.tab,
@@ -333,8 +333,8 @@ class _RecordScreenState extends State<RecordScreen>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  MirrorColors.warm.withOpacity(0.15),
-                  MirrorColors.accentLight.withOpacity(0.08),
+                  MirrorColors.warm.withValues(alpha: 0.15),
+                  MirrorColors.accentLight.withValues(alpha: 0.08),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -412,7 +412,7 @@ class _RecordScreenState extends State<RecordScreen>
                         : const Icon(Icons.auto_awesome, size: 18),
                     label: Text(isAnalyzing ? '分析中...' : 'AI 分析'),
                     style: TextButton.styleFrom(
-                      backgroundColor: MirrorColors.primaryLight.withOpacity(0.3),
+                      backgroundColor: MirrorColors.primaryLight.withValues(alpha: 0.3),
                       foregroundColor: MirrorColors.primaryDark,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
@@ -436,7 +436,7 @@ class _RecordScreenState extends State<RecordScreen>
               label: const Text('我的日记'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: MirrorColors.warm,
-                side: BorderSide(color: MirrorColors.warm.withOpacity(0.4)),
+                side: BorderSide(color: MirrorColors.warm.withValues(alpha: 0.4)),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               ),
             ),
@@ -460,7 +460,7 @@ class _RecordScreenState extends State<RecordScreen>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
-                    color: MirrorColors.primary.withOpacity(0.15),
+                    color: MirrorColors.primary.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -533,7 +533,7 @@ class _RecordScreenState extends State<RecordScreen>
                         : const Icon(Icons.auto_awesome, size: 18),
                     label: Text(isAnalyzing ? '分析中...' : 'AI 分析'),
                     style: TextButton.styleFrom(
-                      backgroundColor: MirrorColors.primaryLight.withOpacity(0.3),
+                      backgroundColor: MirrorColors.primaryLight.withValues(alpha: 0.3),
                       foregroundColor: MirrorColors.primaryDark,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -550,7 +550,7 @@ class _RecordScreenState extends State<RecordScreen>
 
   Widget _buildAiResult(bool isDark) {
     return Card(
-      color: MirrorColors.primaryLight.withOpacity(0.15),
+      color: MirrorColors.primaryLight.withValues(alpha: 0.15),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -565,7 +565,7 @@ class _RecordScreenState extends State<RecordScreen>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: MirrorColors.primary.withOpacity(0.2),
+                    color: MirrorColors.primary.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(

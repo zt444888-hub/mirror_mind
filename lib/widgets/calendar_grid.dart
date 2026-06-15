@@ -60,7 +60,7 @@ class CalendarGrid extends StatelessWidget {
                     margin: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       color: isToday
-                          ? MirrorColors.primary.withOpacity(0.15)
+                          ? MirrorColors.primary.withValues(alpha: 0.15)
                           : null,
                       borderRadius: BorderRadius.circular(10),
                       border: isToday

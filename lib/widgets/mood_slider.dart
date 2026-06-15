@@ -82,14 +82,14 @@ class _MoodSliderPainter extends CustomPainter {
       canvas.drawCircle(
         Offset(x, y),
         isActive ? 12 : 6,
-        Paint()..color = isActive ? MirrorColors.primary : MirrorColors.textHint.withOpacity(0.5),
+        Paint()..color = isActive ? MirrorColors.primary : MirrorColors.textHint.withValues(alpha: 0.5),
       );
       if (isActive) {
         canvas.drawCircle(
           Offset(x, y),
           12,
           Paint()
-            ..color = MirrorColors.primary.withOpacity(0.5)
+            ..color = MirrorColors.primary.withValues(alpha: 0.5)
             ..style = PaintingStyle.stroke
             ..strokeWidth = 2,
         );

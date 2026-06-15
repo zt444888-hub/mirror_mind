@@ -51,7 +51,7 @@ class _CardsScreenState extends State<CardsScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: MirrorColors.warmLight.withOpacity(0.5),
+                  color: MirrorColors.warmLight.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text(
@@ -175,7 +175,7 @@ class _CardsScreenState extends State<CardsScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: MirrorColors.primaryLight.withOpacity(0.3),
+                  color: MirrorColors.primaryLight.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Text(

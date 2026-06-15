@@ -559,7 +559,7 @@ class _MeditationScreenState extends State<MeditationScreen>
                         width: 56,
                         height: 56,
                         decoration: BoxDecoration(
-                          color: mode.color.withOpacity(0.15),
+                          color: mode.color.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Icon(mode.icon, color: mode.color, size: 28),
@@ -584,7 +584,7 @@ class _MeditationScreenState extends State<MeditationScreen>
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                     decoration: BoxDecoration(
-                                      color: MirrorColors.primaryLight.withOpacity(0.3),
+                                      color: MirrorColors.primaryLight.withValues(alpha: 0.3),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: const Text(
@@ -641,7 +641,7 @@ class _MeditationScreenState extends State<MeditationScreen>
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
-                    color: mode.color.withOpacity(0.15),
+                    color: mode.color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Icon(mode.icon, color: mode.color, size: 32),
@@ -784,7 +784,7 @@ class _MeditationScreenState extends State<MeditationScreen>
                 size: const Size(220, 220),
                 painter: _CirclePainter(
                   progress: 1.0,
-                  color: mode.color.withOpacity(0.1),
+                  color: mode.color.withValues(alpha: 0.1),
                   strokeWidth: 6,
                 ),
               ),
@@ -887,7 +887,7 @@ class _MeditationScreenState extends State<MeditationScreen>
                   color: mode.color,
                   boxShadow: [
                     BoxShadow(
-                      color: mode.color.withOpacity(0.4),
+                      color: mode.color.withValues(alpha: 0.4),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),

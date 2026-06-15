@@ -81,6 +81,6 @@ class MirrorColors {
   /// 获取情绪渐变
   static List<Color> emotionGradient(String emotion) {
     final base = emotionColor(emotion);
-    return [base.withOpacity(0.7), base];
+    return [base.withValues(alpha: 0.7), base];
   }
 }

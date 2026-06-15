@@ -315,7 +315,7 @@ class _EmotionChallengeScreenState extends State<EmotionChallengeScreen> {
                         width: 56,
                         height: 56,
                         decoration: BoxDecoration(
-                          color: c.color.withOpacity(0.15),
+                          color: c.color.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Center(child: Text(c.icon, style: const TextStyle(fontSize: 28))),
@@ -362,7 +362,7 @@ class _EmotionChallengeScreenState extends State<EmotionChallengeScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [challenge.color.withOpacity(0.3), challenge.color.withOpacity(0.08)],
+                colors: [challenge.color.withValues(alpha: 0.3), challenge.color.withValues(alpha: 0.08)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -391,7 +391,7 @@ class _EmotionChallengeScreenState extends State<EmotionChallengeScreen> {
                   child: LinearProgressIndicator(
                     value: (_challengeDay - 1) / 7,
                     minHeight: 8,
-                    backgroundColor: challenge.color.withOpacity(0.2),
+                    backgroundColor: challenge.color.withValues(alpha: 0.2),
                     valueColor: AlwaysStoppedAnimation<Color>(challenge.color),
                   ),
                 ),
@@ -409,7 +409,7 @@ class _EmotionChallengeScreenState extends State<EmotionChallengeScreen> {
                         shape: BoxShape.circle,
                         color: done ? challenge.color : (isDark ? MirrorColors.darkSurface : MirrorColors.cardBackground),
                         border: Border.all(
-                          color: done ? challenge.color : MirrorColors.textSecondary.withOpacity(0.3),
+                          color: done ? challenge.color : MirrorColors.textSecondary.withValues(alpha: 0.3),
                           width: 2,
                         ),
                       ),

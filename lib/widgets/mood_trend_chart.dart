@@ -138,7 +138,7 @@ class MoodTrendChart extends StatelessWidget {
                   ),
                   belowBarData: BarAreaData(
                     show: true,
-                    color: MirrorColors.primary.withOpacity(0.08),
+                    color: MirrorColors.primary.withValues(alpha: 0.08),
                   ),
                 ),
                 // 平均分虚线
@@ -148,7 +148,7 @@ class MoodTrendChart extends StatelessWidget {
                     FlSpot((spots.length - 1).toDouble(), avgScore),
                   ],
                   isCurved: false,
-                  color: MirrorColors.accentDark.withOpacity(0.6),
+                  color: MirrorColors.accentDark.withValues(alpha: 0.6),
                   barWidth: 1,
                   dashArray: [6, 4],
                   dotData: const FlDotData(show: false),

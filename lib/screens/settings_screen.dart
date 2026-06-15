@@ -257,7 +257,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               subtitle: const Text('切换深色/浅色主题'),
               value: settings.isDarkMode,
               onChanged: (val) => settings.toggleDarkMode(),
-              activeColor: MirrorColors.primary,
+              activeThumbColor: MirrorColors.primary,
             ),
           ),
           const SizedBox(height: 24),
@@ -276,7 +276,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       : '开启后每天定时提醒'),
                   value: _dailyReminderEnabled,
                   onChanged: _toggleDailyReminder,
-                  activeColor: MirrorColors.primary,
+                  activeThumbColor: MirrorColors.primary,
                 ),
                 if (_dailyReminderEnabled)
                   ListTile(
@@ -298,7 +298,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       : '开始挑战后每天定时提醒'),
                   value: _challengeReminderEnabled,
                   onChanged: _toggleChallengeReminder,
-                  activeColor: MirrorColors.primary,
+                  activeThumbColor: MirrorColors.primary,
                 ),
                 if (_challengeReminderEnabled)
                   ListTile(
@@ -320,7 +320,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       : '开启后每天定时提醒'),
                   value: _breathingReminderEnabled,
                   onChanged: _toggleBreathingReminder,
-                  activeColor: MirrorColors.primary,
+                  activeThumbColor: MirrorColors.primary,
                 ),
                 if (_breathingReminderEnabled)
                   ListTile(

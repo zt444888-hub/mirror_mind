@@ -182,8 +182,8 @@ class _EmotionVocabularyScreenState extends State<EmotionVocabularyScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            MirrorColors.primaryLight.withOpacity(0.4),
-            MirrorColors.accentLight.withOpacity(0.2),
+            MirrorColors.primaryLight.withValues(alpha: 0.4),
+            MirrorColors.accentLight.withValues(alpha: 0.2),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -322,7 +322,7 @@ class _EmotionVocabularyScreenState extends State<EmotionVocabularyScreen>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: MirrorColors.primaryLight.withOpacity(0.3),
+                color: MirrorColors.primaryLight.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(word.definition,
@@ -379,15 +379,15 @@ class _EmotionVocabularyScreenState extends State<EmotionVocabularyScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            MirrorColors.primaryLight.withOpacity(0.4),
-            MirrorColors.secondaryLight.withOpacity(0.3),
+            MirrorColors.primaryLight.withValues(alpha: 0.4),
+            MirrorColors.secondaryLight.withValues(alpha: 0.3),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: MirrorColors.primaryLight.withOpacity(0.5),
+          color: MirrorColors.primaryLight.withValues(alpha: 0.5),
           width: 1.5,
         ),
       ),
@@ -399,7 +399,7 @@ class _EmotionVocabularyScreenState extends State<EmotionVocabularyScreen>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: MirrorColors.primaryDark.withOpacity(0.15),
+                  color: MirrorColors.primaryDark.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Text(

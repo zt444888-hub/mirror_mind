@@ -35,8 +35,8 @@ class _BreathingBallPainter extends CustomPainter {
     final glowPaint = Paint()
       ..shader = RadialGradient(
         colors: [
-          color.withOpacity(0.3),
-          color.withOpacity(0.05),
+          color.withValues(alpha: 0.3),
+          color.withValues(alpha: 0.05),
         ],
       ).createShader(Rect.fromCircle(center: center, radius: radius));
 
@@ -46,8 +46,8 @@ class _BreathingBallPainter extends CustomPainter {
     final ballPaint = Paint()
       ..shader = RadialGradient(
         colors: [
-          color.withOpacity(0.6),
-          color.withOpacity(0.9),
+          color.withValues(alpha: 0.6),
+          color.withValues(alpha: 0.9),
         ],
         stops: const [0.3, 1.0],
       ).createShader(Rect.fromCircle(center: center, radius: radius));
@@ -58,8 +58,8 @@ class _BreathingBallPainter extends CustomPainter {
     final highlightPaint = Paint()
       ..shader = RadialGradient(
         colors: [
-          Colors.white.withOpacity(0.4),
-          Colors.white.withOpacity(0.0),
+          Colors.white.withValues(alpha: 0.4),
+          Colors.white.withValues(alpha: 0.0),
         ],
         stops: const [0.0, 0.4],
       ).createShader(Rect.fromCircle(center: Offset(center.dx - radius * 0.25, center.dy - radius * 0.25), radius: radius * 0.5));

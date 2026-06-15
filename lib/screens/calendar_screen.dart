@@ -212,7 +212,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: MirrorColors.emotionColor(record.emotion).withOpacity(0.3),
+                            color: MirrorColors.emotionColor(record.emotion).withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Center(child: Text(emoji, style: const TextStyle(fontSize: 20))),
@@ -249,7 +249,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: MirrorColors.primaryLight.withOpacity(0.15),
+                                    color: MirrorColors.primaryLight.withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
@@ -498,7 +498,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? MirrorColors.primaryLight.withOpacity(0.3)
+                    ? MirrorColors.primaryLight.withValues(alpha: 0.3)
                     : (isDark ? MirrorColors.darkSurface : MirrorColors.cardBackground),
                 borderRadius: BorderRadius.circular(18),
                 border: isSelected ? Border.all(color: MirrorColors.primary, width: 1.2) : null,

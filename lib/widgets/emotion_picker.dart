@@ -31,7 +31,7 @@ class EmotionPicker extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? MirrorColors.emotionColor(emotion.label).withOpacity(0.3)
+                    ? MirrorColors.emotionColor(emotion.label).withValues(alpha: 0.3)
                     : Theme.of(context).brightness == Brightness.dark
                         ? MirrorColors.darkSurface
                         : MirrorColors.cardBackground,

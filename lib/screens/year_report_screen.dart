@@ -194,7 +194,7 @@ class _YearReportScreenState extends State<YearReportScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: MirrorColors.error.withOpacity(0.1),
+                        color: MirrorColors.error.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(_error!,
@@ -308,7 +308,7 @@ class _YearReportScreenState extends State<YearReportScreen> {
           width: 56,
           height: 56,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.15),
+            color: color.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Center(

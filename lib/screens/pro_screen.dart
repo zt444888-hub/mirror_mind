@@ -164,7 +164,7 @@ class _ProScreenState extends State<ProScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: MirrorColors.accentLight.withOpacity(0.3),
+                  color: MirrorColors.accentLight.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -202,7 +202,7 @@ class _ProScreenState extends State<ProScreen> {
                     height: 64,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.25),
+                      color: Colors.white.withValues(alpha: 0.25),
                     ),
                     child: const Icon(Icons.auto_awesome, color: Colors.white, size: 32),
                   ),
@@ -214,7 +214,7 @@ class _ProScreenState extends State<ProScreen> {
                   const SizedBox(height: 4),
                   Text(
                     '一次购买，终身使用',
-                    style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.85)),
+                    style: TextStyle(fontSize: 14, color: Colors.white.withValues(alpha: 0.85)),
                   ),
                 ],
               ),
@@ -237,7 +237,7 @@ class _ProScreenState extends State<ProScreen> {
                 border: Border.all(color: MirrorColors.primaryLight, width: 1.5),
                 boxShadow: [
                   BoxShadow(
-                    color: MirrorColors.primaryLight.withOpacity(0.2),
+                    color: MirrorColors.primaryLight.withValues(alpha: 0.2),
                     blurRadius: 16,
                     offset: const Offset(0, 4),
                   ),
