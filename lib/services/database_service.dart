@@ -22,9 +22,10 @@ class DatabaseService {
     await _migrateFromOldDb(dbPath, path);
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
+      onConfigure: _onConfigure,
     );
   }
   
@@ -49,7 +50,7 @@ class DatabaseService {
       if (maps.isNotEmpty) {
         final newDb = await openDatabase(
           newPath,
-          version: 3,
+          version: 4,
           onCreate: _onCreate,
         );
         for (final map in maps) {
@@ -83,6 +84,15 @@ class DatabaseService {
     if (oldVersion < 2) {
       await db.execute('ALTER TABLE $_tableName ADD COLUMN gratitude_items TEXT');
     }
+    if (oldVersion < 4) {
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_${_tableName}_date ON $_tableName(date)');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_${_tableName}_created_at ON $_tableName(created_at)');
+    }
+  }
+
+  Future<void> _onConfigure(Database db) async {
+    await db.execute('PRAGMA journal_mode=WAL');
+    await db.execute('PRAGMA foreign_keys=ON');
   }
 
   /// 鎻掑叆涓€鏉℃儏缁褰?

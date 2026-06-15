@@ -38,7 +38,7 @@ class MoodSlider extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text('😔', style: TextStyle(fontSize: 16)),
-            for (int i = 2; i <= 9; i++)
+            for (int i = 1; i <= 10; i++)
               Text(
                 '$i',
                 style: TextStyle(
