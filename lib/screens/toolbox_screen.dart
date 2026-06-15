@@ -12,6 +12,7 @@ class ToolboxScreen extends StatelessWidget {
     _ToolItem(Icons.self_improvement, '冥想引导', '文字引导 + 计时器，放空心灵', const Color(0xFF7B8BA6), '/meditation'),
     _ToolItem(Icons.dashboard_customize, '心情卡片', '把今天的心情做成一张精美卡片', MirrorColors.primaryDark, '/mood-card'),
     _ToolItem(Icons.menu_book, '情绪词库', '60+精准词汇，提升情绪粒度', const Color(0xFF8D6E63), '/emotion-vocabulary'),
+    _ToolItem(Icons.bedtime_rounded, '助眠', '放松身心，安然入眠', const Color(0xFF5C6BC0), '/sleep'),
     _ToolItem(Icons.track_changes, '7天情绪挑战', '连续7天打卡，培养积极情绪习惯', const Color(0xFFD4A017), '/emotion-challenge'),
   ];
 
