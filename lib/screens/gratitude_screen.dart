@@ -88,7 +88,6 @@ class _GratitudeScreenState extends State<GratitudeScreen> {
       return list.cast<String>();
     } catch (e) {
       debugPrint('感恩页面异常: \$e');
-    }
       return [jsonStr];
     }
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart' as ph;
 
@@ -46,7 +47,6 @@ class SpeechService {
       return await ph.openAppSettings();
     } catch (e) {
       debugPrint('语音服务异常: \$e');
-    }
       return false;
     }
   }
