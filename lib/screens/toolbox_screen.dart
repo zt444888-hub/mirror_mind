@@ -5,7 +5,7 @@ class ToolboxScreen extends StatelessWidget {
   const ToolboxScreen({super.key});
 
   static const _tools = [
-    _ToolItem(Icons.air, '4-7-8 呼吸练习', '用呼吸找回平静，每次只需1分钟', MirrorColors.secondary, '/breathing'),
+    _ToolItem(Icons.air, '呼吸练习', '用呼吸找回平静，每次只需1分钟', MirrorColors.secondary, '/breathing'),
     _ToolItem(Icons.auto_stories, '认知重构卡片', '20张心理学卡片，换个角度看问题', MirrorColors.primary, '/cards'),
     _ToolItem(Icons.favorite_border, '感恩三件事', '每天记录三件值得感恩的事', MirrorColors.accent, '/gratitude'),
     _ToolItem(Icons.healing, '情绪急救包', '根据当前心情，即时获取应对建议', MirrorColors.warm, '/emergency'),
