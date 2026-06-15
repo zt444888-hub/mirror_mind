@@ -220,7 +220,7 @@ class _CardsScreenState extends State<CardsScreen> {
                       Text(pack['icon'] as String, style: const TextStyle(fontSize: 28)),
                       const Spacer(),
                       Text(
-                        pack['title'] as String,
+                        pack['title'] as String, softWrap: true,
                         style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 2),
@@ -267,7 +267,7 @@ class _CardsScreenState extends State<CardsScreen> {
                   child: Row(
                     children: [
                       Text(
-                        pack['title'] as String,
+                        pack['title'] as String, softWrap: true,
                         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                       ),
                       const Spacer(),
@@ -298,7 +298,7 @@ class _CardsScreenState extends State<CardsScreen> {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                card.content,
+                                card.content, softWrap: true, maxLines: 10, overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 13,
                                   height: 1.5,
