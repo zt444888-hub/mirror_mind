@@ -20,6 +20,7 @@ import 'screens/emotion_challenge_screen.dart';
 import 'screens/calendar_screen.dart';
 import 'screens/year_report_screen.dart';
 import 'screens/onboarding_screen.dart';
+import 'screens/splash_screen.dart';
 import 'screens/pro_screen.dart';
 
 class MirrorMindApp extends StatelessWidget {
@@ -43,8 +44,9 @@ class MirrorMindApp extends StatelessWidget {
           theme: _buildLightTheme(),
           darkTheme: _buildDarkTheme(),
           themeMode: settings.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-          home: showOnboarding ? const OnboardingScreen() : const HomeScreen(),
+          home: showOnboarding ? const OnboardingScreen() : const SplashScreen(),
           routes: {
+            '/splash': (_) => const SplashScreen(),
             '/home': (_) => const HomeScreen(),
             '/onboarding': (_) => const OnboardingScreen(),
             '/breathing': (_) => const BreathingScreen(),

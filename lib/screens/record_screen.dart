@@ -78,23 +78,14 @@ class _RecordScreenState extends State<RecordScreen>
     }
 
     final settings = context.read<SettingsProvider>();
-    if (!settings.isApiConfigured) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('请先在设置页配置 API Key'),
-          backgroundColor: MirrorColors.warning,
-          action: SnackBarAction(label: '去设置', textColor: Colors.white, onPressed: _navigateToSettings),
-        ),
-      );
-      return;
-    }
-
     final provider = context.read<EmotionProvider>();
-    provider.updateAiConfig(
-      baseUrl: settings.baseUrl,
-      apiKey: settings.apiKey,
-      model: settings.model,
-    );
+    if (settings.isApiConfigured) {
+      provider.updateAiConfig(
+        baseUrl: settings.baseUrl,
+        apiKey: settings.apiKey,
+        model: settings.model,
+      );
+    }
 
     final result = await provider.analyzeText(text);
 
@@ -116,10 +107,6 @@ class _RecordScreenState extends State<RecordScreen>
         _isAnalyzed = true;
       });
     }
-  }
-
-  void _navigateToSettings() {
-    Navigator.pushNamed(context, '/settings');
   }
 
   Future<void> _startListening() async {

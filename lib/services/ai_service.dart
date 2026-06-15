@@ -40,13 +40,71 @@ class AiService {
   /// AI 情绪分析：输入文本 → 返回情绪类型、置信度、共情回应
   Future<EmotionAnalysisResult?> analyzeEmotion(String text) async {
     final configError = _checkConfig();
-    if (configError != null) throw AiConfigException(configError);
+    if (configError != null) {
+      // 未配置 API Key 时使用内置离线分析
+      return _offlineAnalyze(text);
+    }
 
     final sanitized = _sanitizeInput(text);
     final prompt = _buildAnalysisPrompt(sanitized);
     final responseMap = await _callApi(prompt);
 
     return EmotionAnalysisResult.fromJson(responseMap);
+  }
+
+  /// 离线关键词情绪分析（无需 API Key）
+  EmotionAnalysisResult _offlineAnalyze(String text) {
+    final sanitized = _sanitizeInput(text);
+    final lower = sanitized.toLowerCase();
+
+    // 情绪关键词映射
+    final emotionKeywords = <String, List<String>>{
+      '开心': ['开心', '高兴', '快乐', '愉快', '喜悦', '欣喜', '欢笑', '哈哈', '嘻嘻', '棒', '好开心', '太开心了', '庆祝', '满足', '幸福', '感恩', '感动'],
+      '难过': ['难过', '伤心', '悲伤', '痛苦', '心碎', '哭了', '流泪', '失落', '沮丧', '绝望', '悲哀', '忧郁', '伤感', '想哭', '不开心'],
+      '焦虑': ['焦虑', '紧张', '不安', '担心', '害怕', '恐惧', '恐慌', '心慌', '烦躁', '着急', '压力', '忐忑', '不知所措', '失眠', '担忧'],
+      '愤怒': ['愤怒', '生气', '恼火', '怒', '气死', '烦', '讨厌', '恶心', '厌恶', '受不了', '爆炸', '火大', '不爽', '可恶'],
+      '平静': ['平静', '放松', '安宁', '平和', '淡定', '从容', '安稳', '舒心', '舒适', '惬意', '悠闲', '宁静', '心如止水'],
+      '疲惫': ['疲惫', '累', '困', '疲倦', '疲劳', '筋疲力尽', '没力气', '乏了', '虚脱', '无力', '透支', '扛不住', '想睡'],
+      '孤独': ['孤独', '孤单', '寂寞', '一个人', '没人陪', '独处', '孤零零', '被遗忘', '被忽视', '没人理解', '孤立'],
+      '期待': ['期待', '希望', '盼望', '向往', '渴望', '憧憬', '期盼', '许愿', '想要', '梦想', '目标'],
+    };
+
+    // 分析每个情绪类别的匹配度
+    var bestEmotion = '一般';
+    var bestScore = 0;
+    for (final entry in emotionKeywords.entries) {
+      var score = 0;
+      for (final keyword in entry.value) {
+        if (lower.contains(keyword)) {
+          score += 2;
+        }
+      }
+      // 给长文本更多权重
+      score += (sanitized.length / 20).floor();
+      if (score > bestScore) {
+        bestScore = score;
+        bestEmotion = entry.key;
+      }
+    }
+
+    // 构建共情回应
+    final responses = <String, String>{
+      '开心': '感受到你的快乐了！保持这份好心情，生活中的美好时刻值得被记住和珍惜。',
+      '难过': '听到你难过我也很心疼。允许自己感受这份情绪，慢慢来，一切都会好起来的。',
+      '焦虑': '焦虑是很正常的感受。试试深呼吸，把注意力放在当下，一切都还在你的掌控中。',
+      '愤怒': '愤怒是合理的情绪。先深呼吸冷静一下，给自己一点空间和时间。',
+      '平静': '这种平静的状态非常珍贵。享受当下的宁静，这就是内心力量的源泉。',
+      '疲惫': '你辛苦了。好好休息是对自己最好的照顾，给自己充充电吧。',
+      '孤独': '即使独处，你也不孤单。你的感受值得被看见，也许可以联系一个信任的人。',
+      '期待': '有期待的感觉真好！向着目标前进的每一步都值得庆祝。',
+      '一般': '谢谢你的分享。每一天都是新的开始，希望你能找到属于自己的小确幸。',
+    };
+
+    return EmotionAnalysisResult(
+      emotion: bestEmotion,
+      confidence: bestScore > 0 ? (bestScore / 20.0).clamp(0.3, 0.95) : 0.5,
+      response: responses[bestEmotion] ?? responses['一般']!,
+    );
   }
 
   /// 生成周报
