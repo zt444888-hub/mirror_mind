@@ -332,6 +332,7 @@ class _ProScreenState extends State<ProScreen> {
             _buildComparisonRow('情绪趋势', '7 天简单记录', '30 天趋势曲线\n+ Tag 情绪筛选'),
             _buildComparisonRow('PDF 报告', '周报', '周报 + 月报\n+ 年度报告'),
             _buildComparisonRow('提醒设置', '2 种提醒', '3 种提醒\n全部可用'),
+            _buildComparisonRow('AI 对话', '需自备 API Key', '直接可用\n云端小镜陪你聊'),
           ],
         ),
       ),

@@ -15,6 +15,7 @@ class ToolboxScreen extends StatelessWidget {
     _ToolItem(Icons.menu_book, '情绪词库', '60+精准词汇，提升情绪粒度', Color(0xFF8D6E63), '/emotion-vocabulary'),
     _ToolItem(Icons.bedtime_rounded, '助眠', '放松身心，安然入眠', Color(0xFF5C6BC0), '/sleep'),
     _ToolItem(Icons.track_changes, '7天情绪挑战', '连续7天打卡，培养积极情绪习惯', Color(0xFFD4A017), '/emotion-challenge'),
+      _ToolItem(Icons.chat_bubble_outline, '与小镜对话', 'AI 情感陪伴，随时聊聊心里话', MirrorColors.primary, '/ai-chat'),
   ];
 
   @override

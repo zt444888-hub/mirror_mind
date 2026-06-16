@@ -78,6 +78,8 @@ class _MeditationScreenState extends State<MeditationScreen>
         '安心地进入梦乡',
       ],
     ),
+    // Pro 功能 ↓
+    if (!PurchaseService().isPro) return const SizedBox.shrink();
     const _MeditationMode(
       title: '焦虑缓解',
       description: '平复紧张情绪',

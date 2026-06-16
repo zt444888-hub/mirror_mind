@@ -22,6 +22,7 @@ import 'screens/year_report_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/pro_screen.dart';
+import 'screens/ai_chat_screen.dart';
 
 class MirrorMindApp extends StatelessWidget {
   final GlobalKey<NavigatorState> navigatorKey;
@@ -65,7 +66,8 @@ class MirrorMindApp extends StatelessWidget {
         '/sleep': (_) => const SleepScreen(),
         '/horoscope': (_) => const HoroscopeScreen(),
             '/settings': (_) => const SettingsScreen(),
-            '/pro': (context) => Builder(
+            '/ai-chat': (_) => const AiChatScreen(),
+          '/pro': (context) => Builder(
               builder: (context) {
                 final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
                 return ProScreen(hint: args?['hint']);

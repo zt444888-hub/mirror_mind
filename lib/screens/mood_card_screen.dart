@@ -25,7 +25,8 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
   final TextEditingController _textController = TextEditingController();
 
   EmotionRecord? _selectedRecord;
-  int _templateIndex = 0; // 0=简约 1=文艺 2=温暖
+  int _templateIndex = 0;
+  bool _showAllTemplates = false; // 0=简约 1=文艺 2=温暖
   bool _useCustomText = false;
 
   static const List<String> _templateNames = ['简约', '文艺', '温暖', '渐变', '极简', '手写', '胶片', '糖果', '森林', '暗夜'];
@@ -65,6 +66,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
   @override
   void initState() {
     super.initState();
+    _showAllTemplates = PurchaseService().isPro;
     _loadLatestRecord();
   }
 
