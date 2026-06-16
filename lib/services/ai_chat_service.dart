@@ -1,12 +1,14 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
-/// 心镜云后端地址
+/// 蹇冮暅浜戝悗绔湴鍧€
 const String kCloudBaseUrl = 'https://mirror-mind.onrender.com';
 
 class AiChatService extends ChangeNotifier {
+  final _secureStorage = const FlutterSecureStorage();
   final List<Map<String, String>> _messages = [];
   bool _isThinking = false;
   String? _lastError;
@@ -17,7 +19,7 @@ class AiChatService extends ChangeNotifier {
   bool get isThinking => _isThinking;
   String? get lastError => _lastError;
 
-  /// 唤醒 Render 后端（防止冷启动延迟）
+  /// 鍞ら啋 Render 鍚庣锛堥槻姝㈠喎鍚姩寤惰繜锛?
   static Future<void> warmUp() async {
     try {
       await http.get(Uri.parse('$kCloudBaseUrl')).timeout(const Duration(seconds: 8));
@@ -31,7 +33,7 @@ class AiChatService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      print('[心镜] 正在调用云后端: $kCloudBaseUrl/api/chat');
+      debugPrint('[蹇冮暅] 姝ｅ湪璋冪敤浜戝悗绔? $kCloudBaseUrl/api/chat');
       final resp = await http
           .post(
             Uri.parse('$kCloudBaseUrl/api/chat'),
@@ -47,20 +49,20 @@ class AiChatService extends ChangeNotifier {
 
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body);
-        final reply = data['reply'] as String? ?? '小镜暂时无法回应~';
+        final reply = data['reply'] as String? ?? '灏忛暅鏆傛椂鏃犳硶鍥炲簲~';
         _messages.add({'role': 'assistant', 'content': reply});
       } else {
-        _messages.add({'role': 'assistant', 'content': '小镜暂时有点卡，稍后再试吧 🙏'});
+        _messages.add({'role': 'assistant', 'content': '灏忛暅鏆傛椂鏈夌偣鍗★紝绋嶅悗鍐嶈瘯鍚?馃檹'});
       }
     } catch (e) {
-      print('[心镜] 云后端调用失败: \$e');
+      debugPrint('[蹇冮暅] 浜戝悗绔皟鐢ㄥけ璐? \$e');
       _lastError = e.toString();
       if (e is http.ClientException || e.toString().contains('SocketException')) {
-        _messages.add({'role': 'assistant', 'content': '网络连接失败，请检查网络后重试 📶'});
+        _messages.add({'role': 'assistant', 'content': '缃戠粶杩炴帴澶辫触锛岃妫€鏌ョ綉缁滃悗閲嶈瘯 馃摱'});
       } else if (e.toString().contains('TimeoutException')) {
-        _messages.add({'role': 'assistant', 'content': '连接超时，服务器暂时繁忙，请稍后再试 ⏳'});
+        _messages.add({'role': 'assistant', 'content': '杩炴帴瓒呮椂锛屾湇鍔″櫒鏆傛椂绻佸繖锛岃绋嶅悗鍐嶈瘯 鈴?});
       } else {
-        _messages.add({'role': 'assistant', 'content': '小镜暂时有点卡，稍后再来吧 🙏'});
+        _messages.add({'role': 'assistant', 'content': '灏忛暅鏆傛椂鏈夌偣鍗★紝绋嶅悗鍐嶆潵鍚?馃檹'});
       }
     }
 
@@ -99,3 +101,5 @@ class AiChatService extends ChangeNotifier {
     } catch (_) {}
   }
 }
+
+
