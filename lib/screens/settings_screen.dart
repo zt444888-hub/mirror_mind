@@ -61,6 +61,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _dailyMinute = dailyTime['minute']!;
         _breathingReminderEnabled = breathingEnabled;
         _breathingHour = breathingTime['hour']!;
+        _breathingMinute = breathingTime['minute']!;
+        _challengeHour = challengeTime['hour']!;
         _challengeMinute = challengeTime['minute']!;
       });
     }

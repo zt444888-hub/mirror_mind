@@ -160,8 +160,8 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       dailyReminderId,
-      '心镜 · 7天挑战',
-      '娴犲﹤銇夎箛鍐╁剰閹簼绠為弽鍑ょ吹閼哄彉绔撮崚鍡涙寭鐠佹澘缍嶆稉鈧稉瀣儌~',
+      '心镜 · 每日记录',
+      '今天过得怎么样？来记录一下你的心情吧~',
       scheduledDate,
       const NotificationDetails(
         android: AndroidNotificationDetails(
@@ -211,8 +211,8 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       breathingReminderId,
-      '心镜 · 7天挑战',
-      '鐠囥儱浠涙稉顏勬嚑閸氬摜绮屾稊鐘虫杹閺夊彞绔存稉瀣╃啊',
+      '心镜 · 呼吸练习',
+      '该放松一下了，来做几分钟呼吸练习吧~',
       scheduledDate,
       const NotificationDetails(
         android: AndroidNotificationDetails(

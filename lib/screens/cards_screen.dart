@@ -36,6 +36,81 @@ class _CardsScreenState extends State<CardsScreen> {
     super.dispose();
   }
 
+
+  /// 构建滑动窗口式页码指示器（最多显示 7 个点）
+  Widget _buildPageIndicators(bool isDark) {
+    final total = cognitiveCards.length;
+    final maxVisible = 7;
+    final halfWindow = maxVisible ~/ 2;
+
+    int start;
+    int end;
+
+    if (total <= maxVisible) {
+      start = 0;
+      end = total;
+    } else if (_currentPage <= halfWindow) {
+      start = 0;
+      end = maxVisible;
+    } else if (_currentPage >= total - halfWindow - 1) {
+      start = total - maxVisible;
+      end = total;
+    } else {
+      start = _currentPage - halfWindow;
+      end = _currentPage + halfWindow + 1;
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // 左侧省略号
+        if (start > 0)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 2),
+            child: Text(
+              '...',
+              style: TextStyle(
+                fontSize: 10,
+                color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
+              ),
+            ),
+          ),
+        // 可见点
+        ...List.generate(
+          end - start,
+          (i) {
+            final index = start + i;
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              width: _currentPage == index ? 24 : 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: _currentPage == index
+                    ? MirrorColors.primary
+                    : (isDark ? MirrorColors.darkSurface : MirrorColors.cardBackground),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            );
+          },
+        ),
+        // 右侧省略号
+        if (end < total)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 2),
+            child: Text(
+              '...',
+              style: TextStyle(
+                fontSize: 10,
+                color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -86,27 +161,10 @@ class _CardsScreenState extends State<CardsScreen> {
           _buildAdvancedPacks(isDark),
           const SizedBox(height: 8),
 
-          // 页码指示器
+          // 页码指示器（滑动窗口，最多显示 7 个点）
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                cognitiveCards.length,
-                (index) => AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: _currentPage == index ? 24 : 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: _currentPage == index
-                        ? MirrorColors.primary
-                        : (isDark ? MirrorColors.darkSurface : MirrorColors.cardBackground),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-            ),
+            child: _buildPageIndicators(isDark),
           ),
 
           // 操作按钮
