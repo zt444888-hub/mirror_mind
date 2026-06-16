@@ -4,6 +4,8 @@ import '../providers/emotion_provider.dart';
 import '../models/emotion_record.dart';
 import '../constants/colors.dart';
 import '../constants/emotions.dart';
+import '../constants/festivals.dart';
+import '../constants/festivals.dart';
 import '../widgets/calendar_grid.dart';
 import '../widgets/weekly_chart.dart';
 import '../widgets/mood_trend_chart.dart';
@@ -179,7 +181,26 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
+          const SizedBox(height: 12),
+          (() {
+            final fs = Festival.getByDate(date.month, date.day);
+            if (fs.isEmpty) return const SizedBox.shrink();
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Wrap(spacing: 8, runSpacing: 4, children: fs.map((f) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: f.type == "chinese" ? MirrorColors.warm.withValues(alpha: 0.3) : MirrorColors.primaryLight.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(f.emoji != null ? "${f.emoji} ${f.name}" : f.name, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: f.type == "chinese" ? MirrorColors.accentDark : MirrorColors.primaryDark)),
+                );
+              }).toList()),
+            );
+          })(),
+          const SizedBox(height: 4),
           Text(
             '${date.month}月${date.day}日',
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),

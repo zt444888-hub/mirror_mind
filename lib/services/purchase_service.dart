@@ -4,7 +4,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // 开发调试开关：设为 true 解锁所有付费功能
-const bool _debugUnlockAll = true;
+const bool _debugUnlockAll = false;
 
 class PurchaseService {
   static final PurchaseService _instance = PurchaseService._();

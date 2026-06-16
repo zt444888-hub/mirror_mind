@@ -44,6 +44,8 @@ class ToolboxScreen extends StatelessWidget {
             itemBuilder: (context, index) => _buildGridCard(context, _tools[index]),
           ),
         ),
+        _buildDonateCard(context),
+        const SizedBox(height: 8),
         const SizedBox(height: 8),
       ],
     );
@@ -130,6 +132,35 @@ class ToolboxScreen extends StatelessWidget {
     );
   }
 }
+
+  Widget _buildDonateCard(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: InkWell(
+        onTap: () => Navigator.pushNamed(context, "/pro"),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(width: 48, height: 48,
+                decoration: BoxDecoration(gradient: const LinearGradient(colors: [MirrorColors.primaryLight, MirrorColors.primary], begin: Alignment.topLeft, end: Alignment.bottomRight), borderRadius: BorderRadius.circular(14)),
+                child: const Icon(Icons.favorite, color: Colors.white, size: 24)),
+              const SizedBox(width: 12),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Text("打赏 ¥68", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: MirrorColors.primaryDark)),
+                const SizedBox(height: 2),
+                const Text("成为终身免费会员 · 支持心镜发展", style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary)),
+              ])),
+              Container(width: 28, height: 28,
+                decoration: BoxDecoration(color: MirrorColors.primaryLight.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(10)),
+                child: const Icon(Icons.chevron_right, color: MirrorColors.primary, size: 18)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
 class _ToolItem {
   final IconData icon;
