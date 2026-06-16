@@ -19,7 +19,7 @@ class DatabaseService {
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, _dbName);
-    // 妫€鏌ユ槸鍚﹀瓨鍦ㄦ棫鍝堝笇鍛藉悕鐨勬暟鎹簱锛屽鏈夊垯杩佺Щ
+    // Check for old hash-named DBs and migrate to the fixed name.
     await _migrateFromOldDb(dbPath, path);
     return await openDatabase(
       path,
@@ -32,8 +32,8 @@ class DatabaseService {
   /// 浠庢棫鍝堝笇鍛藉悕鐨勬暟鎹簱杩佺Щ鏁版嵁鍒板浐瀹氭枃浠跺悕鏁版嵁搴?  /// 閬垮厤 String.hashCode 璺ㄧ増鏈笉绋冲畾瀵艰嚧鏁版嵁涓㈠け
   Future<void> _migrateFromOldDb(String dbPath, String newPath) async {
     final newExists = await databaseExists(newPath);
-    if (newExists) return; // 鏂版暟鎹簱宸插瓨鍦紝鏃犻渶杩佺Щ
-    // 鏃у懡鍚嶆ā寮忥細mm_<hash>.db
+    if (newExists) return; // New DB already exists, skip migration.
+    // Old naming pattern: mm_<hash>.db
     final dir = Directory(dbPath);
     if (!await dir.exists()) return;
     final files = await dir.list().toList();
@@ -93,13 +93,13 @@ class DatabaseService {
   }
 
 
-  /// 鎻掑叆涓€鏉℃儏缁褰?
+  /// Insert a new emotion record.
   Future<int> insertRecord(EmotionRecord record) async {
     final db = await database;
     return await db.insert(_tableName, record.toMap());
   }
 
-  /// 鏇存柊璁板綍
+  /// Update an existing record.
   Future<int> updateRecord(EmotionRecord record) async {
     final db = await database;
     return await db.update(
@@ -110,7 +110,7 @@ class DatabaseService {
     );
   }
 
-  /// 鑾峰彇鏌愪竴澶╃殑鎵€鏈夎褰?
+  /// Get all records for a given date.
   Future<List<EmotionRecord>> getRecordsByDate(DateTime date) async {
     final db = await database;
     final dateStr = date.toIso8601String().split('T')[0];
@@ -123,7 +123,7 @@ class DatabaseService {
     return maps.map((m) => EmotionRecord.fromMap(m)).toList();
   }
 
-  /// 鑾峰彇鏌愭湀鐨勬墍鏈夎褰曪紙鐢ㄤ簬鏃ュ巻鏍囨敞锛?
+  /// Get records for a given month (used for calendar markers).
   Future<List<EmotionRecord>> getRecordsByMonth(int year, int month) async {
     final db = await database;
     final startDate = '$year-${month.toString().padLeft(2, '0')}-01';
@@ -139,7 +139,7 @@ class DatabaseService {
     return maps.map((m) => EmotionRecord.fromMap(m)).toList();
   }
 
-  /// 鑾峰彇鏈懆璁板綍锛堝懆涓€寮€濮嬶級
+  /// Get records for the current week (Monday to Sunday).
   Future<List<EmotionRecord>> getRecordsThisWeek() async {
     final now = DateTime.now();
     final weekday = now.weekday;
@@ -178,7 +178,7 @@ class DatabaseService {
     return maps.map((m) => EmotionRecord.fromMap(m)).toList();
   }
 
-  /// 鑾峰彇鏈€鏂颁竴鏉¤褰?
+  /// Get the most recent record.
   Future<EmotionRecord?> getLatestRecord() async {
     final db = await database;
     final maps = await db.query(
@@ -190,7 +190,7 @@ class DatabaseService {
     return EmotionRecord.fromMap(maps.first);
   }
 
-  /// 鑾峰彇鎵€鏈夎褰曪紙鐢ㄤ簬瀵煎嚭锛?
+  /// Get all records (for export).
   Future<List<EmotionRecord>> getAllRecords() async {
     final db = await database;
     final maps = await db.query(
@@ -200,14 +200,14 @@ class DatabaseService {
     return maps.map((m) => EmotionRecord.fromMap(m)).toList();
   }
 
-  /// 瀵煎嚭鎵€鏈夋暟鎹负 JSON 瀛楃涓?
+  /// Export all data as a JSON string.
   Future<String> exportToJson() async {
     final records = await getAllRecords();
     final list = records.map((r) => r.toMap()).toList();
     return const JsonEncoder.withIndent('  ').convert(list);
   }
 
-  /// 鍒犻櫎鏌愭潯璁板綍
+  /// Delete a record by id.
   Future<int> deleteRecord(int id) async {
     final db = await database;
     return await db.delete(
@@ -217,13 +217,13 @@ class DatabaseService {
     );
   }
 
-  /// 娓呯┖鎵€鏈夎褰?
+  /// Delete all records.
   Future<void> deleteAllRecords() async {
     final db = await database;
     await db.delete(_tableName);
   }
 
-  /// 璁＄畻杩炵画璁板綍澶╂暟锛堜粠浠婂ぉ寰€鍓嶆暟锛屼腑鏂垯鍋滐級
+  /// Count consecutive record days (from today backward, stops on break).
   Future<int> getConsecutiveDays() async {
     final db = await database;
     final maps = await db.rawQuery(
@@ -234,17 +234,17 @@ class DatabaseService {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
-    // 灏嗘墍鏈夋棩鏈熷瓧绗︿覆鏀惧叆 Set 蹇€熸煡鎵?
+    // Put all date strings into a Set for fast lookup.
     final dateSet = <String>{};
     for (final m in maps) {
       dateSet.add(m['date'] as String);
     }
 
-    // 浠婂ぉ鏃犺褰曞垯杩炵画澶╂暟涓?0
+    // If no record for today, consecutive days = 0.
     final todayStr = today.toIso8601String().split('T')[0];
     if (!dateSet.contains(todayStr)) return 0;
 
-    // 鍚戝墠绱姞鐩村埌闂存柇
+    // Scan backward until a day without a record is found.
     int consecutive = 0;
     for (int i = 0; ; i++) {
       final checkDate = today.subtract(Duration(days: i));
@@ -259,7 +259,7 @@ class DatabaseService {
     return consecutive;
   }
 
-  /// 鎸夋爣绛炬煡璇㈣褰?
+  /// Get records by tag.
   Future<List<EmotionRecord>> getRecordsByTag(String tag) async {
     final db = await database;
     final maps = await db.query(
@@ -304,7 +304,7 @@ class DatabaseService {
     return maps.map((m) => EmotionRecord.fromMap(m)).toList();
   }
 
-  /// 璁＄畻鏈夎褰曠殑鎬诲ぉ鏁帮紙鍘婚噸锛?
+  /// Count total distinct record days.
   Future<int> getTotalRecordDays() async {
     final db = await database;
     final result = await db.rawQuery(
@@ -313,7 +313,7 @@ class DatabaseService {
     return result.first['count'] as int;
   }
 
-  /// 鍏抽棴鏁版嵁搴?
+  /// Close the database connection.
   Future<void> close() async {
     final db = await database;
     await db.close();

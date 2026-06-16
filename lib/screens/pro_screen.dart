@@ -16,12 +16,12 @@ class ProScreen extends StatefulWidget {
 class _ProScreenState extends State<ProScreen> {
   bool _isBuying = false;
   bool _isRestoring = false;
-  bool _isPro = false;
+  bool _donated = false;
 
   @override
   void initState() {
     super.initState();
-    _isPro = PurchaseService().isPro;
+    _donated = PurchaseService().donated;
   }
 
   Future<void> _handleBuy() async {
@@ -62,9 +62,8 @@ class _ProScreenState extends State<ProScreen> {
   }
 
   void _checkProStatus() {
-    final isPro = PurchaseService().isPro;
-    if (isPro) {
-      setState(() => _isPro = true);
+    if (PurchaseService().donated) {
+      setState(() => _donated = true);
       _showSuccessAndPop();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -132,20 +131,62 @@ class _ProScreenState extends State<ProScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    if (_isPro) {
+    if (_donated) {
       return Scaffold(
         backgroundColor: isDark ? MirrorColors.darkBackground : MirrorColors.background,
-        appBar: AppBar(title: const Text('心镜 Pro')),
-        body: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.verified, size: 64, color: MirrorColors.secondary),
-              SizedBox(height: 16),
-              Text('心镜 Pro · 已解锁', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-              SizedBox(height: 8),
-              Text('感谢你的支持', style: TextStyle(fontSize: 14, color: MirrorColors.textSecondary)),
-            ],
+        appBar: AppBar(
+          title: const Text('支持心镜'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [MirrorColors.primaryLight, MirrorColors.primary],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0x40FFFFFF),
+                    ),
+                    child: const Icon(Icons.favorite, size: 40, color: Colors.white),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    '心镜 MirrorMind',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Appreciation enriches our own mind.\n欣赏他人，丰盈自己',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xE6FFFFFF),
+                      height: 1.6,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       );

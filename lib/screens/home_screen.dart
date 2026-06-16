@@ -94,8 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
               label: '小镜',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.self_improvement_outlined),
-              activeIcon: Icon(Icons.self_improvement),
+              icon: Icon(Icons.build_outlined),
+              activeIcon: Icon(Icons.build),
               label: '工具箱',
             ),
           ],

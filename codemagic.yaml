@@ -7,6 +7,9 @@ workflows:
       xcode: 16.0
       groups:
         - appstore
+      vars:
+        APP_STORE_CONNECT_ISSUER_ID: "$APP_STORE_CONNECT_ISSUER_ID"
+        APP_STORE_CONNECT_KEY_ID: "$APP_STORE_CONNECT_KEY_ID"
     triggering:
       events:
         - push
@@ -15,23 +18,22 @@ workflows:
           include: true
           source: true
     scripts:
+      - echo "=== Install dependencies ==="
+      - flutter pub get
+      - cd ios && pod install && cd ..
+      - echo "=== Build IPA ==="
+      - flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
       - |
-        echo '-----BEGIN PRIVATE KEY-----' > /tmp/key.p8
-        echo 'MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg48hEZxZwmXflNxtZ' >> /tmp/key.p8
-        echo '2yw/biuv7r10Z6h6McTrESlbLhWgCgYIKoZIzj0DAQehRANCAARb9yVYyYnmhSkn' >> /tmp/key.p8
-        echo 'PhuvJ5grCtGsr2NtIJcmoMRxUgDRJUon1+WHMKCHUwliClwiIuKxrtuoAsu3kI0q' >> /tmp/key.p8
-        echo 'xKjFgtC9' >> /tmp/key.p8
-        echo '-----END PRIVATE KEY-----' >> /tmp/key.p8
-        pip3 install pyjwt cryptography --quiet 2>/dev/null
-        echo 'aW1wb3J0IGpzb24sc3VicHJvY2VzcyxvcyxiYXNlNjQsdXVpZCx0aW1lLHVybGxpYi5yZXF1ZXN0LHVybGxpYi5lcnJvcgppbXBvcnQgand0CnRva2VuID0gand0LmVuY29kZSgKICAgIHsnaXNzJzogb3MuZW52aXJvblsnQVBQX1NUT1JFX0NPTk5FQ1RfSVNTVUVSX0lEJ10sCiAgICAgJ2V4cCc6IGludCh0aW1lLnRpbWUoKSkgKyAxMjAwLAogICAgICdhdWQnOiAnYXBwc3RvcmVjb25uZWN0LXYxJywKICAgICAnaWF0JzogaW50KHRpbWUudGltZSgpKX0sCiAgICBvcGVuKCcvdG1wL2tleS5wOCcpLnJlYWQoKSwgYWxnb3JpdGhtPSdFUzI1NicsCiAgICBoZWFkZXJzPXsna2lkJzogb3MuZW52aXJvblsnQVBQX1NUT1JFX0NPTk5FQ1RfS0VZX0lEJ119KQpwcmludCgnSldUIE9LJykKIyBERUxFVEUgZXhpc3RpbmcgRElTVFJJQlVUSU9OIGNlcnRzCnJlcSA9IHVybGxpYi5yZXF1ZXN0LlJlcXVlc3QoCiAgICAnaHR0cHM6Ly9hcGkuYXBwc3RvcmVjb25uZWN0LmFwcGxlLmNvbS92MS9jZXJ0aWZpY2F0ZXM/ZmlsdGVyJTVCY2VydGlmaWNhdGVUeXBlJTVEPURJU1RSSUJVVElPTicsCiAgICBoZWFkZXJzPXsnQXV0aG9yaXphdGlvbic6IGYnQmVhcmVyIHt0b2tlbn0nfSkKdHJ5OgogICAgcmVzcCA9IHVybGxpYi5yZXF1ZXN0LnVybG9wZW4ocmVxKQogICAgZm9yIGMgaW4ganNvbi5sb2FkKHJlc3ApLmdldCgnZGF0YScsIFtdKToKICAgICAgICBjaWQgPSBjWydpZCddOyBwcmludCgnRGVsZXRpbmc6JywgY2lkKQogICAgICAgIHVybGxpYi5yZXF1ZXN0LnVybG9wZW4odXJsbGliLnJlcXVlc3QuUmVxdWVzdCgKICAgICAgICAgICAgZidodHRwczovL2FwaS5hcHBzdG9yZWNvbm5lY3QuYXBwbGUuY29tL3YxL2NlcnRpZmljYXRlcy97Y2lkfScsCiAgICAgICAgICAgIG1ldGhvZD0nREVMRVRFJywgaGVhZGVycz17J0F1dGhvcml6YXRpb24nOiBmJ0JlYXJlciB7dG9rZW59J30pKQpleGNlcHQ6IHBhc3MKcHJpbnQoJ1dhaXRpbmcgNjBzIGZvciBkZWxldGlvbi4uLicpCnRpbWUuc2xlZXAoNjApCiMgQ3JlYXRlIG5ldyBjZXJ0IHdpdGggcmV0cmllcwpzdWJwcm9jZXNzLnJ1bihbJ29wZW5zc2wnLCdyZXEnLCctbmV3JywnLW5ld2tleScsJ3JzYToyMDQ4JywnLWtleW91dCcsJy90bXAvcHJpdi5wZW0nLCctb3V0JywnL3RtcC9jZXJ0LmNzcicsCiAgICAnLW5vZGVzJywnLXN1YmonLCcvQz1DTi9PPU1NL0NOPWlPUyBEaXN0cmlidXRpb24nXSwgY2hlY2s9VHJ1ZSwgY2FwdHVyZV9vdXRwdXQ9VHJ1ZSkKY3NyID0gb3BlbignL3RtcC9jZXJ0LmNzcicpLnJlYWQoKS5zdHJpcCgpLnJlcGxhY2UoJ1xuJywgJ1xcbicpCmJvZHkgPSBqc29uLmR1bXBzKHsnZGF0YSc6eyd0eXBlJzonY2VydGlmaWNhdGVzJywnYXR0cmlidXRlcyc6eydjc3JDb250ZW50Jzpjc3IsJ2NlcnRpZmljYXRlVHlwZSc6J0RJU1RSSUJVVElPTid9fX0pCmZvciBhdHRlbXB0IGluIHJhbmdlKDMpOgogICAgdHJ5OgogICAgICAgIHJlc3AgPSB1cmxsaWIucmVxdWVzdC51cmxvcGVuKHVybGxpYi5yZXF1ZXN0LlJlcXVlc3QoCiAgICAgICAgICAgICdodHRwczovL2FwaS5hcHBzdG9yZWNvbm5lY3QuYXBwbGUuY29tL3YxL2NlcnRpZmljYXRlcycsCiAgICAgICAgICAgIGRhdGE9Ym9keS5lbmNvZGUoKSwKICAgICAgICAgICAgaGVhZGVycz17J0F1dGhvcml6YXRpb24nOiBmJ0JlYXJlciB7dG9rZW59JywgJ0NvbnRlbnQtVHlwZSc6ICdhcHBsaWNhdGlvbi9qc29uJ30pKQogICAgICAgIGRhdGEgPSBqc29uLmxvYWQocmVzcCk7IGJyZWFrCiAgICBleGNlcHQgdXJsbGliLmVycm9yLkhUVFBFcnJvciBhcyBlOgogICAgICAgIGlmIGUuY29kZSA9PSA0MDkgYW5kIGF0dGVtcHQgPCAyOgogICAgICAgICAgICBwcmludCgnNDA5LCB3YWl0IDMwcy4uLicpOyB0aW1lLnNsZWVwKDMwKQogICAgICAgIGVsc2U6IHJhaXNlCmNlcnRfaWQgPSBkYXRhWydkYXRhJ11bJ2lkJ107IGNlcnRfYm9keSA9IGRhdGFbJ2RhdGEnXVsnYXR0cmlidXRlcyddWydjZXJ0aWZpY2F0ZUNvbnRlbnQnXQpwcmludCgnQ3JlYXRlZDonLCBjZXJ0X2lkKQojIEluc3RhbGwKayA9IG9wZW4oJy90bXAvcHJpdi5wZW0nKS5yZWFkKCkKY2VydF9wZW0gPSAnLS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tXG4nICsgY2VydF9ib2R5ICsgJ1xuLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLVxuJwp3aXRoIG9wZW4oJy90bXAvY29tYi5wZW0nLCd3JykgYXMgZjogZi53cml0ZShrICsgJ1xuJyArIGNlcnRfcGVtKQpwdyA9ICdwMTItJyArIHV1aWQudXVpZDQoKS5oZXhbOjE2XQpzdWJwcm9jZXNzLnJ1bihbJ29wZW5zc2wnLCdwa2NzMTInLCctZXhwb3J0JywnLWluJywnL3RtcC9jb21iLnBlbScsJy1vdXQnLCcvdG1wL2Rpc3QucDEyJywKICAgICctcGFzc291dCcsZidwYXNzOntwd30nLCctbmFtZScsJ2lPUyBEaXN0cmlidXRpb24nXSxjaGVjaz1UcnVlKQpzdWJwcm9jZXNzLnJ1bihbJ3NlY3VyaXR5JywnaW1wb3J0JywnL3RtcC9kaXN0LnAxMicsJy1QJyxwdywnLWsnLAogICAgb3MucGF0aC5leHBhbmR1c2VyKCd+L0xpYnJhcnkvS2V5Y2hhaW5zL2xvZ2luLmtleWNoYWluLWRiJyldLGNoZWNrPVRydWUpCnByaW50KCdJbnN0YWxsZWQ6JywgY2VydF9pZCkK' | base64 -d | python3
-        echo "=== Build ==="
-        flutter pub get
-        cd ios && pod install && cd ..
-        flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+        echo "=== Upload to App Store Connect ==="
         IPA_FILE=$(find build/ios/ipa -name "*.ipa" | head -1)
-        echo "IPA: $IPA_FILE"
         if [ -n "$IPA_FILE" ]; then
-          xcrun altool --upload-app -f "$IPA_FILE" --type ios --apiKey JQ5TY68783 --apiIssuer 85ae2584-87e7-4297-8720-960978e48a55
+          xcrun altool --upload-app -f "$IPA_FILE" \
+            --type ios \
+            --apiKey $APP_STORE_CONNECT_KEY_ID \
+            --apiIssuer $APP_STORE_CONNECT_ISSUER_ID
+        else
+          echo "ERROR: No IPA found"
+          exit 1
         fi
     artifacts:
       - build/ios/ipa/*.ipa
