@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/settings_provider.dart';
 import '../providers/emotion_provider.dart';
 import '../services/notification_service.dart';
@@ -137,7 +138,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
       // 记录备份时间
       final now = DateTime.now();
-      await prefs.setString('last_backup', '${now.year}-${now.month.toString().padLeft(2,'0')}-${now.day.toString().padLeft(2,'0')} ${now.hour.toString().padLeft(2,'0')}:${now.minute.toString().padLeft(2,'0')}');
+      await (await SharedPreferences.getInstance()).setString('last_backup', '${now.year}-${now.month.toString().padLeft(2,'0')}-${now.day.toString().padLeft(2,'0')} ${now.hour.toString().padLeft(2,'0')}:${now.minute.toString().padLeft(2,'0')}');
       // 提示用户备份到云盘
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

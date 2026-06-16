@@ -34,6 +34,7 @@ class _RecordScreenState extends State<RecordScreen>
   bool _isAnalyzed = false;
   bool _isSaving = false;
   bool _isListening = false;
+  bool _showPrompt = true;
   bool _speechAvailable = false;
 
   @override
@@ -244,6 +245,25 @@ class _RecordScreenState extends State<RecordScreen>
       onTap: () => FocusScope.of(context).unfocus(),
       child: Column(
         children: [
+          // 每日引导
+          if (_showPrompt)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: MirrorColors.primaryLight.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.auto_awesome, color: MirrorColors.primary, size: 18),
+                  SizedBox(width: 8),
+                  Expanded(child: Text("今天心情怎么样？记录一下吧 🌸", style: TextStyle(fontSize: 13, color: MirrorColors.primaryDark))),
+                ],
+              ),
+            ),
+          const SizedBox(height: 6),
           // Tab 切换栏
           Container(
             margin: const EdgeInsets.fromLTRB(20, 8, 20, 0),
