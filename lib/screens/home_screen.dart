@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/emotion_provider.dart';
 import '../constants/colors.dart';
@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ToolboxScreen(),
   ];
 
-  final List<String> _titles = const ['心镜', '情绪日历', '与小镜对话', '自愈工具箱'];
+  final List<String> _titles = const ['蹇冮暅', '鎯呯华鏃ュ巻', '涓庡皬闀滃璇?, '鑷剤宸ュ叿绠?];
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
       provider.loadLatestRecord();
       provider.loadStreak();
       provider.loadWeekRecords();
-      // 预热 AI 后端
+      // 棰勭儹 AI 鍚庣
       AiChatService.warmUp();
     });
   }
@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Color(0x0A000000),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -81,22 +81,22 @@ class _HomeScreenState extends State<HomeScreen> {
             BottomNavigationBarItem(
               icon: Icon(Icons.auto_awesome_outlined),
               activeIcon: Icon(Icons.auto_awesome),
-              label: '记录',
+              label: '璁板綍',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.calendar_month_outlined),
               activeIcon: Icon(Icons.calendar_month),
-              label: '日历',
+              label: '鏃ュ巻',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.self_improvement_outlined),
               activeIcon: Icon(Icons.self_improvement),
-              label: '小镜',
+              label: '灏忛暅',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.self_improvement_outlined),
               activeIcon: Icon(Icons.self_improvement),
-              label: '工具箱',
+              label: '宸ュ叿绠?,
             ),
           ],
           selectedItemColor: MirrorColors.primaryDark,
@@ -107,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// 顶部成就条：连续天数 + 徽章进度 + 周打卡
+  /// 椤堕儴鎴愬氨鏉★細杩炵画澶╂暟 + 寰界珷杩涘害 + 鍛ㄦ墦鍗?
   Widget _buildAchievementBar(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Selector<EmotionProvider, ({int consecutiveDays, int totalRecordDays})>(
@@ -129,14 +129,14 @@ class _HomeScreenState extends State<HomeScreen> {
               gradient: LinearGradient(
                 colors: isDark
                     ? [MirrorColors.darkCardBackground, MirrorColors.darkCardBackground.withValues(alpha: 0.8)]
-                    : [MirrorColors.surface, MirrorColors.primaryLight.withValues(alpha: 0.3)],
+                    : [MirrorColors.surface, Color(0x80D4C5E2)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
+                  color: Color(0x0A000000),
                   blurRadius: 10,
                   offset: const Offset(0, 2),
                 ),
@@ -144,14 +144,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: Column(
               children: [
-                // 第一行：火焰 + 天数 + 当前徽章
+                // 绗竴琛岋細鐏劙 + 澶╂暟 + 褰撳墠寰界珷
                 Row(
                   children: [
-                    // 火焰动画图标 (根据天数变化)
+                    // 鐏劙鍔ㄧ敾鍥炬爣 (鏍规嵁澶╂暟鍙樺寲)
                     Text(
-                      consecutive >= 100 ? '🔥🔥🔥' :
-                      consecutive >= 30 ? '🔥🔥' :
-                      consecutive >= 7 ? '🔥' : '✨',
+                      consecutive >= 100 ? '馃敟馃敟馃敟' :
+                      consecutive >= 30 ? '馃敟馃敟' :
+                      consecutive >= 7 ? '馃敟' : '鉁?,
                       style: const TextStyle(fontSize: 22),
                     ),
                     const SizedBox(width: 10),
@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          consecutive > 0 ? '连续 $consecutive 天' : '今天还没有记录',
+                          consecutive > 0 ? '杩炵画 $consecutive 澶? : '浠婂ぉ杩樻病鏈夎褰?,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -167,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         Text(
-                          total > 0 ? '共记录 $total 天 · 点击查看全部成就' : '开始记录你的第一天吧',
+                          total > 0 ? '鍏辫褰?$total 澶?路 鐐瑰嚮鏌ョ湅鍏ㄩ儴鎴愬氨' : '寮€濮嬭褰曚綘鐨勭涓€澶╁惂',
                           style: TextStyle(
                             fontSize: 12,
                             color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
@@ -176,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     const Spacer(),
-                    // 当前徽章
+                    // 褰撳墠寰界珷
                     if (badge != null)
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -202,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                   ],
                 ),
-                // 第二行：进度条（到下一个徽章）
+                // 绗簩琛岋細杩涘害鏉★紙鍒颁笅涓€涓窘绔狅級
                 if (nextBadge != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 12),
@@ -213,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '下一个：${nextBadge.emoji} ${nextBadge.label}',
+                              '涓嬩竴涓細${nextBadge.emoji} ${nextBadge.label}',
                               style: TextStyle(
                                 fontSize: 11,
                                 color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
@@ -250,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// 显示成就对话框
+  /// 鏄剧ず鎴愬氨瀵硅瘽妗?
   void _showAchievementDialog(BuildContext context, int consecutive, int total) {
     final allBadges = _allBadges();
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -271,18 +271,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(
                   width: 40, height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.grey.withValues(alpha: 0.3),
+                    color: Color(0x4DBEBEBE),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),
               const SizedBox(height: 20),
-              Text('成就徽章', style: TextStyle(
+              Text('鎴愬氨寰界珷', style: TextStyle(
                 fontSize: 20, fontWeight: FontWeight.w700,
                 color: isDark ? MirrorColors.darkTextPrimary : MirrorColors.textPrimary,
               )),
               const SizedBox(height: 16),
-              const Text('坚持记录情绪，解锁更多徽章！', style: TextStyle(fontSize: 13, color: MirrorColors.textSecondary)),
+              const Text('鍧氭寔璁板綍鎯呯华锛岃В閿佹洿澶氬窘绔狅紒', style: TextStyle(fontSize: 13, color: MirrorColors.textSecondary)),
               const SizedBox(height: 16),
               ...allBadges.map((b) {
                 final unlocked = b.check(consecutive, total);
@@ -290,12 +290,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   margin: const EdgeInsets.only(bottom: 10),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: isDark ? MirrorColors.darkSurface : Colors.grey.withValues(alpha: 0.08),
+                    color: isDark ? MirrorColors.darkSurface : Color(0x14BEBEBE),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     children: [
-                      Text(unlocked ? b.emoji : '🔒', style: const TextStyle(fontSize: 24)),
+                      Text(unlocked ? b.emoji : '馃敀', style: const TextStyle(fontSize: 24)),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -327,21 +327,21 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// 所有成就徽章定义
+  /// 鎵€鏈夋垚灏卞窘绔犲畾涔?
   List<_BadgeInfo> _allBadges() {
     return [
-      _BadgeInfo('🌱', '新芽', '记录第 1 天', Color(0xFF8DB580), (c, t) => c >= 1 || t >= 1),
-      _BadgeInfo('🌿', '成长', '连续 7 天', MirrorColors.primary, (c, t) => c >= 7),
-      _BadgeInfo('🌳', '稳固', '连续 21 天', MirrorColors.secondary, (c, t) => c >= 21),
-      _BadgeInfo('🌸', '绽放', '连续 60 天', const Color(0xFFE891A0), (c, t) => c >= 60),
-      _BadgeInfo('🌟', '闪耀', '连续 100 天', const Color(0xFFE8A838), (c, t) => c >= 100),
-      _BadgeInfo('🏆', '坚持', '累计 30 天', const Color(0xFFD4A017), (c, t) => t >= 30),
-      _BadgeInfo('💎', '钻石', '累计 100 天', const Color(0xFF6C5CE7), (c, t) => t >= 100),
-      _BadgeInfo('👑', '王者', '累计 365 天', const Color(0xFFD4A017), (c, t) => t >= 365),
+      _BadgeInfo('馃尡', '鏂拌娊', '璁板綍绗?1 澶?, Color(0xFF8DB580), (c, t) => c >= 1 || t >= 1),
+      _BadgeInfo('馃尶', '鎴愰暱', '杩炵画 7 澶?, MirrorColors.primary, (c, t) => c >= 7),
+      _BadgeInfo('馃尦', '绋冲浐', '杩炵画 21 澶?, MirrorColors.secondary, (c, t) => c >= 21),
+      _BadgeInfo('馃尭', '缁芥斁', '杩炵画 60 澶?, const Color(0xFFE891A0), (c, t) => c >= 60),
+      _BadgeInfo('馃専', '闂€€', '杩炵画 100 澶?, const Color(0xFFE8A838), (c, t) => c >= 100),
+      _BadgeInfo('馃弳', '鍧氭寔', '绱 30 澶?, const Color(0xFFD4A017), (c, t) => t >= 30),
+      _BadgeInfo('馃拵', '閽荤煶', '绱 100 澶?, const Color(0xFF6C5CE7), (c, t) => t >= 100),
+      _BadgeInfo('馃憫', '鐜嬭€?, '绱 365 澶?, const Color(0xFFD4A017), (c, t) => t >= 365),
     ];
   }
 
-  /// 获取下一个未解锁的徽章
+  /// 鑾峰彇涓嬩竴涓湭瑙ｉ攣鐨勫窘绔?
   _BadgeInfo? _getNextBadge(int consecutive, int total) {
     for (final b in _allBadges()) {
       if (!b.check(consecutive, total)) return b;
@@ -349,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return null;
   }
 
-  /// 计算到下一个徽章的进度 (0.0 ~ 1.0)
+  /// 璁＄畻鍒颁笅涓€涓窘绔犵殑杩涘害 (0.0 ~ 1.0)
   double _getProgress(int consecutive, int total) {
     final thresholds = [
       (th: 1, useConsecutive: true),
@@ -364,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen> {
     for (final t in thresholds) {
       final current = t.useConsecutive ? consecutive : total;
       if (current < t.th) {
-        // 看上一个阈值
+        // 鐪嬩笂涓€涓槇鍊?
         final prevThresholds = thresholds.where((x) =>
           (x.useConsecutive == t.useConsecutive) && 
           (t.useConsecutive ? x.th < t.th : x.th < t.th)
@@ -376,7 +376,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return 1.0;
   }
 
-  /// 根据连续天数 / 总天数返回当前成就徽章
+  /// 鏍规嵁杩炵画澶╂暟 / 鎬诲ぉ鏁拌繑鍥炲綋鍓嶆垚灏卞窘绔?
   _BadgeInfo? _getBadge(int consecutiveDays, int totalDays) {
     for (final b in _allBadges()) {
       if (b.check(consecutiveDays, totalDays)) {
@@ -387,7 +387,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-/// 成就徽章数据类
+/// 鎴愬氨寰界珷鏁版嵁绫?
 class _BadgeInfo {
   final String emoji;
   final String label;
@@ -397,3 +397,4 @@ class _BadgeInfo {
 
   const _BadgeInfo(this.emoji, this.label, this.description, this.color, this.check);
 }
+

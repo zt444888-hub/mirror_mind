@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/emotion_provider.dart';
 import '../models/emotion_record.dart';
 import '../constants/colors.dart';
 
-/// 日记列表页：展示所有长文记录（深度日记模式）
+/// 鏃ヨ鍒楄〃椤碉細灞曠ず鎵€鏈夐暱鏂囪褰曪紙娣卞害鏃ヨ妯″紡锛?
 class DiaryListScreen extends StatefulWidget {
   const DiaryListScreen({super.key});
 
@@ -26,8 +26,8 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
     setState(() => _isLoading = true);
     final provider = context.read<EmotionProvider>();
     final allRecords = await provider.loadAllRecords();
-    // 筛选 tag 为"深度日记"的长文记录
-    final diaries = allRecords.where((r) => r.tag == '深度日记').toList()
+    // 绛涢€?tag 涓?娣卞害鏃ヨ"鐨勯暱鏂囪褰?
+    final diaries = allRecords.where((r) => r.tag == '娣卞害鏃ヨ').toList()
       ..sort((a, b) => b.date.compareTo(a.date));
 
     if (mounted) {
@@ -38,20 +38,20 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
     }
   }
 
-  /// 删除日记
+  /// 鍒犻櫎鏃ヨ
   Future<void> _deleteDiary(EmotionRecord record) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('删除日记'),
-        content: const Text('删除后无法恢复，确定要删除这篇日记吗？'),
+        title: const Text('鍒犻櫎鏃ヨ'),
+        content: const Text('鍒犻櫎鍚庢棤娉曟仮澶嶏紝纭畾瑕佸垹闄よ繖绡囨棩璁板悧锛?),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('鍙栨秷')),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: ElevatedButton.styleFrom(backgroundColor: MirrorColors.error),
-            child: const Text('删除'),
+            child: const Text('鍒犻櫎'),
           ),
         ],
       ),
@@ -64,11 +64,11 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
     }
   }
 
-  /// 提取标题（从 inputText 中解析）
+  /// 鎻愬彇鏍囬锛堜粠 inputText 涓В鏋愶級
   String _extractTitle(EmotionRecord record) {
     final text = record.inputText ?? '';
     if (text.isEmpty) return '';
-    if (text.startsWith('标题：')) {
+    if (text.startsWith('鏍囬锛?)) {
       final titleEnd = text.indexOf('\n');
       if (titleEnd > 0) {
         return text.substring(3, titleEnd).trim();
@@ -78,16 +78,16 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
     return firstLine.length > 20 ? '${firstLine.substring(0, 20)}...' : firstLine;
   }
 
-  /// 提取正文预览
+  /// 鎻愬彇姝ｆ枃棰勮
   String _extractPreview(EmotionRecord record) {
     final text = record.inputText ?? '';
     if (text.isEmpty) return '';
     String content = text;
-    if (text.startsWith('标题：')) {
+    if (text.startsWith('鏍囬锛?)) {
       final titleEnd = text.indexOf('\n');
       if (titleEnd > 0) {
         content = text.substring(titleEnd + 1).trim();
-        if (content.startsWith('内容：')) {
+        if (content.startsWith('鍐呭锛?)) {
           content = content.substring(3).trim();
         }
       }
@@ -98,9 +98,9 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date);
-    if (diff.inDays == 0) return '今天';
-    if (diff.inDays == 1) return '昨天';
-    if (diff.inDays < 7) return '${diff.inDays}天前';
+    if (diff.inDays == 0) return '浠婂ぉ';
+    if (diff.inDays == 1) return '鏄ㄥぉ';
+    if (diff.inDays < 7) return '${diff.inDays}澶╁墠';
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
@@ -110,7 +110,7 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
 
     return Scaffold(
       backgroundColor: isDark ? MirrorColors.darkBackground : MirrorColors.background,
-      appBar: AppBar(title: const Text('我的日记')),
+      appBar: AppBar(title: const Text('鎴戠殑鏃ヨ')),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _diaries.isEmpty
@@ -118,15 +118,15 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('📖', style: TextStyle(fontSize: 48, color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary)),
+                      Text('馃摉', style: TextStyle(fontSize: 48, color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary)),
                       const SizedBox(height: 16),
                       Text(
-                        '还没有日记',
+                        '杩樻病鏈夋棩璁?,
                         style: TextStyle(fontSize: 16, color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '在"深度日记"模式下写点什么吧',
+                        '鍦?娣卞害鏃ヨ"妯″紡涓嬪啓鐐逛粈涔堝惂',
                         style: TextStyle(fontSize: 13, color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary),
                       ),
                     ],
@@ -166,7 +166,7 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
       ),
       confirmDismiss: (_) async {
         await _deleteDiary(diary);
-        return false; // 手动处理删除，不依赖 Dismissible 默认行为
+        return false; // 鎵嬪姩澶勭悊鍒犻櫎锛屼笉渚濊禆 Dismissible 榛樿琛屼负
       },
       child: Card(
         margin: const EdgeInsets.only(bottom: 12),
@@ -195,7 +195,7 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                       decoration: BoxDecoration(
-                        color: MirrorColors.primaryLight.withValues(alpha: 0.3),
+                        color: Color(0x80D4C5E2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
@@ -265,14 +265,14 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
               child: ListView(
                 controller: scrollController,
                 children: [
-                  // 拖拽条
+                  // 鎷栨嫿鏉?
                   Center(
                     child: Container(
                       width: 40,
                       height: 4,
                       margin: const EdgeInsets.only(bottom: 20),
                       decoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: 0.3),
+                        color: Color(0x4DBEBEBE),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -329,3 +329,4 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
     );
   }
 }
+

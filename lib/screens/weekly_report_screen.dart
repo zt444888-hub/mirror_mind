@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/emotion_provider.dart';
 import '../providers/settings_provider.dart';
@@ -35,9 +35,9 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
     if (!settings.isApiConfigured) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('请先在设置页配置 API Key'),
+          content: const Text('璇峰厛鍦ㄨ缃〉閰嶇疆 API Key'),
           backgroundColor: MirrorColors.warning,
-          action: SnackBarAction(label: '去设置', textColor: Colors.white, onPressed: _navigateToSettings),
+          action: SnackBarAction(label: '鍘昏缃?, textColor: Colors.white, onPressed: _navigateToSettings),
         ),
       );
       return;
@@ -85,24 +85,24 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
 
     return Scaffold(
       backgroundColor: isDark ? MirrorColors.darkBackground : MirrorColors.background,
-      appBar: AppBar(title: const Text('情绪周报')),
+      appBar: AppBar(title: const Text('鎯呯华鍛ㄦ姤')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 本周统计
+            // 鏈懆缁熻
             if (weekRecords.isNotEmpty) _buildWeekStats(weekRecords, isDark),
             if (weekRecords.isNotEmpty) const SizedBox(height: 24),
 
-            // 生成按钮
+            // 鐢熸垚鎸夐挳
             if (_report == null && !_isLoading) ...[
               SizedBox(
                 height: 52,
                 child: ElevatedButton.icon(
                   onPressed: weekRecords.isEmpty ? null : _generateReport,
                   icon: const Icon(Icons.auto_awesome, size: 18),
-                  label: Text(weekRecords.isEmpty ? '本周暂无情绪记录' : '生成本周情绪体检报告'),
+                  label: Text(weekRecords.isEmpty ? '鏈懆鏆傛棤鎯呯华璁板綍' : '鐢熸垚鏈懆鎯呯华浣撴鎶ュ憡'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: MirrorColors.primary,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -118,7 +118,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
                   children: [
                     CircularProgressIndicator(color: MirrorColors.primary),
                     SizedBox(height: 16),
-                    Text('AI 正在分析本周情绪...', style: TextStyle(color: MirrorColors.textSecondary)),
+                    Text('AI 姝ｅ湪鍒嗘瀽鏈懆鎯呯华...', style: TextStyle(color: MirrorColors.textSecondary)),
                   ],
                 ),
               ),
@@ -136,7 +136,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               ),
             ],
 
-            // 周报卡片
+            // 鍛ㄦ姤鍗＄墖
             if (_report != null) ...[
               const SizedBox(height: 16),
               _buildReportCard(isDark),
@@ -156,13 +156,13 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('本周统计', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            const Text('鏈懆缁熻', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildStatItem('记录天数', '${records.length}', MirrorColors.primary),
-                _buildStatItem('平均评分', _avgScore(records), MirrorColors.secondary),
+                _buildStatItem('璁板綍澶╂暟', '${records.length}', MirrorColors.primary),
+                _buildStatItem('骞冲潎璇勫垎', _avgScore(records), MirrorColors.secondary),
               ],
             ),
           ],
@@ -209,7 +209,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
         gradient: LinearGradient(
           colors: [
             MirrorColors.primaryLight.withValues(alpha: 0.5),
-            MirrorColors.accentLight.withValues(alpha: 0.3),
+            Color(0x80FBEAE3),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -226,7 +226,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 标题行
+          // 鏍囬琛?
           Row(
             children: [
               Container(
@@ -236,7 +236,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Text(
-                  '本周情绪体检报告',
+                  '鏈懆鎯呯华浣撴鎶ュ憡',
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MirrorColors.primaryDark),
                 ),
               ),
@@ -246,7 +246,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
           ),
           const SizedBox(height: 20),
 
-          // 主导情绪
+          // 涓诲鎯呯华
           if (report.dominantEmotion.isNotEmpty) ...[
             Container(
               padding: const EdgeInsets.all(16),
@@ -275,7 +275,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('本周主要情绪', style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary)),
+                        const Text('鏈懆涓昏鎯呯华', style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary)),
                         const SizedBox(height: 2),
                         Text(
                           report.dominantEmotion,
@@ -290,13 +290,13 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
             const SizedBox(height: 20),
           ],
 
-          // 总结
+          // 鎬荤粨
           if (report.summary.isNotEmpty) ...[
             Text(report.summary, style: const TextStyle(fontSize: 15, height: 1.6)),
             const SizedBox(height: 16),
           ],
 
-          // 建议
+          // 寤鸿
           if (report.suggestion.isNotEmpty) ...[
             Container(
               padding: const EdgeInsets.all(16),
@@ -307,7 +307,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('💡', style: TextStyle(fontSize: 18)),
+                  const Text('馃挕', style: TextStyle(fontSize: 18)),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
@@ -321,7 +321,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
             const SizedBox(height: 16),
           ],
 
-          // 金句
+          // 閲戝彞
           if (report.quote.isNotEmpty) ...[
             const Divider(),
             const SizedBox(height: 12),
@@ -344,15 +344,15 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
 
   String _emojiFor(String emotion) {
     switch (emotion) {
-      case '开心': return '😊';
-      case '平静': return '😌';
-      case '兴奋': return '🤩';
-      case '感恩': return '🥰';
-      case '焦虑': return '😰';
-      case '难过': return '😢';
-      case '生气': return '😤';
-      case '疲惫': return '😴';
-      default: return '😐';
+      case '寮€蹇?: return '馃槉';
+      case '骞抽潤': return '馃槍';
+      case '鍏村': return '馃ぉ';
+      case '鎰熸仼': return '馃グ';
+      case '鐒﹁檻': return '馃槹';
+      case '闅捐繃': return '馃槩';
+      case '鐢熸皵': return '馃槫';
+      case '鐤叉儷': return '馃槾';
+      default: return '馃槓';
     }
   }
 
@@ -364,7 +364,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
         icon: _isExporting
             ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
             : const Icon(Icons.picture_as_pdf, size: 18),
-        label: Text(_isExporting ? '导出中...' : '导出 PDF'),
+        label: Text(_isExporting ? '瀵煎嚭涓?..' : '瀵煎嚭 PDF'),
         style: OutlinedButton.styleFrom(
           foregroundColor: MirrorColors.primaryDark,
           side: const BorderSide(color: MirrorColors.primary),
@@ -397,7 +397,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('PDF 已保存至：$path'),
+            content: Text('PDF 宸蹭繚瀛樿嚦锛?path'),
             backgroundColor: MirrorColors.primary,
           ),
         );
@@ -406,7 +406,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('导出失败：${e.toString()}'),
+            content: Text('瀵煎嚭澶辫触锛?{e.toString()}'),
             backgroundColor: MirrorColors.error,
           ),
         );
@@ -416,3 +416,4 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
     }
   }
 }
+

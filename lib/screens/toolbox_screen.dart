@@ -1,20 +1,20 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 
 class ToolboxScreen extends StatelessWidget {
   const ToolboxScreen({super.key});
 
   static const _tools = [
-    _ToolItem(Icons.air, '呼吸练习', '用呼吸找回平静，每次只需1分钟', MirrorColors.secondary, '/breathing'),
-    _ToolItem(Icons.auto_stories, '认知重构卡片', '20张心理学卡片，换个角度看问题', MirrorColors.primary, '/cards'),
-    _ToolItem(Icons.favorite_border, '感恩三件事', '每天记录三件值得感恩的事', MirrorColors.accent, '/gratitude'),
-    _ToolItem(Icons.healing, '情绪急救包', '根据当前心情，即时获取应对建议', MirrorColors.warm, '/emergency'),
-    _ToolItem(Icons.self_improvement, '冥想引导', '文字引导 + 计时器，放空心灵', Color(0xFF7B8BA6), '/meditation'),
-    _ToolItem(Icons.auto_awesome, '星座运势', '每日星座运势', Color(0xFF9C27B0), '/horoscope'),
-    _ToolItem(Icons.dashboard_customize, '心情卡片', '把今天的心情做成一张精美卡片', MirrorColors.primaryDark, '/mood-card'),
-    _ToolItem(Icons.menu_book, '情绪词库', '60+精准词汇，提升情绪粒度', Color(0xFF8D6E63), '/emotion-vocabulary'),
-    _ToolItem(Icons.bedtime_rounded, '助眠', '放松身心，安然入眠', Color(0xFF5C6BC0), '/sleep'),
-    _ToolItem(Icons.track_changes, '7天情绪挑战', '连续7天打卡，培养积极情绪习惯', Color(0xFFD4A017), '/emotion-challenge'),
+    _ToolItem(Icons.air, '鍛煎惛缁冧範', '鐢ㄥ懠鍚告壘鍥炲钩闈欙紝姣忔鍙渶1鍒嗛挓', MirrorColors.secondary, '/breathing'),
+    _ToolItem(Icons.auto_stories, '璁ょ煡閲嶆瀯鍗＄墖', '20寮犲績鐞嗗鍗＄墖锛屾崲涓搴︾湅闂', MirrorColors.primary, '/cards'),
+    _ToolItem(Icons.favorite_border, '鎰熸仼涓変欢浜?, '姣忓ぉ璁板綍涓変欢鍊煎緱鎰熸仼鐨勪簨', MirrorColors.accent, '/gratitude'),
+    _ToolItem(Icons.healing, '鎯呯华鎬ユ晳鍖?, '鏍规嵁褰撳墠蹇冩儏锛屽嵆鏃惰幏鍙栧簲瀵瑰缓璁?, MirrorColors.warm, '/emergency'),
+    _ToolItem(Icons.self_improvement, '鍐ユ兂寮曞', '鏂囧瓧寮曞 + 璁℃椂鍣紝鏀剧┖蹇冪伒', Color(0xFF7B8BA6), '/meditation'),
+    _ToolItem(Icons.auto_awesome, '鏄熷骇杩愬娍', '姣忔棩鏄熷骇杩愬娍', Color(0xFF9C27B0), '/horoscope'),
+    _ToolItem(Icons.dashboard_customize, '蹇冩儏鍗＄墖', '鎶婁粖澶╃殑蹇冩儏鍋氭垚涓€寮犵簿缇庡崱鐗?, MirrorColors.primaryDark, '/mood-card'),
+    _ToolItem(Icons.menu_book, '鎯呯华璇嶅簱', '60+绮惧噯璇嶆眹锛屾彁鍗囨儏缁矑搴?, Color(0xFF8D6E63), '/emotion-vocabulary'),
+    _ToolItem(Icons.bedtime_rounded, '鍔╃湢', '鏀炬澗韬績锛屽畨鐒跺叆鐪?, Color(0xFF5C6BC0), '/sleep'),
+    _ToolItem(Icons.track_changes, '7澶╂儏缁寫鎴?, '杩炵画7澶╂墦鍗★紝鍩瑰吇绉瀬鎯呯华涔犳儻', Color(0xFFD4A017), '/emotion-challenge'),
   ];
 
   @override
@@ -26,7 +26,7 @@ class ToolboxScreen extends StatelessWidget {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              '选择一种方式照顾自己',
+              '閫夋嫨涓€绉嶆柟寮忕収椤捐嚜宸?,
               style: TextStyle(fontSize: 15, color: MirrorColors.textSecondary),
             ),
           ),
@@ -103,8 +103,8 @@ class ToolboxScreen extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            MirrorColors.primaryLight.withValues(alpha: 0.3),
-            MirrorColors.accentLight.withValues(alpha: 0.3),
+            Color(0x80D4C5E2),
+            Color(0x80FBEAE3),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -114,7 +114,7 @@ class ToolboxScreen extends StatelessWidget {
       child: const Column(
         children: [
           Text(
-            '"照顾好自己，不是自私，是智慧。"',
+            '"鐓ч【濂借嚜宸憋紝涓嶆槸鑷锛屾槸鏅烘収銆?',
             style: TextStyle(
               fontSize: 15,
               fontStyle: FontStyle.italic,
@@ -124,7 +124,7 @@ class ToolboxScreen extends StatelessWidget {
           ),
           SizedBox(height: 8),
           Text(
-            '—— 心镜',
+            '鈥斺€?蹇冮暅',
             style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary),
           ),
         ],
@@ -156,10 +156,10 @@ class ToolboxScreen extends StatelessWidget {
             const SizedBox(height: 12),
             const Text('"Dreams are the seedlings of realities."',textAlign: TextAlign.center,style: TextStyle(fontSize: 14,fontStyle: FontStyle.italic,height: 1.5,color: MirrorColors.primaryDark)),
             const SizedBox(height: 4),
-            const Text('梦想是现实的萌芽',textAlign: TextAlign.center,style: TextStyle(fontSize: 14,height: 1.5,color: MirrorColors.primaryDark)),
+            const Text('姊︽兂鏄幇瀹炵殑钀岃娊',textAlign: TextAlign.center,style: TextStyle(fontSize: 14,height: 1.5,color: MirrorColors.primaryDark)),
             const SizedBox(height: 12),
             Container(padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 3),decoration: BoxDecoration(color: MirrorColors.warm.withValues(alpha: 0.2),borderRadius: BorderRadius.circular(10)),
-              child: const Text('感谢您的支持',style: TextStyle(fontSize: 11,color: MirrorColors.accentDark))),
+              child: const Text('鎰熻阿鎮ㄧ殑鏀寔',style: TextStyle(fontSize: 11,color: MirrorColors.accentDark))),
           ],
         ),
       ),
@@ -180,11 +180,11 @@ class ToolboxScreen extends StatelessWidget {
                 child: const Icon(Icons.favorite,color: Colors.white,size: 24)),
               const SizedBox(width: 12),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
-                const Text('打赏 ¥68',style: TextStyle(fontSize: 16,fontWeight: FontWeight.w700,color: MirrorColors.primaryDark)),
+                const Text('鎵撹祻 楼68',style: TextStyle(fontSize: 16,fontWeight: FontWeight.w700,color: MirrorColors.primaryDark)),
                 const SizedBox(height: 2),
-                const Text('成为终身免费会员 · 支持心镜发展',style: TextStyle(fontSize: 12,color: MirrorColors.textSecondary)),
+                const Text('鎴愪负缁堣韩鍏嶈垂浼氬憳 路 鏀寔蹇冮暅鍙戝睍',style: TextStyle(fontSize: 12,color: MirrorColors.textSecondary)),
               ])),
-              Container(width: 28,height: 28,decoration: BoxDecoration(color: MirrorColors.primaryLight.withValues(alpha: 0.3),borderRadius: BorderRadius.circular(10)),
+              Container(width: 28,height: 28,decoration: BoxDecoration(color: Color(0x80D4C5E2),borderRadius: BorderRadius.circular(10)),
                 child: const Icon(Icons.chevron_right,color: MirrorColors.primary,size: 18)),
             ],
           ),
@@ -258,12 +258,12 @@ class ToolboxScreen extends StatelessWidget {
                 child: const Icon(Icons.favorite, color: Colors.white, size: 24)),
               const SizedBox(width: 12),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Text("打赏 \u00a568", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: MirrorColors.primaryDark)),
+                const Text("鎵撹祻 \u00a568", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: MirrorColors.primaryDark)),
                 const SizedBox(height: 2),
-                const Text("成为终身免费会员 \u00b7 支持心镜发展", style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary)),
+                const Text("鎴愪负缁堣韩鍏嶈垂浼氬憳 \u00b7 鏀寔蹇冮暅鍙戝睍", style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary)),
               ])),
               Container(width: 28, height: 28,
-                decoration: BoxDecoration(color: MirrorColors.primaryLight.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: Color(0x80D4C5E2), borderRadius: BorderRadius.circular(10)),
                 child: const Icon(Icons.chevron_right, color: MirrorColors.primary, size: 18)),
             ],
           ),
@@ -286,12 +286,12 @@ class ToolboxScreen extends StatelessWidget {
                 child: const Icon(Icons.favorite, color: Colors.white, size: 24)),
               const SizedBox(width: 12),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Text("打赏 ¥68", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: MirrorColors.primaryDark)),
+                const Text("鎵撹祻 楼68", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: MirrorColors.primaryDark)),
                 const SizedBox(height: 2),
-                const Text("成为终身免费会员 · 支持心镜发展", style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary)),
+                const Text("鎴愪负缁堣韩鍏嶈垂浼氬憳 路 鏀寔蹇冮暅鍙戝睍", style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary)),
               ])),
               Container(width: 28, height: 28,
-                decoration: BoxDecoration(color: MirrorColors.primaryLight.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: Color(0x80D4C5E2), borderRadius: BorderRadius.circular(10)),
                 child: const Icon(Icons.chevron_right, color: MirrorColors.primary, size: 18)),
             ],
           ),
@@ -309,3 +309,4 @@ class _ToolItem {
 
   const _ToolItem(this.icon, this.title, this.subtitle, this.color, this.route);
 }
+

@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +6,7 @@ import '../providers/emotion_provider.dart';
 import '../models/emotion_record.dart';
 import '../constants/colors.dart';
 
-/// 每日一问 — 情绪盲盒：每天随机推送深度反思问题
+/// 姣忔棩涓€闂?鈥?鎯呯华鐩茬洅锛氭瘡澶╅殢鏈烘帹閫佹繁搴﹀弽鎬濋棶棰?
 class DailyQuestionScreen extends StatefulWidget {
   const DailyQuestionScreen({super.key});
 
@@ -19,12 +19,12 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
   final TextEditingController _answerController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  // 动画控制器
+  // 鍔ㄧ敾鎺у埗鍣?
   late AnimationController _typewriterController;
   late AnimationController _flipController;
   late AnimationController _fadeController;
 
-  // 状态
+  // 鐘舵€?
   _QuestionItem? _todayQuestion;
   int _displayCharCount = 0;
   bool _isFlipped = false;
@@ -33,86 +33,86 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
 
 
   int _consecutiveDays = 0;
-  // ==================== 50 个问题库 ====================
+  // ==================== 50 涓棶棰樺簱 ====================
   static final List<_QuestionItem> _questionBank = [
-    // --- 自我认知 (10) ---
-    const _QuestionItem('如果今天是你生命中最重要的一天，你会怎么度过？', '自我认知'),
-    const _QuestionItem('你最近学到的最重要的一课是什么？', '自我认知'),
-    const _QuestionItem('如果用三个词形容现在的自己，你会选什么？', '自我认知'),
-    const _QuestionItem('你内心深处最害怕的是什么？你如何面对它？', '自我认知'),
-    const _QuestionItem('什么事情让你觉得"这就是我"？', '自我认知'),
-    const _QuestionItem('如果可以改变自己的一件事，你会改变什么？', '自我认知'),
-    const _QuestionItem('你觉得自己最被低估的优点是什么？', '自我认知'),
-    const _QuestionItem('上一次你为自己感到骄傲是什么时候？', '自我认知'),
-    const _QuestionItem('有什么事情是你一直想做但还没开始的？', '自我认知'),
-    const _QuestionItem('你觉得十年后的自己会对现在的你说什么？', '自我认知'),
+    // --- 鑷垜璁ょ煡 (10) ---
+    const _QuestionItem('濡傛灉浠婂ぉ鏄綘鐢熷懡涓渶閲嶈鐨勪竴澶╋紝浣犱細鎬庝箞搴﹁繃锛?, '鑷垜璁ょ煡'),
+    const _QuestionItem('浣犳渶杩戝鍒扮殑鏈€閲嶈鐨勪竴璇炬槸浠€涔堬紵', '鑷垜璁ょ煡'),
+    const _QuestionItem('濡傛灉鐢ㄤ笁涓瘝褰㈠鐜板湪鐨勮嚜宸憋紝浣犱細閫変粈涔堬紵', '鑷垜璁ょ煡'),
+    const _QuestionItem('浣犲唴蹇冩繁澶勬渶瀹虫€曠殑鏄粈涔堬紵浣犲浣曢潰瀵瑰畠锛?, '鑷垜璁ょ煡'),
+    const _QuestionItem('浠€涔堜簨鎯呰浣犺寰?杩欏氨鏄垜"锛?, '鑷垜璁ょ煡'),
+    const _QuestionItem('濡傛灉鍙互鏀瑰彉鑷繁鐨勪竴浠朵簨锛屼綘浼氭敼鍙樹粈涔堬紵', '鑷垜璁ょ煡'),
+    const _QuestionItem('浣犺寰楄嚜宸辨渶琚綆浼扮殑浼樼偣鏄粈涔堬紵', '鑷垜璁ょ煡'),
+    const _QuestionItem('涓婁竴娆′綘涓鸿嚜宸辨劅鍒伴獎鍌叉槸浠€涔堟椂鍊欙紵', '鑷垜璁ょ煡'),
+    const _QuestionItem('鏈変粈涔堜簨鎯呮槸浣犱竴鐩存兂鍋氫絾杩樻病寮€濮嬬殑锛?, '鑷垜璁ょ煡'),
+    const _QuestionItem('浣犺寰楀崄骞村悗鐨勮嚜宸变細瀵圭幇鍦ㄧ殑浣犺浠€涔堬紵', '鑷垜璁ょ煡'),
 
-    // --- 人际关系 (10) ---
-    const _QuestionItem('谁是你生命中意想不到的贵人？', '人际关系'),
-    const _QuestionItem('最近一次让你真心笑出声的事是什么？', '人际关系'),
-    const _QuestionItem('你最想对谁说一声"谢谢"？为什么？', '人际关系'),
-    const _QuestionItem('有没有一个人，改变了你的人生轨迹？', '人际关系'),
-    const _QuestionItem('你觉得自己在别人眼中是什么样的人？', '人际关系'),
-    const _QuestionItem('最近一次和朋友深入交流是什么时候？', '人际关系'),
-    const _QuestionItem('你如何处理与他人的冲突和误解？', '人际关系'),
-    const _QuestionItem('有没有一个人，你想重新联系但一直没勇气？', '人际关系'),
-    const _QuestionItem('你觉得爱和被爱，哪个更重要？', '人际关系'),
-    const _QuestionItem('如果可以请任何人共进晚餐，你会选谁？', '人际关系'),
+    // --- 浜洪檯鍏崇郴 (10) ---
+    const _QuestionItem('璋佹槸浣犵敓鍛戒腑鎰忔兂涓嶅埌鐨勮吹浜猴紵', '浜洪檯鍏崇郴'),
+    const _QuestionItem('鏈€杩戜竴娆¤浣犵湡蹇冪瑧鍑哄０鐨勪簨鏄粈涔堬紵', '浜洪檯鍏崇郴'),
+    const _QuestionItem('浣犳渶鎯冲璋佽涓€澹?璋㈣阿"锛熶负浠€涔堬紵', '浜洪檯鍏崇郴'),
+    const _QuestionItem('鏈夋病鏈変竴涓汉锛屾敼鍙樹簡浣犵殑浜虹敓杞ㄨ抗锛?, '浜洪檯鍏崇郴'),
+    const _QuestionItem('浣犺寰楄嚜宸卞湪鍒汉鐪间腑鏄粈涔堟牱鐨勪汉锛?, '浜洪檯鍏崇郴'),
+    const _QuestionItem('鏈€杩戜竴娆″拰鏈嬪弸娣卞叆浜ゆ祦鏄粈涔堟椂鍊欙紵', '浜洪檯鍏崇郴'),
+    const _QuestionItem('浣犲浣曞鐞嗕笌浠栦汉鐨勫啿绐佸拰璇В锛?, '浜洪檯鍏崇郴'),
+    const _QuestionItem('鏈夋病鏈変竴涓汉锛屼綘鎯抽噸鏂拌仈绯讳絾涓€鐩存病鍕囨皵锛?, '浜洪檯鍏崇郴'),
+    const _QuestionItem('浣犺寰楃埍鍜岃鐖憋紝鍝釜鏇撮噸瑕侊紵', '浜洪檯鍏崇郴'),
+    const _QuestionItem('濡傛灉鍙互璇蜂换浣曚汉鍏辫繘鏅氶锛屼綘浼氶€夎皝锛?, '浜洪檯鍏崇郴'),
 
-    // --- 未来展望 (10) ---
-    const _QuestionItem('如果可以对10年前的自己说一句话，你会说什么？', '未来展望'),
-    const _QuestionItem('你对未来最大的期待是什么？', '未来展望'),
-    const _QuestionItem('如果可以拥有一种超能力，你希望是什么？', '未来展望'),
-    const _QuestionItem('你理想中的一天是怎样的？', '未来展望'),
-    const _QuestionItem('如果不考虑现实限制，你最想做什么工作？', '未来展望'),
-    const _QuestionItem('你想给这个世界留下什么？', '未来展望'),
-    const _QuestionItem('明年今天，你希望自己有什么不同？', '未来展望'),
-    const _QuestionItem('你最大的梦想还在吗？它是否改变了？', '未来展望'),
-    const _QuestionItem('如果可以选择在任何地方生活，你会选哪里？', '未来展望'),
-    const _QuestionItem('你希望自己的墓志铭上写什么？', '未来展望'),
+    // --- 鏈潵灞曟湜 (10) ---
+    const _QuestionItem('濡傛灉鍙互瀵?0骞村墠鐨勮嚜宸辫涓€鍙ヨ瘽锛屼綘浼氳浠€涔堬紵', '鏈潵灞曟湜'),
+    const _QuestionItem('浣犲鏈潵鏈€澶х殑鏈熷緟鏄粈涔堬紵', '鏈潵灞曟湜'),
+    const _QuestionItem('濡傛灉鍙互鎷ユ湁涓€绉嶈秴鑳藉姏锛屼綘甯屾湜鏄粈涔堬紵', '鏈潵灞曟湜'),
+    const _QuestionItem('浣犵悊鎯充腑鐨勪竴澶╂槸鎬庢牱鐨勶紵', '鏈潵灞曟湜'),
+    const _QuestionItem('濡傛灉涓嶈€冭檻鐜板疄闄愬埗锛屼綘鏈€鎯冲仛浠€涔堝伐浣滐紵', '鏈潵灞曟湜'),
+    const _QuestionItem('浣犳兂缁欒繖涓笘鐣岀暀涓嬩粈涔堬紵', '鏈潵灞曟湜'),
+    const _QuestionItem('鏄庡勾浠婂ぉ锛屼綘甯屾湜鑷繁鏈変粈涔堜笉鍚岋紵', '鏈潵灞曟湜'),
+    const _QuestionItem('浣犳渶澶х殑姊︽兂杩樺湪鍚楋紵瀹冩槸鍚︽敼鍙樹簡锛?, '鏈潵灞曟湜'),
+    const _QuestionItem('濡傛灉鍙互閫夋嫨鍦ㄤ换浣曞湴鏂圭敓娲伙紝浣犱細閫夊摢閲岋紵', '鏈潵灞曟湜'),
+    const _QuestionItem('浣犲笇鏈涜嚜宸辩殑澧撳織閾笂鍐欎粈涔堬紵', '鏈潵灞曟湜'),
 
-    // --- 过往回顾 (10) ---
-    const _QuestionItem('童年最温暖的记忆是什么？', '过往回顾'),
-    const _QuestionItem('有没有一件事让你至今后悔？', '过往回顾'),
-    const _QuestionItem('你人生中的转折点是什么？', '过往回顾'),
-    const _QuestionItem('上一次哭是因为什么？', '过往回顾'),
-    const _QuestionItem('你做过最勇敢的一件事是什么？', '过往回顾'),
-    const _QuestionItem('有没有一个决定改变了你的人生？', '过往回顾'),
-    const _QuestionItem('你最大的失败教会了你什么？', '过往回顾'),
-    const _QuestionItem('如果有人给你一笔巨款，你会用它做什么？', '过往回顾'),
-    const _QuestionItem('你人生中最难忘的一次旅行是？', '过往回顾'),
-    const _QuestionItem('如果可以重新活一天，你会选哪一天？', '过往回顾'),
+    // --- 杩囧線鍥為【 (10) ---
+    const _QuestionItem('绔ュ勾鏈€娓╂殩鐨勮蹇嗘槸浠€涔堬紵', '杩囧線鍥為【'),
+    const _QuestionItem('鏈夋病鏈変竴浠朵簨璁╀綘鑷充粖鍚庢倲锛?, '杩囧線鍥為【'),
+    const _QuestionItem('浣犱汉鐢熶腑鐨勮浆鎶樼偣鏄粈涔堬紵', '杩囧線鍥為【'),
+    const _QuestionItem('涓婁竴娆″摥鏄洜涓轰粈涔堬紵', '杩囧線鍥為【'),
+    const _QuestionItem('浣犲仛杩囨渶鍕囨暍鐨勪竴浠朵簨鏄粈涔堬紵', '杩囧線鍥為【'),
+    const _QuestionItem('鏈夋病鏈変竴涓喅瀹氭敼鍙樹簡浣犵殑浜虹敓锛?, '杩囧線鍥為【'),
+    const _QuestionItem('浣犳渶澶х殑澶辫触鏁欎細浜嗕綘浠€涔堬紵', '杩囧線鍥為【'),
+    const _QuestionItem('濡傛灉鏈変汉缁欎綘涓€绗斿法娆撅紝浣犱細鐢ㄥ畠鍋氫粈涔堬紵', '杩囧線鍥為【'),
+    const _QuestionItem('浣犱汉鐢熶腑鏈€闅惧繕鐨勪竴娆℃梾琛屾槸锛?, '杩囧線鍥為【'),
+    const _QuestionItem('濡傛灉鍙互閲嶆柊娲讳竴澶╋紝浣犱細閫夊摢涓€澶╋紵', '杩囧線鍥為【'),
 
-    // --- 假设想象 (10) ---
-    const _QuestionItem('如果明天是世界末日，你会如何度过最后一天？', '假设想象'),
-    const _QuestionItem('如果你可以隐身一天，你会做什么？', '假设想象'),
-    const _QuestionItem('如果你能和任何历史人物对话，你想和谁聊什么？', '假设想象'),
-    const _QuestionItem('如果你的生活是一部电影，它的名字是什么？', '假设想象'),
-    const _QuestionItem('如果你变成了动物，你觉得自己会是什么？', '假设想象'),
-    const _QuestionItem('如果能发明一样东西，你会发明什么？', '假设想象'),
-    const _QuestionItem('如果你有一台时光机，你会回到过去还是去往未来？', '假设想象'),
-    const _QuestionItem('如果幸福可以充值，你愿意用什么来交换？', '假设想象'),
-    const _QuestionItem('如果你只能保留一个记忆，你会保留什么？', '假设想象'),
-    const _QuestionItem('如果一个陌生人可以了解你的一件事，你希望是什么？', '假设想象'),
+    // --- 鍋囪鎯宠薄 (10) ---
+    const _QuestionItem('濡傛灉鏄庡ぉ鏄笘鐣屾湯鏃ワ紝浣犱細濡備綍搴﹁繃鏈€鍚庝竴澶╋紵', '鍋囪鎯宠薄'),
+    const _QuestionItem('濡傛灉浣犲彲浠ラ殣韬竴澶╋紝浣犱細鍋氫粈涔堬紵', '鍋囪鎯宠薄'),
+    const _QuestionItem('濡傛灉浣犺兘鍜屼换浣曞巻鍙蹭汉鐗╁璇濓紝浣犳兂鍜岃皝鑱婁粈涔堬紵', '鍋囪鎯宠薄'),
+    const _QuestionItem('濡傛灉浣犵殑鐢熸椿鏄竴閮ㄧ數褰憋紝瀹冪殑鍚嶅瓧鏄粈涔堬紵', '鍋囪鎯宠薄'),
+    const _QuestionItem('濡傛灉浣犲彉鎴愪簡鍔ㄧ墿锛屼綘瑙夊緱鑷繁浼氭槸浠€涔堬紵', '鍋囪鎯宠薄'),
+    const _QuestionItem('濡傛灉鑳藉彂鏄庝竴鏍蜂笢瑗匡紝浣犱細鍙戞槑浠€涔堬紵', '鍋囪鎯宠薄'),
+    const _QuestionItem('濡傛灉浣犳湁涓€鍙版椂鍏夋満锛屼綘浼氬洖鍒拌繃鍘昏繕鏄幓寰€鏈潵锛?, '鍋囪鎯宠薄'),
+    const _QuestionItem('濡傛灉骞哥鍙互鍏呭€硷紝浣犳効鎰忕敤浠€涔堟潵浜ゆ崲锛?, '鍋囪鎯宠薄'),
+    const _QuestionItem('濡傛灉浣犲彧鑳戒繚鐣欎竴涓蹇嗭紝浣犱細淇濈暀浠€涔堬紵', '鍋囪鎯宠薄'),
+    const _QuestionItem('濡傛灉涓€涓檶鐢熶汉鍙互浜嗚В浣犵殑涓€浠朵簨锛屼綘甯屾湜鏄粈涔堬紵', '鍋囪鎯宠薄'),
   ];
 
-  // 金句库（回答后随机展示）
+  // 閲戝彞搴擄紙鍥炵瓟鍚庨殢鏈哄睍绀猴級
   static final List<String> _quotes = [
-    '认识自己，是终生浪漫的开始。—— 王尔德',
-    '生命中最难的不是没有人懂你，而是你不懂自己。',
-    '答案不在别处，就在你诚实地面对自己的那一刻。',
-    '每一次深刻的自我对话，都是一次灵魂的洗礼。',
-    '你比你想象的更勇敢、更坚韧、更值得被爱。',
-    '人生的意义不是被发现的，而是被创造的。',
-    '接纳不完美的自己，才是真正的强大。',
-    '你所经历的一切，都在塑造独一无二的你。',
-    '活着本身就是最大的奇迹。',
-    '今天所做的一切，都是对明天的自己说"我值得"。',
-    '不必成为更好的自己，只需更好地成为自己。',
-    '世界是一面镜子，你对它微笑，它就对你微笑。',
-    '温柔地对待自己，就像对待最好的朋友。',
-    '每一个当下，都是你余生中最年轻的一刻。',
-    '所有的迷茫，都是因为你在认真地活着。',
+    '璁よ瘑鑷繁锛屾槸缁堢敓娴极鐨勫紑濮嬨€傗€斺€?鐜嬪皵寰?,
+    '鐢熷懡涓渶闅剧殑涓嶆槸娌℃湁浜烘噦浣狅紝鑰屾槸浣犱笉鎳傝嚜宸便€?,
+    '绛旀涓嶅湪鍒锛屽氨鍦ㄤ綘璇氬疄鍦伴潰瀵硅嚜宸辩殑閭ｄ竴鍒汇€?,
+    '姣忎竴娆℃繁鍒荤殑鑷垜瀵硅瘽锛岄兘鏄竴娆＄伒榄傜殑娲楃ぜ銆?,
+    '浣犳瘮浣犳兂璞＄殑鏇村媷鏁€佹洿鍧氶煣銆佹洿鍊煎緱琚埍銆?,
+    '浜虹敓鐨勬剰涔変笉鏄鍙戠幇鐨勶紝鑰屾槸琚垱閫犵殑銆?,
+    '鎺ョ撼涓嶅畬缇庣殑鑷繁锛屾墠鏄湡姝ｇ殑寮哄ぇ銆?,
+    '浣犳墍缁忓巻鐨勪竴鍒囷紝閮藉湪濉戦€犵嫭涓€鏃犱簩鐨勪綘銆?,
+    '娲荤潃鏈韩灏辨槸鏈€澶х殑濂囪抗銆?,
+    '浠婂ぉ鎵€鍋氱殑涓€鍒囷紝閮芥槸瀵规槑澶╃殑鑷繁璇?鎴戝€煎緱"銆?,
+    '涓嶅繀鎴愪负鏇村ソ鐨勮嚜宸憋紝鍙渶鏇村ソ鍦版垚涓鸿嚜宸便€?,
+    '涓栫晫鏄竴闈㈤暅瀛愶紝浣犲瀹冨井绗戯紝瀹冨氨瀵逛綘寰瑧銆?,
+    '娓╂煍鍦板寰呰嚜宸憋紝灏卞儚瀵瑰緟鏈€濂界殑鏈嬪弸銆?,
+    '姣忎竴涓綋涓嬶紝閮芥槸浣犱綑鐢熶腑鏈€骞磋交鐨勪竴鍒汇€?,
+    '鎵€鏈夌殑杩疯尗锛岄兘鏄洜涓轰綘鍦ㄨ鐪熷湴娲荤潃銆?,
   ];
 
   @override
@@ -146,24 +146,24 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
     super.dispose();
   }
 
-  /// 基于日期生成今日问题
+  /// 鍩轰簬鏃ユ湡鐢熸垚浠婃棩闂
   void _loadTodayQuestion() {
     final now = DateTime.now();
-    // 使用年月日组合作为种子，保证同一天问题相同
+    // 浣跨敤骞存湀鏃ョ粍鍚堜綔涓虹瀛愶紝淇濊瘉鍚屼竴澶╅棶棰樼浉鍚?
     final seed = now.year * 10000 + now.month * 100 + now.day;
     final random = Random(seed);
     final index = random.nextInt(_questionBank.length);
     _todayQuestion = _questionBank[index];
     _goldenQuote = _quotes[random.nextInt(_quotes.length)];
 
-    // 启动打字机动画
+    // 鍚姩鎵撳瓧鏈哄姩鐢?
     _startTypewriter();
   }
 
-  /// 打字机动画
+  /// 鎵撳瓧鏈哄姩鐢?
   void _startTypewriter() {
     final question = _todayQuestion!.question;
-    const interval = 60; // 每个字 60ms
+    const interval = 60; // 姣忎釜瀛?60ms
     _typewriterController.duration = Duration(
       milliseconds: question.length * interval,
     );
@@ -182,13 +182,13 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
     });
   }
 
-  /// 加载连续回答天数
+  /// 鍔犺浇杩炵画鍥炵瓟澶╂暟
   Future<void> _loadConsecutiveDays() async {
-    // 简化：从数据库查询 tag 为 "每日一问" 的记录
+    // 绠€鍖栵細浠庢暟鎹簱鏌ヨ tag 涓?"姣忔棩涓€闂? 鐨勮褰?
     final provider = context.read<EmotionProvider>();
     final records = await provider.loadAllRecords();
     final questionRecords = records
-        .where((r) => r.tag == '每日一问')
+        .where((r) => r.tag == '姣忔棩涓€闂?)
         .map((r) => DateTime(r.date.year, r.date.month, r.date.day))
         .toSet()
         .toList()
@@ -211,12 +211,12 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
     if (mounted) setState(() => _consecutiveDays = consecutive);
   }
 
-  /// 保存回答
+  /// 淇濆瓨鍥炵瓟
   Future<void> _saveAnswer() async {
     final answer = _answerController.text.trim();
     if (answer.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('写下你的思考吧~'), backgroundColor: MirrorColors.warm),
+        const SnackBar(content: Text('鍐欎笅浣犵殑鎬濊€冨惂~'), backgroundColor: MirrorColors.warm),
       );
       return;
     }
@@ -225,10 +225,10 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
 
     final record = EmotionRecord(
       date: DateTime.now(),
-      emotion: '一般',
-      inputText: '问题：${_todayQuestion!.question}\n回答：$answer',
+      emotion: '涓€鑸?,
+      inputText: '闂锛?{_todayQuestion!.question}\n鍥炵瓟锛?answer',
       score: 7,
-      tag: '每日一问',
+      tag: '姣忔棩涓€闂?,
     );
 
     final provider = context.read<EmotionProvider>();
@@ -240,19 +240,19 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
       // _isSaved logic removed
     });
 
-    // 翻转卡片显示金句
+    // 缈昏浆鍗＄墖鏄剧ず閲戝彞
     _flipController.forward();
     _fadeController.forward();
     setState(() => _isFlipped = true);
     _loadConsecutiveDays();
   }
 
-  /// 分享今日问题
+  /// 鍒嗕韩浠婃棩闂
   void _shareQuestion() {
-    // 通过系统分享
+    // 閫氳繃绯荤粺鍒嗕韩
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('长按复制问题与好友分享吧'),
+        content: Text('闀挎寜澶嶅埗闂涓庡ソ鍙嬪垎浜惂'),
         backgroundColor: MirrorColors.secondary,
       ),
     );
@@ -260,32 +260,32 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
 
   String _getCategoryIcon(String category) {
     switch (category) {
-      case '自我认知':
-        return '🪞';
-      case '人际关系':
-        return '💞';
-      case '未来展望':
-        return '🔭';
-      case '过往回顾':
-        return '📜';
-      case '假设想象':
-        return '✨';
+      case '鑷垜璁ょ煡':
+        return '馃獮';
+      case '浜洪檯鍏崇郴':
+        return '馃挒';
+      case '鏈潵灞曟湜':
+        return '馃敪';
+      case '杩囧線鍥為【':
+        return '馃摐';
+      case '鍋囪鎯宠薄':
+        return '鉁?;
       default:
-        return '💭';
+        return '馃挱';
     }
   }
 
   Color _getCategoryColor(String category) {
     switch (category) {
-      case '自我认知':
+      case '鑷垜璁ょ煡':
         return MirrorColors.primary;
-      case '人际关系':
+      case '浜洪檯鍏崇郴':
         return MirrorColors.accent;
-      case '未来展望':
+      case '鏈潵灞曟湜':
         return MirrorColors.secondary;
-      case '过往回顾':
+      case '杩囧線鍥為【':
         return MirrorColors.warm;
-      case '假设想象':
+      case '鍋囪鎯宠薄':
         return const Color(0xFF9B7ED8);
       default:
         return MirrorColors.primary;
@@ -307,13 +307,13 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
     return Scaffold(
       backgroundColor: isDark ? MirrorColors.darkBackground : MirrorColors.background,
       appBar: AppBar(
-        title: const Text('每日一问'),
+        title: const Text('姣忔棩涓€闂?),
         actions: [
           if (!_isFlipped)
             IconButton(
               icon: const Icon(Icons.share_outlined),
               onPressed: _shareQuestion,
-              tooltip: '分享',
+              tooltip: '鍒嗕韩',
             ),
         ],
       ),
@@ -322,7 +322,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // 连续天数
+            // 杩炵画澶╂暟
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
@@ -343,9 +343,9 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Text('🔥', style: TextStyle(fontSize: 14)),
+                  const Text('馃敟', style: TextStyle(fontSize: 14)),
                   Text(
-                    '已连续回答 $_consecutiveDays 天',
+                    '宸茶繛缁洖绛?$_consecutiveDays 澶?,
                     style: TextStyle(
                       fontSize: 13,
                       color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
@@ -356,12 +356,12 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
             ),
             const SizedBox(height: 24),
 
-            // 问题卡片（可翻转）
+            // 闂鍗＄墖锛堝彲缈昏浆锛?
             _buildQuestionCard(isDark, question, categoryColor),
 
             const SizedBox(height: 24),
 
-            // 回答区域（只在翻转前显示）
+            // 鍥炵瓟鍖哄煙锛堝彧鍦ㄧ炕杞墠鏄剧ず锛?
             if (!_isFlipped) _buildAnswerSection(isDark),
             if (_isFlipped) _buildGoldenQuoteCard(isDark),
           ],
@@ -370,7 +370,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
     );
   }
 
-  /// 问题卡片（毛玻璃效果 + 翻转动画）
+  /// 闂鍗＄墖锛堟瘺鐜荤拑鏁堟灉 + 缈昏浆鍔ㄧ敾锛?
   Widget _buildQuestionCard(bool isDark, _QuestionItem question, Color categoryColor) {
     return GestureDetector(
       onTap: _isFlipped ? () {
@@ -400,7 +400,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
     );
   }
 
-  /// 卡片正面：问题
+  /// 鍗＄墖姝ｉ潰锛氶棶棰?
   Widget _buildQuestionFront(bool isDark, _QuestionItem question, Color categoryColor) {
     return Container(
       width: double.infinity,
@@ -465,7 +465,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              '写下你的答案',
+              '鍐欎笅浣犵殑绛旀',
               style: TextStyle(
                 fontSize: 13,
                 color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
@@ -478,7 +478,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
     );
   }
 
-  /// 卡片背面：金句
+  /// 鍗＄墖鑳岄潰锛氶噾鍙?
   Widget _buildQuestionBack(bool isDark) {
     return FadeTransition(
       opacity: _fadeController,
@@ -488,7 +488,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              MirrorColors.accentLight.withValues(alpha: 0.3),
+              Color(0x80FBEAE3),
               MirrorColors.primaryLight.withValues(alpha: 0.15),
             ],
             begin: Alignment.topLeft,
@@ -498,7 +498,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
         ),
         child: Column(
           children: [
-            const Text('🌟', style: TextStyle(fontSize: 40)),
+            const Text('馃専', style: TextStyle(fontSize: 40)),
             const SizedBox(height: 20),
             Text(
               _goldenQuote,
@@ -513,7 +513,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
             ),
             const SizedBox(height: 20),
             Text(
-              '感谢你的真诚回答',
+              '鎰熻阿浣犵殑鐪熻瘹鍥炵瓟',
               style: TextStyle(
                 fontSize: 13,
                 color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
@@ -525,7 +525,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
     );
   }
 
-  /// 回答区域
+  /// 鍥炵瓟鍖哄煙
   Widget _buildAnswerSection(bool isDark) {
     return Card(
       child: Padding(
@@ -542,7 +542,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
                 color: isDark ? MirrorColors.darkTextPrimary : MirrorColors.textPrimary,
               ),
               decoration: const InputDecoration(
-                hintText: '写下你的思考...\n不必完美，真实就好',
+                hintText: '鍐欎笅浣犵殑鎬濊€?..\n涓嶅繀瀹岀編锛岀湡瀹炲氨濂?,
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.zero,
               ),
@@ -558,7 +558,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
-                    : const Text('保存回答'),
+                    : const Text('淇濆瓨鍥炵瓟'),
               ),
             ),
           ],
@@ -567,7 +567,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
     );
   }
 
-  /// 金句卡片
+  /// 閲戝彞鍗＄墖
   Widget _buildGoldenQuoteCard(bool isDark) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -577,10 +577,10 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
       ),
       child: Column(
         children: [
-          const Text('🎉', style: TextStyle(fontSize: 32)),
+          const Text('馃帀', style: TextStyle(fontSize: 32)),
           const SizedBox(height: 8),
           Text(
-            '今天的问题已回答',
+            '浠婂ぉ鐨勯棶棰樺凡鍥炵瓟',
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
@@ -589,7 +589,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
           ),
           const SizedBox(height: 4),
           Text(
-            '明天再来探索新的问题吧',
+            '鏄庡ぉ鍐嶆潵鎺㈢储鏂扮殑闂鍚?,
             style: TextStyle(
               fontSize: 13,
               color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
@@ -601,10 +601,11 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
   }
 }
 
-/// 问题数据类
+/// 闂鏁版嵁绫?
 class _QuestionItem {
   final String question;
   final String category;
 
   const _QuestionItem(this.question, this.category);
 }
+

@@ -79,7 +79,7 @@ class CardSwiper extends StatelessWidget {
                       card.subtitle,
                       style: TextStyle(
                         fontSize: 15,
-                        color: Colors.white.withValues(alpha: 0.9),
+                        color: Color(0xE6FFFFFF),
                         height: 1.5,
                       ),
                     ),
@@ -144,3 +144,4 @@ class CardSwiper extends StatelessWidget {
     }
   }
 }
+
