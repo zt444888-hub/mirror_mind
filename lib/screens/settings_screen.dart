@@ -135,6 +135,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         [XFile(file.path)],
         text: '心镜数据备份',
       );
+      // 记录备份时间
+      final now = DateTime.now();
+      await prefs.setString('last_backup', '${now.year}-${now.month.toString().padLeft(2,'0')}-${now.day.toString().padLeft(2,'0')} ${now.hour.toString().padLeft(2,'0')}:${now.minute.toString().padLeft(2,'0')}');
       // 提示用户备份到云盘
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
