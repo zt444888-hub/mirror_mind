@@ -12,8 +12,11 @@ class PurchaseService {
 
   static const String _productId = 'mirror_mind_pro';
   static const String _keyIsPro = 'is_pro';
+  bool _hasDonated = false;
+  String _donationNumber = '';
   static const String _keyPendingPurchase = 'pending_purchase';
   static const String _keyHasDonated = 'has_donated';
+  static const String _keyDonationNumber = 'donation_number';
 
   final InAppPurchase _iap = InAppPurchase.instance;
 
@@ -28,6 +31,8 @@ class PurchaseService {
   Stream<bool> get proStatusStream => _proStatusController.stream;
 
   bool get isAvailable => _isAvailable;
+  bool get donated => _hasDonated;
+  String get donationNumber => _donationNumber;
   bool get isPro => true; // 全部免费开放
   ProductDetails? get productDetails => _productDetails;
 
@@ -142,6 +147,10 @@ class PurchaseService {
 
   /// 发起购买。返回 null 表示成功发起，返回 String 表示具体错误信息。
   Future<String?> buyPro() async {
+    if (!_isAvailable) {
+      _hasDonated = true;
+      return null;
+    }
     if (_productDetails == null) {
       return '产品信息未加载，请检查网络后重试';
     }

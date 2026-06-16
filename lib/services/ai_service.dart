@@ -80,7 +80,6 @@ class AiService {
         }
       }
       // 给长文本更多权重
-      score += (sanitized.length / 20).floor();
       if (score > bestScore) {
         bestScore = score;
         bestEmotion = entry.key;
@@ -102,7 +101,7 @@ class AiService {
 
     return EmotionAnalysisResult(
       emotion: bestEmotion,
-      confidence: bestScore > 0 ? (bestScore / 20.0).clamp(0.3, 0.95) : 0.5,
+      confidence: bestScore > 0 ? (bestScore / 10.0).clamp(0.3, 0.95) : 0.5,
       response: responses[bestEmotion] ?? responses['一般']!,
     );
   }

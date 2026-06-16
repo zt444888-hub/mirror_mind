@@ -72,7 +72,6 @@ class AiChatService extends ChangeNotifier {
 
   Future<void> loadHistory() async {
     try {
-      print('[心镜] 正在调用云后端: $kCloudBaseUrl/api/chat');
       final prefs = await SharedPreferences.getInstance();
       final json = prefs.getString(_keyHistory);
       if (json != null && json.isNotEmpty) {
@@ -95,7 +94,6 @@ class AiChatService extends ChangeNotifier {
 
   Future<void> _saveHistory() async {
     try {
-      print('[心镜] 正在调用云后端: $kCloudBaseUrl/api/chat');
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_keyHistory, jsonEncode(_messages));
     } catch (_) {}
