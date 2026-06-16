@@ -15,8 +15,43 @@ class MeditationScreen extends StatefulWidget {
 class _MeditationScreenState extends State<MeditationScreen>
     with TickerProviderStateMixin {
   // 预设时长选项（秒）
+  bool _isPro = false;
   static const List<int> _durationOptions = [300, 600, 900, 1200, 1800]; // 5, 10, 15, 20, 30分钟
   
+  // Pro 专属模式列表
+  static List<_MeditationMode> get _proModes => [
+    const _MeditationMode(
+      title: '焦虑缓解',
+      description: '平复紧张情绪',
+      icon: Icons.wind_power,
+      color: Color(0xFF6BB3A5),
+      defaultDuration: 300,
+      phrases: ['找一个安静的地方，坐下或躺下', '将手放在腹部，感受呼吸的起伏', '吸气数秒，感受腹部像气球一样鼓起', '呼气数秒，慢慢释放所有的紧张', '当焦虑出现时，只是观察它，不评判', '想象焦虑像一片乌云，慢慢飘走', '重复：我此刻是安全的，一切都会好起来', '感受双脚与地面的连接，找回稳定感', '继续深呼吸，让平静充满内心', '当准备好时，慢慢睁开眼睛'],
+    ),
+    const _MeditationMode(
+      title: '压力释放',
+      description: '卸下身心负担',
+      icon: Icons.anchor,
+      color: Color(0xFF8FA8D0),
+      defaultDuration: 600,
+      phrases: ['以舒适的姿势坐下，闭上眼睛', '回忆今天或最近让你感到压力的事情', '承认这些压力的存在，不抗拒', '想象将压力写在一张纸上', '现在，把这张纸揉成一团', '想象将它扔进垃圾桶，彻底扔掉', '感受身体变得轻盈，压力正在离开', '深呼吸，吸入平静，呼出压力', '重复几次，直到感觉轻松一些', '感谢自己释放了这些负担'],
+    ),
+    const _MeditationMode(
+      title: '感恩冥想',
+      description: '培养感恩之心',
+      icon: Icons.favorite_outline,
+      color: Color(0xFFC49B8C),
+      defaultDuration: 600,
+      phrases: ['以舒适的姿势坐下', '回想今天值得感恩的三件事', '感受每一次呼吸带来的生命能量', '感谢生命中的每一个人和事', '把感恩的能量传递给身边的人', '温柔地结束这次冥想'],
+    ),
+  ];
+
+  /// 获取当前可用的冥想模式列表（根据 Pro 状态过滤）
+  static List<_MeditationMode> getModes(bool isPro) {
+    if (isPro) return _modes + _proModes;
+    return _modes;
+  }
+
   // 获取时长显示文字
   String _getDurationLabel(int seconds) {
     if (seconds < 60) return '$seconds 秒';
@@ -78,8 +113,6 @@ class _MeditationScreenState extends State<MeditationScreen>
         '安心地进入梦乡',
       ],
     ),
-    // Pro 功能 ↓
-    if (!PurchaseService().isPro) return const SizedBox.shrink();
     const _MeditationMode(
       title: '焦虑缓解',
       description: '平复紧张情绪',
@@ -279,6 +312,7 @@ class _MeditationScreenState extends State<MeditationScreen>
   @override
   void initState() {
     super.initState();
+    _isPro = PurchaseService().isPro;
     _progressController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
@@ -545,8 +579,8 @@ class _MeditationScreenState extends State<MeditationScreen>
             style: TextStyle(fontSize: 15, color: MirrorColors.textSecondary),
           ),
         ),
-        ...List.generate(_modes.length, (index) {
-          final mode = _modes[index];
+        ...List.generate(getModes(_isPro).length, (index) {
+          final mode = getModes(_isPro)[index];
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Card(
