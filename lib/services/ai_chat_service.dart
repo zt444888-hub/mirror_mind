@@ -17,6 +17,13 @@ class AiChatService extends ChangeNotifier {
   bool get isThinking => _isThinking;
   String? get lastError => _lastError;
 
+  /// 唤醒 Render 后端（防止冷启动延迟）
+  static Future<void> warmUp() async {
+    try {
+      await http.get(Uri.parse('$kCloudBaseUrl')).timeout(const Duration(seconds: 8));
+    } catch (_) {}
+  }
+
   Future<void> sendMessage(String text) async {
     _messages.add({'role': 'user', 'content': text});
     _isThinking = true;
@@ -48,7 +55,13 @@ class AiChatService extends ChangeNotifier {
     } catch (e) {
       print('[心镜] 云后端调用失败: \$e');
       _lastError = e.toString();
-      _messages.add({'role': 'assistant', 'content': '小镜暂时有点卡，稍后再试吧 🙏'});
+      if (e is http.ClientException || e.toString().contains('SocketException')) {
+        _messages.add({'role': 'assistant', 'content': '网络连接失败，请检查网络后重试 📶'});
+      } else if (e.toString().contains('TimeoutException')) {
+        _messages.add({'role': 'assistant', 'content': '连接超时，服务器暂时繁忙，请稍后再试 ⏳'});
+      } else {
+        _messages.add({'role': 'assistant', 'content': '小镜暂时有点卡，稍后再来吧 🙏'});
+      }
     }
 
     while (_messages.length > 40) _messages.removeAt(0);

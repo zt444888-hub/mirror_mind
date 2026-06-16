@@ -135,6 +135,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
         [XFile(file.path)],
         text: '心镜数据备份',
       );
+      // 提示用户备份到云盘
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('导出成功！建议将文件保存到 iCloud/百度网盘等云盘'),
+            backgroundColor: MirrorColors.success,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -169,6 +169,8 @@ class _RecordScreenState extends State<RecordScreen>
 
     final provider = context.read<EmotionProvider>();
     await provider.saveRecord(record);
+    // 保存后自动刷新成就条
+    await provider.loadStreak();
 
     if (!mounted) return;
     setState(() => _isSaving = false);

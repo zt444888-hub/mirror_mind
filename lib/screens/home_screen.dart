@@ -6,6 +6,7 @@ import 'record_screen.dart';
 import 'calendar_screen.dart';
 import 'toolbox_screen.dart';
 import 'ai_chat_screen.dart';
+import '../services/ai_chat_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,6 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
       provider.loadLatestRecord();
       provider.loadStreak();
       provider.loadWeekRecords();
+      // 预热 AI 后端
+      AiChatService.warmUp();
     });
   }
 
