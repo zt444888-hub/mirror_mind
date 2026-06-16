@@ -13,6 +13,7 @@ class PurchaseService {
   static const String _productId = 'mirror_mind_pro';
   static const String _keyIsPro = 'is_pro';
   static const String _keyPendingPurchase = 'pending_purchase';
+  static const String _keyHasDonated = 'has_donated';
 
   final InAppPurchase _iap = InAppPurchase.instance;
 
@@ -30,6 +31,14 @@ class PurchaseService {
   bool get isPro => true; // 全部免费开放
   ProductDetails? get productDetails => _productDetails;
 
+  static Future<bool> hasDonated() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_keyHasDonated) ?? false;
+  }
+  static Future<void> setDonated() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyHasDonated, true);
+  }
   static Future<bool> isProStatic() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_keyIsPro) ?? false;

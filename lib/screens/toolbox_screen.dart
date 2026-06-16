@@ -133,7 +133,65 @@ class ToolboxScreen extends StatelessWidget {
   }
 }
 
+
   Widget _buildDonateCard(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: PurchaseService.hasDonated(),
+      builder: (_, snap) {
+        if (snap.data == true) return _thankCard();
+        return _donateCard(context);
+      },
+    );
+  }
+
+  Widget _thankCard() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Container(width: 56,height: 56,decoration: BoxDecoration(gradient: const LinearGradient(colors: [MirrorColors.primaryLight,MirrorColors.primary],begin: Alignment.topLeft,end: Alignment.bottomRight),borderRadius: BorderRadius.circular(16)),
+              child: const Icon(Icons.favorite,color: Colors.white,size: 28)),
+            const SizedBox(height: 12),
+            const Text('"Dreams are the seedlings of realities."',textAlign: TextAlign.center,style: TextStyle(fontSize: 14,fontStyle: FontStyle.italic,height: 1.5,color: MirrorColors.primaryDark)),
+            const SizedBox(height: 4),
+            const Text('梦想是现实的萌芽',textAlign: TextAlign.center,style: TextStyle(fontSize: 14,height: 1.5,color: MirrorColors.primaryDark)),
+            const SizedBox(height: 12),
+            Container(padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 3),decoration: BoxDecoration(color: MirrorColors.warm.withValues(alpha: 0.2),borderRadius: BorderRadius.circular(10)),
+              child: const Text('感谢您的支持',style: TextStyle(fontSize: 11,color: MirrorColors.accentDark))),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _donateCard(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: InkWell(
+        onTap: () => Navigator.pushNamed(context, '/pro'),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(width: 48,height: 48,decoration: BoxDecoration(gradient: const LinearGradient(colors: [MirrorColors.primaryLight,MirrorColors.primary],begin: Alignment.topLeft,end: Alignment.bottomRight),borderRadius: BorderRadius.circular(14)),
+                child: const Icon(Icons.favorite,color: Colors.white,size: 24)),
+              const SizedBox(width: 12),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+                const Text('打赏 ¥68',style: TextStyle(fontSize: 16,fontWeight: FontWeight.w700,color: MirrorColors.primaryDark)),
+                const SizedBox(height: 2),
+                const Text('成为终身免费会员 · 支持心镜发展',style: TextStyle(fontSize: 12,color: MirrorColors.textSecondary)),
+              ])),
+              Container(width: 28,height: 28,decoration: BoxDecoration(color: MirrorColors.primaryLight.withValues(alpha: 0.3),borderRadius: BorderRadius.circular(10)),
+                child: const Icon(Icons.chevron_right,color: MirrorColors.primary,size: 18)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
     return FutureBuilder<bool>(
       future: PurchaseService.hasDonated(),
       builder: (context, snapshot) {
