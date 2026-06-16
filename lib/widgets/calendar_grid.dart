@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
+import '../constants/festivals.dart';
 
 class CalendarGrid extends StatelessWidget {
   final int year;
@@ -14,6 +15,17 @@ class CalendarGrid extends StatelessWidget {
     required this.dayColors,
     this.onDayTapped,
   });
+
+  /// 获取某天的节日名称（取第一个）
+  String? _festivalName(int day) {
+    final festivals = Festival.getByDate(month, day);
+    if (festivals.isEmpty) return null;
+    // 优先显示中国传统节日
+    final chinese = festivals.where((f) => f.type == 'chinese').toList();
+    if (chinese.isNotEmpty) return chinese.first.emoji != null ? '${chinese.first.emoji} ${chinese.first.name}' : chinese.first.name;
+    final first = festivals.first;
+    return first.emoji != null ? '${first.emoji} ${first.name}' : first.name;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +68,7 @@ class CalendarGrid extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () => onDayTapped?.call(day),
                   child: Container(
-                    height: 40,
+                    height: 52,
                     margin: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       color: isToday
@@ -82,7 +94,13 @@ class CalendarGrid extends StatelessWidget {
                                     : MirrorColors.textPrimary,
                           ),
                         ),
-                        if (color != null) ...[
+                        if (_festivalName(day) != null)
+                          Text(
+                            _festivalName(day)!,
+                            style: const TextStyle(fontSize: 7, color: MirrorColors.accentDark, height: 1.0),
+                            maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
+                          )
+                        else if (color != null) ...[
                           const SizedBox(height: 3),
                           Container(
                             width: 8,
