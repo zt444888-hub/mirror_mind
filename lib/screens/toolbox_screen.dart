@@ -134,6 +134,86 @@ class ToolboxScreen extends StatelessWidget {
 }
 
   Widget _buildDonateCard(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: PurchaseService.hasDonated(),
+      builder: (context, snapshot) {
+        final donated = snapshot.data ?? false;
+        if (donated) return _buildThankYouCard();
+        return _buildDonatePrompt(context);
+      },
+    );
+  }
+
+  Widget _buildThankYouCard() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Container(
+              width: 64, height: 64,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(colors: [MirrorColors.primaryLight, MirrorColors.primary], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(Icons.favorite, color: Colors.white, size: 32),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              '"Dreams are the seedlings of realities.\n\u68a6\u60f3\u662f\u73b0\u5b9e\u7684\u8404\u82bd"',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                height: 1.6,
+                fontStyle: FontStyle.italic,
+                color: MirrorColors.primaryDark.withValues(alpha: 0.9),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              decoration: BoxDecoration(
+                color: MirrorColors.warm.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Text("\u611f\u8c22\u60a8\u7684\u652f\u6301", style: TextStyle(fontSize: 12, color: MirrorColors.accentDark)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDonatePrompt(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: InkWell(
+        onTap: () => Navigator.pushNamed(context, '/pro'),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(width: 48, height: 48,
+                decoration: BoxDecoration(gradient: const LinearGradient(colors: [MirrorColors.primaryLight, MirrorColors.primary], begin: Alignment.topLeft, end: Alignment.bottomRight), borderRadius: BorderRadius.circular(14)),
+                child: const Icon(Icons.favorite, color: Colors.white, size: 24)),
+              const SizedBox(width: 12),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Text("打赏 \u00a568", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: MirrorColors.primaryDark)),
+                const SizedBox(height: 2),
+                const Text("成为终身免费会员 \u00b7 支持心镜发展", style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary)),
+              ])),
+              Container(width: 28, height: 28,
+                decoration: BoxDecoration(color: MirrorColors.primaryLight.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(10)),
+                child: const Icon(Icons.chevron_right, color: MirrorColors.primary, size: 18)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: InkWell(
