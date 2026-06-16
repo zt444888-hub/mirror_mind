@@ -20,11 +20,11 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _pages = const [
     RecordScreen(),
     CalendarScreen(),
-    ToolboxScreen(),
     AiChatScreen(),
+    ToolboxScreen(),
   ];
 
-  final List<String> _titles = const ['心镜', '情绪日历', '自愈工具箱', '与小镜对话'];
+  final List<String> _titles = const ['心镜', '情绪日历', '与小镜对话', '自愈工具箱'];
 
   @override
   void initState() {
@@ -51,9 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          // 成就条
-          _buildAchievementBar(context),
-          // 主内容
+          if (_currentIndex == 0) _buildAchievementBar(context),
           Expanded(
             child: IndexedStack(
               index: _currentIndex,
@@ -90,12 +88,12 @@ class _HomeScreenState extends State<HomeScreen> {
             BottomNavigationBarItem(
               icon: Icon(Icons.self_improvement_outlined),
               activeIcon: Icon(Icons.self_improvement),
-              label: '工具箱',
+              label: '小镜',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.chat_bubble_outline_rounded),
-              activeIcon: Icon(Icons.chat_bubble_rounded),
-              label: '小镜',
+              icon: Icon(Icons.self_improvement_outlined),
+              activeIcon: Icon(Icons.self_improvement),
+              label: '工具箱',
             ),
           ],
           selectedItemColor: MirrorColors.primaryDark,

@@ -186,68 +186,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          // --- API 配置 ---
-          _buildSectionTitle('AI 配置'),
+          // --- AI 配置（自动连接云端，无需手动配置） ---
+          _buildSectionTitle('AI 服务'),
           const SizedBox(height: 8),
-          // API Key 安全提示
           Container(
-            padding: const EdgeInsets.all(14),
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: isDark ? Colors.amber.shade900.withValues(alpha: 0.15) : Colors.amber.shade50,
+              color: MirrorColors.primaryLight.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.amber.shade200, width: 1),
             ),
             child: Row(
               children: [
-                Icon(Icons.warning_amber, size: 20, color: Colors.amber.shade800),
-                const SizedBox(width: 10),
+                Container(
+                  width: 40, height: 40,
+                  decoration: BoxDecoration(
+                    color: MirrorColors.primary.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.cloud_done, color: MirrorColors.primary, size: 22),
+                ),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    '安全提示：建议使用临时 API Key，不要使用生产环境 Key。当前 Key 以明文存储在本地。',
-                    style: TextStyle(fontSize: 12, color: Colors.amber.shade800, height: 1.5),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('AI 服务已就绪', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 2),
+                      const Text('心镜已连接到云端 AI，无需配置可直接使用', style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary)),
+                    ],
                   ),
                 ),
               ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  _buildTextField(
-                    controller: _baseUrlController,
-                    label: 'API Base URL',
-                    hint: 'https://api.openai.com/v1',
-                  ),
-                  const SizedBox(height: 16),
-                  _buildTextField(
-                    controller: _apiKeyController,
-                    label: 'API Key',
-                    hint: 'sk-...',
-                    obscure: _obscureApiKey,
-                    suffix: IconButton(
-                      icon: Icon(_obscureApiKey ? Icons.visibility_off : Icons.visibility, size: 20),
-                      onPressed: () => setState(() => _obscureApiKey = !_obscureApiKey),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildTextField(
-                    controller: _modelController,
-                    label: '模型名称',
-                    hint: 'gpt-4o-mini',
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () { _saveSettings(); },
-                      child: const Text('保存设置'),
-                    ),
-                  ),
-                ],
-              ),
             ),
           ),
           const SizedBox(height: 24),
