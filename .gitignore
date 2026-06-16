@@ -46,3 +46,7 @@ app.*.map.json
 *.py
 
 backend/node_modules/
+
+# Build outputs
+android/build/
+build/
