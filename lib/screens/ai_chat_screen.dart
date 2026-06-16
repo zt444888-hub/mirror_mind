@@ -20,6 +20,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
   @override
   void initState() { super.initState(); _cs = AiChatService(); _setup(); }
   Future<void> _setup() async {
+    _cs.addListener(() { if (mounted) setState(() {}); });
     final s = context.read<SettingsProvider>();
     _cs.syncConfig(baseUrl: s.baseUrl, apiKey: s.apiKey, model: s.model, isPro: PurchaseService().isPro);
     await _cs.loadHistory(); 

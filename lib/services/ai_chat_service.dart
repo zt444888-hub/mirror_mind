@@ -4,6 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+
+/// 心镜云后端地址
+/// 部署 Zeabur 后替换为你的域名
+/// 例如: https://xxx.zeabur.app
+const String kCloudBaseUrl = 'http://localhost:3000';
+
 class AiChatService extends ChangeNotifier {
   String? _baseUrl;
   String? _apiKey;
@@ -31,8 +37,18 @@ class AiChatService extends ChangeNotifier {
     _isThinking = true; _lastError = null; notifyListeners();
     try {
       String response;
-      if (_isAiCloud) { response = _offlineReply(text); }
-      else { response = await _callApi(text); }
+      // 优先走云后端
+      try {
+        response = await _callCloudApi(text);
+      } catch (e) {
+        if (_apiKey != null && _apiKey!.isNotEmpty) {
+          try { response = await _callApi(text); }
+          catch (_) { response = _offlineReply(text); }
+        } else {
+          await Future.delayed(const Duration(milliseconds: 600));
+          response = _offlineReply(text);
+        }
+      }
       _messages.add({'role': 'assistant', 'content': response});
       if (_messages.length > 40) _messages.removeRange(0, _messages.length - 40);
       await _saveHistory();
@@ -51,6 +67,33 @@ class AiChatService extends ChangeNotifier {
 
   Future<void> clearHistory() async {
     _messages.clear(); final prefs = await SharedPreferences.getInstance(); await prefs.remove(_keyHistory); notifyListeners();
+  }
+
+  /// 调用云后端（走你的服务器，用户零配置）
+  Future<String> _callCloudApi(String text) async {
+    final url = '$kCloudBaseUrl/api/chat';
+    final msgs = _messages.take(20).map((m) => ({
+      'role': m['role'],
+      'content': m['content'],
+    })).toList();
+
+    final resp = await http
+        .post(
+          Uri.parse(url),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'messages': msgs}),
+        )
+        .timeout(const Duration(seconds: 15));
+
+    if (resp.statusCode == 429) {
+      return '今天的免费额度用完啦，明天再来吧~ 🌸';
+    }
+    if (resp.statusCode != 200) {
+      throw Exception('后端错误: ${resp.statusCode}');
+    }
+
+    final body = jsonDecode(resp.body);
+    return body['reply'] as String? ?? '小镜暂时无法回应~';
   }
 
   Future<String> _callApi(String text) async {

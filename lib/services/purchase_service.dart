@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// 开发调试开关：设为 true 解锁所有付费功能
+const bool _debugUnlockAll = true;
+
 class PurchaseService {
   static final PurchaseService _instance = PurchaseService._();
   factory PurchaseService() => _instance;
@@ -25,7 +28,7 @@ class PurchaseService {
   Stream<bool> get proStatusStream => _proStatusController.stream;
 
   bool get isAvailable => _isAvailable;
-  bool get isPro => _isPro;
+  bool get isPro => _debugUnlockAll || _isPro;
   ProductDetails? get productDetails => _productDetails;
 
   static Future<bool> isProStatic() async {

@@ -5,6 +5,7 @@ import '../constants/colors.dart';
 import 'record_screen.dart';
 import 'calendar_screen.dart';
 import 'toolbox_screen.dart';
+import 'ai_chat_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,9 +21,10 @@ class _HomeScreenState extends State<HomeScreen> {
     RecordScreen(),
     CalendarScreen(),
     ToolboxScreen(),
+    AiChatScreen(),
   ];
 
-  final List<String> _titles = const ['心镜', '情绪日历', '自愈工具箱'];
+  final List<String> _titles = const ['心镜', '情绪日历', '自愈工具箱', '与小镜对话'];
 
   @override
   void initState() {
@@ -90,7 +92,15 @@ class _HomeScreenState extends State<HomeScreen> {
               activeIcon: Icon(Icons.self_improvement),
               label: '工具箱',
             ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat_bubble_outline_rounded),
+              activeIcon: Icon(Icons.chat_bubble_rounded),
+              label: '小镜',
+            ),
           ],
+          selectedItemColor: MirrorColors.primaryDark,
+          unselectedItemColor: MirrorColors.textSecondary,
+          type: BottomNavigationBarType.fixed,
         ),
       ),
     );
