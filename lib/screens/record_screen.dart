@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/emotion_provider.dart';
 import '../providers/settings_provider.dart';
@@ -26,7 +26,7 @@ class _RecordScreenState extends State<RecordScreen>
   final ScrollController _scrollController = ScrollController();
   late TabController _tabController;
 
-  String _selectedEmotion = '涓€鑸?;
+  String _selectedEmotion = '一般';
   int _selectedScore = 5;
   String? _selectedTag;
   String? _aiResponse;
@@ -74,7 +74,7 @@ class _RecordScreenState extends State<RecordScreen>
         : _diaryContentController.text.trim();
     if (text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('璇峰厛杈撳叆浠婂ぉ鐨勫績鎯?), backgroundColor: MirrorColors.warm),
+        const SnackBar(content: Text('请先输入今天的心情'), backgroundColor: MirrorColors.warm),
       );
       return;
     }
@@ -145,13 +145,13 @@ class _RecordScreenState extends State<RecordScreen>
     final diaryContent = _diaryContentController.text.trim();
     final text = isDiaryMode
         ? (diaryTitle.isNotEmpty
-            ? '鏍囬锛?diaryTitle\n鍐呭锛?diaryContent'
-            : '鍐呭锛?diaryContent')
+            ? '标题：$diaryTitle\n内容：$diaryContent'
+            : '内容：$diaryContent')
         : _textController.text.trim();
 
     if (text.isEmpty || (isDiaryMode && diaryContent.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('璇峰厛璁板綍浠婂ぉ鐨勫績鎯?), backgroundColor: MirrorColors.warm),
+        const SnackBar(content: Text('请先记录今天的心情'), backgroundColor: MirrorColors.warm),
       );
       return;
     }
@@ -165,12 +165,12 @@ class _RecordScreenState extends State<RecordScreen>
       aiResponse: _aiResponse,
       confidence: _aiConfidence,
       score: _selectedScore,
-      tag: isDiaryMode ? '娣卞害鏃ヨ' : _selectedTag,
+      tag: isDiaryMode ? '深度日记' : _selectedTag,
     );
 
     final provider = context.read<EmotionProvider>();
     await provider.saveRecord(record);
-    // 淇濆瓨鍚庤嚜鍔ㄥ埛鏂版垚灏辨潯
+    // 保存后自动刷新成就条
     await provider.loadStreak();
 
     if (!mounted) return;
@@ -209,10 +209,10 @@ class _RecordScreenState extends State<RecordScreen>
               ),
             ),
             const SizedBox(height: 16),
-            const Text('璁板綍宸蹭繚瀛?, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            const Text('记录已保存', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Text(
-              '浠婂ぉ鐨勬儏缁娓╂煍鍦版敹钘忎簡',
+              '今天的情绪被温柔地收藏了',
               style: TextStyle(color: Theme.of(ctx).brightness == Brightness.dark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary),
             ),
           ],
@@ -226,7 +226,7 @@ class _RecordScreenState extends State<RecordScreen>
       _textController.clear();
       _diaryTitleController.clear();
       _diaryContentController.clear();
-      _selectedEmotion = '涓€鑸?;
+      _selectedEmotion = '一般';
       _selectedScore = 5;
       _selectedTag = null;
       _aiResponse = null;
@@ -245,7 +245,7 @@ class _RecordScreenState extends State<RecordScreen>
       onTap: () => FocusScope.of(context).unfocus(),
       child: Column(
         children: [
-          // 姣忔棩寮曞
+          // 每日引导
           if (_showPrompt)
             Container(
               width: double.infinity,
@@ -259,12 +259,12 @@ class _RecordScreenState extends State<RecordScreen>
                 children: [
                   Icon(Icons.auto_awesome, color: MirrorColors.primary, size: 18),
                   SizedBox(width: 8),
-                  Expanded(child: Text("浠婂ぉ蹇冩儏鎬庝箞鏍凤紵璁板綍涓€涓嬪惂 馃尭", style: TextStyle(fontSize: 13, color: MirrorColors.primaryDark))),
+                  Expanded(child: Text("今天心情怎么样？记录一下吧 🌸", style: TextStyle(fontSize: 13, color: MirrorColors.primaryDark))),
                 ],
               ),
             ),
           const SizedBox(height: 6),
-          // Tab 鍒囨崲鏍?
+          // Tab 切换栏
           Container(
             margin: const EdgeInsets.fromLTRB(20, 8, 20, 0),
             decoration: BoxDecoration(
@@ -283,13 +283,13 @@ class _RecordScreenState extends State<RecordScreen>
               labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               dividerColor: Colors.transparent,
               tabs: const [
-                Tab(text: '蹇€熻褰?),
-                Tab(text: '娣卞害鏃ヨ'),
+                Tab(text: '快速记录'),
+                Tab(text: '深度日记'),
               ],
               onTap: (_) => setState(() {}),
             ),
           ),
-          // 涓诲唴瀹?
+          // 主内容
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -304,7 +304,7 @@ class _RecordScreenState extends State<RecordScreen>
     );
   }
 
-  /// 蹇€熻褰曟ā寮?
+  /// 快速记录模式
   Widget _buildQuickRecord(bool isDark, bool isAnalyzing) {
     return SingleChildScrollView(
       controller: _scrollController,
@@ -331,14 +331,14 @@ class _RecordScreenState extends State<RecordScreen>
     );
   }
 
-  /// 娣卞害鏃ヨ妯″紡
+  /// 深度日记模式
   Widget _buildDeepDiary(bool isDark, bool isAnalyzing) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 娓╂殩鎻愮ず
+          // 温暖提示
           Container(
             padding: const EdgeInsets.all(16),
             margin: const EdgeInsets.only(bottom: 16),
@@ -346,7 +346,7 @@ class _RecordScreenState extends State<RecordScreen>
               gradient: LinearGradient(
                 colors: [
                   MirrorColors.warm.withValues(alpha: 0.15),
-                  MirrorColors.accentLight.withValues(alpha: 0.08),
+                  Color(0x14FBEAE3),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -354,12 +354,12 @@ class _RecordScreenState extends State<RecordScreen>
               borderRadius: BorderRadius.circular(14),
             ),
             child: const Text(
-              '鍐欑粰鑷繁鐨勪俊\n浠婂ぉ鍙戠敓浜嗕粈涔堜簨锛熸湁浠€涔堟兂瀵硅嚜宸辫鐨勶紵涓嶅繀瀹岀編锛岀湡瀹炲氨濂姐€?,
+              '写给自己的信\n今天发生了什么事？有什么想对自己说的？不必完美，真实就好。',
               style: TextStyle(fontSize: 14, height: 1.6, color: MirrorColors.textSecondary),
             ),
           ),
 
-          // 鏍囬杈撳叆
+          // 标题输入
           Card(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -371,7 +371,7 @@ class _RecordScreenState extends State<RecordScreen>
                   color: isDark ? MirrorColors.darkTextPrimary : MirrorColors.textPrimary,
                 ),
                 decoration: const InputDecoration(
-                  hintText: '缁欎粖澶╃殑鏃ヨ璧蜂釜鏍囬锛堝彲閫夛級',
+                  hintText: '给今天的日记起个标题（可选）',
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.zero,
                 ),
@@ -380,7 +380,7 @@ class _RecordScreenState extends State<RecordScreen>
           ),
           const SizedBox(height: 12),
 
-          // 闀挎枃杈撳叆
+          // 长文输入
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -394,7 +394,7 @@ class _RecordScreenState extends State<RecordScreen>
                   color: isDark ? MirrorColors.darkTextPrimary : MirrorColors.textPrimary,
                 ),
                 decoration: const InputDecoration(
-                  hintText: '浠婂ぉ鍙戠敓浜嗕粈涔堜簨锛熸湁浠€涔堟兂瀵硅嚜宸辫鐨勶紵',
+                  hintText: '今天发生了什么事？有什么想对自己说的？',
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.zero,
                 ),
@@ -403,15 +403,15 @@ class _RecordScreenState extends State<RecordScreen>
           ),
           const SizedBox(height: 16),
 
-          // AI 鍒嗘瀽缁撴灉
+          // AI 分析结果
           if (_isAnalyzed && _aiResponse != null) _buildAiResult(isDark),
           if (_isAnalyzed && _aiResponse != null) const SizedBox(height: 16),
 
-          // 鎯呯华閫夋嫨
+          // 情绪选择
           _buildEmotionSection(isDark),
           const SizedBox(height: 20),
 
-          // 鎿嶄綔鎸夐挳琛?
+          // 操作按钮行
           Row(
             children: [
               Expanded(
@@ -422,7 +422,7 @@ class _RecordScreenState extends State<RecordScreen>
                     icon: isAnalyzing
                         ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                         : const Icon(Icons.auto_awesome, size: 18),
-                    label: Text(isAnalyzing ? '鍒嗘瀽涓?..' : 'AI 鍒嗘瀽'),
+                    label: Text(isAnalyzing ? '分析中...' : 'AI 分析'),
                     style: TextButton.styleFrom(
                       backgroundColor: Color(0x80D4C5E2),
                       foregroundColor: MirrorColors.primaryDark,
@@ -439,13 +439,13 @@ class _RecordScreenState extends State<RecordScreen>
           ),
           const SizedBox(height: 20),
 
-          // 鏃ヨ鍒楄〃鍏ュ彛
+          // 日记列表入口
           SizedBox(
             height: 48,
             child: OutlinedButton.icon(
               onPressed: () => Navigator.pushNamed(context, '/diary-list'),
               icon: const Icon(Icons.menu_book, size: 18),
-              label: const Text('鎴戠殑鏃ヨ'),
+              label: const Text('我的日记'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: MirrorColors.warm,
                 side: BorderSide(color: MirrorColors.warm.withValues(alpha: 0.4)),
@@ -468,7 +468,7 @@ class _RecordScreenState extends State<RecordScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('鎯呯华璇勫垎', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                const Text('情绪评分', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
@@ -493,7 +493,7 @@ class _RecordScreenState extends State<RecordScreen>
     );
   }
 
-  /// 蹇€熻褰曡緭鍏ュ尯鍩?
+  /// 快速记录输入区域
   Widget _buildQuickInputSection(bool isDark, bool isAnalyzing) {
     return Card(
       child: Padding(
@@ -510,7 +510,7 @@ class _RecordScreenState extends State<RecordScreen>
                 color: isDark ? MirrorColors.darkTextPrimary : MirrorColors.textPrimary,
               ),
               decoration: const InputDecoration(
-                hintText: '浠婂ぉ蹇冩儏鎬庝箞鏍凤紵涓€鍙ヨ瘽灏卞ソ...',
+                hintText: '今天心情怎么样？一句话就好...',
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.zero,
               ),
@@ -543,7 +543,7 @@ class _RecordScreenState extends State<RecordScreen>
                     icon: isAnalyzing
                         ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                         : const Icon(Icons.auto_awesome, size: 18),
-                    label: Text(isAnalyzing ? '鍒嗘瀽涓?..' : 'AI 鍒嗘瀽'),
+                    label: Text(isAnalyzing ? '分析中...' : 'AI 分析'),
                     style: TextButton.styleFrom(
                       backgroundColor: Color(0x80D4C5E2),
                       foregroundColor: MirrorColors.primaryDark,
@@ -572,12 +572,12 @@ class _RecordScreenState extends State<RecordScreen>
               children: [
                 const Icon(Icons.auto_awesome, size: 16, color: MirrorColors.primaryDark),
                 const SizedBox(width: 6),
-                const Text('AI 鍒嗘瀽', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: MirrorColors.primaryDark)),
+                const Text('AI 分析', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: MirrorColors.primaryDark)),
                 const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: MirrorColors.primary.withValues(alpha: 0.2),
+                    color: Color(0x33B8A9C9),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -608,7 +608,7 @@ class _RecordScreenState extends State<RecordScreen>
       children: [
         const Padding(
           padding: EdgeInsets.only(left: 4, bottom: 12),
-          child: Text('閫夋嫨鎯呯华', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          child: Text('选择情绪', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
         ),
         EmotionPicker(
           selected: _selectedEmotion,
@@ -625,7 +625,7 @@ class _RecordScreenState extends State<RecordScreen>
       children: [
         const Padding(
           padding: EdgeInsets.only(left: 4, bottom: 12),
-          child: Text('鏍囩锛堝彲閫夛級', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          child: Text('标签（可选）', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
         ),
         SizedBox(
           height: 40,
@@ -666,7 +666,7 @@ class _RecordScreenState extends State<RecordScreen>
     );
   }
 
-  /// 鏈懆鎯呯华瓒嬪娍鍥?
+  /// 本周情绪趋势图
   Widget _buildWeeklyTrend() {
     return Consumer<EmotionProvider>(
       builder: (context, provider, _) {
@@ -686,10 +686,10 @@ class _RecordScreenState extends State<RecordScreen>
             children: [
               Row(
                 children: [
-                  const Text('馃搳', style: TextStyle(fontSize: 16)),
+                  const Text('📊', style: TextStyle(fontSize: 16)),
                   const SizedBox(width: 8),
                   Text(
-                    '鏈懆鎯呯华瓒嬪娍',
+                    '本周情绪趋势',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -723,9 +723,8 @@ class _RecordScreenState extends State<RecordScreen>
                 height: 20,
                 child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
               )
-            : const Text('淇濆瓨璁板綍'),
+            : const Text('保存记录'),
       ),
     );
   }
 }
-

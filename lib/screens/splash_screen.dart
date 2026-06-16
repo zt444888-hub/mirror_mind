@@ -1,4 +1,4 @@
-﻿import 'dart:math';
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 
@@ -16,21 +16,21 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _scaleAnim;
 
   final _quotes = [
-    '浠婂ぉ涔熸槸缇庡ソ鐨勪竴澶?馃尭',
-    '浣犳瘮浣犳兂璞＄殑鏇村潥寮?馃挭',
-    '鏀炬參鑴氭锛屾劅鍙楀綋涓?馃崈',
-    '姣忎竴涓灛闂撮兘鍊煎緱琚湅瑙?鉁?,
-    '浣犵殑鎰熷彈寰堥噸瑕?馃挋',
-    '娓╂煍鍦板寰呰嚜宸?馃尶',
-    '姝ゅ埢锛屽氨鏄渶濂界殑绀肩墿 馃巵',
-    '涓栫晫鍦ㄦ倓鎮勭埍浣?馃挍',
-    '涓€鍒囬兘浼氬ソ璧锋潵鐨?馃寛',
-    '浣犲€煎緱琚俯鏌斾互寰?馃晩锔?,
-    '娣卞懠鍚革紝鐢熸椿杩樺湪缁х画 馃寠',
-    '浠婂ぉ涔熻濂藉ソ鐖辫嚜宸?鉂わ笍',
-    '璁╁績瀹変綇鍦ㄦ鍒?鈽侊笍',
-    '浣犲仛鐨勫凡缁忚冻澶熷ソ浜?馃専',
-    '缁欒嚜宸辩殑蹇冧竴涓姳鎶?馃',
+    '今天也是美好的一天 🌸',
+    '你比你想象的更坚强 💪',
+    '放慢脚步，感受当下 🍃',
+    '每一个瞬间都值得被看见 ✨',
+    '你的感受很重要 💙',
+    '温柔地对待自己 🌿',
+    '此刻，就是最好的礼物 🎁',
+    '世界在悄悄爱你 💛',
+    '一切都会好起来的 🌈',
+    '你值得被温柔以待 🕊️',
+    '深呼吸，生活还在继续 🌊',
+    '今天也要好好爱自己 ❤️',
+    '让心安住在此刻 ☁️',
+    '你做的已经足够好了 🌟',
+    '给自己的心一个抱抱 🤗',
   ];
 
   late String _todayQuote;
@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    // 姣忓ぉ涓嶅悓锛屼絾鍚屼竴澶╃浉鍚?
+    // 每天不同，但同一天相同
     final seed = DateTime.now().year * 10000 +
         DateTime.now().month * 100 +
         DateTime.now().day;
@@ -93,7 +93,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo 鍥炬爣
+                  // Logo 图标
                   Container(
                     width: 100,
                     height: 100,
@@ -116,7 +116,7 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                   const SizedBox(height: 24),
                   const Text(
-                    '蹇冮暅',
+                    '心镜',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -146,4 +146,3 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 }
-

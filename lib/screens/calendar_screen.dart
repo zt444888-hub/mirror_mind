@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/emotion_provider.dart';
 import '../models/emotion_record.dart';
@@ -24,12 +24,12 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
   DateTime _currentMonth = DateTime(DateTime.now().year, DateTime.now().month);
   Map<int, Color> _dayColors = {};
   Map<int, List<EmotionRecord>> _dayRecords = {};
-  String _selectedTag = '鍏ㄩ儴';
+  String _selectedTag = '全部';
   bool _isExporting = false;
 
   static const List<String> _tags = [
-    '鍏ㄩ儴', '宸ヤ綔', '瀹跺涵', '绀句氦', '鍋ュ悍', '璐㈠姟', '鎯呮劅',
-    '鎴愰暱', '鍏朵粬', '姣忔棩涓€闂?, '娣卞害鏃ヨ', '7澶╂寫鎴?,
+    '全部', '工作', '家庭', '社交', '健康', '财务', '情感',
+    '成长', '其他', '每日一问', '深度日记', '7天挑战',
   ];
 
   @override
@@ -58,7 +58,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
     final provider = context.read<EmotionProvider>();
     await provider.loadMonthRecordsByTag(_currentMonth.year, _currentMonth.month, tag: _selectedTag);
 
-    final records = _selectedTag == '鍏ㄩ儴' ? provider.monthRecords : provider.tagFilteredMonthRecords;
+    final records = _selectedTag == '全部' ? provider.monthRecords : provider.tagFilteredMonthRecords;
     final colorMap = <int, Color>{};
     final recordMap = <int, List<EmotionRecord>>{};
 
@@ -120,7 +120,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('鏈堟姤 PDF 涓?Pro 鍔熻兘锛屽崌绾у悗瑙ｉ攣'),
+            content: Text('月报 PDF 为 Pro 功能，升级后解锁'),
             backgroundColor: MirrorColors.warm,
           ),
         );
@@ -132,7 +132,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
     try {
       final provider = context.read<EmotionProvider>();
       final pdfService = PdfService();
-      final records = _selectedTag == '鍏ㄩ儴' ? provider.monthRecords : provider.tagFilteredMonthRecords;
+      final records = _selectedTag == '全部' ? provider.monthRecords : provider.tagFilteredMonthRecords;
 
       final path = await pdfService.generateMonthlyReportPdf(
         records: records,
@@ -143,7 +143,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('鏈堟姤 PDF 宸蹭繚瀛樿嚦锛?path'),
+            content: Text('月报 PDF 已保存至：$path'),
             backgroundColor: MirrorColors.primary,
           ),
         );
@@ -152,7 +152,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('瀵煎嚭澶辫触锛?{e.toString()}'),
+            content: Text('导出失败：${e.toString()}'),
             backgroundColor: MirrorColors.error,
           ),
         );
@@ -192,7 +192,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                 return Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: BoxDecoration(
-                    color: f.type == "chinese" ? MirrorColors.warm.withValues(alpha: 0.3) : Color(0x80D4C5E2),
+                    color: f.type == "chinese" ? Color(0x80E8D5B0) : Color(0x80D4C5E2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(f.emoji != null ? "${f.emoji} ${f.name}" : f.name, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: f.type == "chinese" ? MirrorColors.accentDark : MirrorColors.primaryDark)),
@@ -202,7 +202,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
           })(),
           const SizedBox(height: 4),
           Text(
-            '${date.month}鏈?{date.day}鏃?,
+            '${date.month}月${date.day}日',
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
@@ -211,7 +211,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
               padding: const EdgeInsets.symmetric(vertical: 32),
               child: Center(
                 child: Text(
-                  '杩欏ぉ杩樻病鏈夎褰曟儏缁?,
+                  '这天还没有记录情绪',
                   style: TextStyle(color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary),
                 ),
               ),
@@ -309,12 +309,12 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
             indicatorColor: MirrorColors.primary,
             indicatorSize: TabBarIndicatorSize.label,
             tabs: const [
-              Tab(text: '鏈堣鍥?),
-              Tab(text: '瓒嬪娍'),
+              Tab(text: '月视图'),
+              Tab(text: '趋势'),
             ],
           ),
         ),
-        // Tab 鍐呭
+        // Tab 内容
         Expanded(
           child: TabBarView(
             controller: _tabController,
@@ -328,7 +328,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
     );
   }
 
-  /// 鏍规嵁鏈湀涓昏鎯呯华鐢熸垚浜烘牸鏍囩
+  /// 根据本月主要情绪生成人格标签
   String _getMoodPersonality(List<EmotionRecord> records) {
     if (records.isEmpty) return '';
     final counts = <String, int>{};
@@ -339,15 +339,15 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
     if (top.isEmpty) return '';
     final emotion = top.first.key;
     switch (emotion) {
-      case '寮€蹇?: return '澶氬反鑳鸿揪浜?馃帀';
-      case '骞抽潤': return '浣涚郴淇鑰?馃';
-      case '鍏村': return '灏忓お闃?馃尀';
-      case '鎰熸仼': return '娌绘剤绯?馃尶';
-      case '鐒﹁檻': return '鏁忔劅鎺㈢储瀹?馃';
-      case '闅捐繃': return '娓╂煍璇椾汉 馃導锔?;
-      case '鐢熸皵': return '鐑鎴樺＋ 馃敟';
-      case '鐤叉儷': return '鍏呯數杈句汉 馃攱';
-      default: return '鎯呯华鎺㈤櫓瀹?馃寛';
+      case '开心': return '多巴胺达人 🎉';
+      case '平静': return '佛系修行者 🧘';
+      case '兴奋': return '小太阳 🌞';
+      case '感恩': return '治愈系 🌿';
+      case '焦虑': return '敏感探索家 🦋';
+      case '难过': return '温柔诗人 🌧️';
+      case '生气': return '热血战士 🔥';
+      case '疲惫': return '充电达人 🔋';
+      default: return '情绪探险家 🌈';
     }
   }
 
@@ -359,17 +359,17 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 鏈堜唤瀵艰埅 + 瀵煎嚭鎸夐挳
+          // 月份导航 + 导出按钮
           _buildMonthNav(isDark),
           if (context.watch<EmotionProvider>().monthRecords.isNotEmpty)
             _buildMoodPersonalityBadge(isDark, context.watch<EmotionProvider>().monthRecords),
           const SizedBox(height: 12),
 
-          // 鏍囩绛涢€?
+          // 标签筛选
           _buildTagFilter(isDark),
           const SizedBox(height: 12),
 
-          // 鏃ュ巻缃戞牸
+          // 日历网格
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -383,7 +383,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
           ),
           const SizedBox(height: 24),
 
-          // 鏈懆缁熻
+          // 本周统计
           if (weekRecords.isNotEmpty)
             Card(
               child: Padding(
@@ -392,12 +392,12 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      '鏈懆鎯呯华姒傝',
+                      '本周情绪概览',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '鍏辫褰?${weekRecords.length} 娆?,
+                      '共记录 ${weekRecords.length} 次',
                       style: TextStyle(fontSize: 13, color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary),
                     ),
                     const SizedBox(height: 16),
@@ -410,7 +410,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                       child: TextButton.icon(
                         onPressed: () => Navigator.pushNamed(context, '/weekly_report'),
                         icon: const Icon(Icons.auto_awesome, size: 16),
-                        label: const Text('鐢熸垚 AI 鍛ㄦ姤'),
+                        label: const Text('生成 AI 周报'),
                       ),
                     ),
                   ],
@@ -424,7 +424,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
     );
   }
 
-  /// 鏈湀鎯呯华浜烘牸鏍囩
+  /// 本月情绪人格标签
   Widget _buildMoodPersonalityBadge(bool isDark, List<EmotionRecord> records) {
     final label = _getMoodPersonality(records);
     if (label.isEmpty) return const SizedBox.shrink();
@@ -434,7 +434,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0x80D4C5E2), MirrorColors.secondaryLight.withValues(alpha: 0.2)],
+          colors: [Color(0x80D4C5E2), Color(0x33DCE8E0)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -442,13 +442,13 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
       ),
       child: Row(
         children: [
-          Text('馃幁', style: TextStyle(fontSize: 24)),
+          Text('🎭', style: TextStyle(fontSize: 24)),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('鏈湀鎯呯华浜烘牸', style: TextStyle(fontSize: 11, color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary)),
+                Text('本月情绪人格', style: TextStyle(fontSize: 11, color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary)),
                 const SizedBox(height: 2),
                 Text(label, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: isDark ? MirrorColors.darkTextPrimary : MirrorColors.textPrimary)),
               ],
@@ -459,14 +459,14 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
     );
   }
 
-  /// 鏈堝害鎬荤粨
+  /// 月度总结
   Widget _buildMonthSummary(bool isDark, List<EmotionRecord> records) {
     final counts = <String, int>{};
     for (final r in records) {
       counts[r.emotion] = (counts[r.emotion] ?? 0) + 1;
     }
     final sorted = counts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
-    final topEmotion = sorted.isNotEmpty ? sorted.first.key : '涓€鑸?;
+    final topEmotion = sorted.isNotEmpty ? sorted.first.key : '一般';
     final total = records.length;
     final scores = records.map((r) => r.score).whereType<int>().toList();
     final avgScore = scores.isEmpty ? 0.0 : scores.reduce((a, b) => a + b) / scores.length;
@@ -480,17 +480,17 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
           children: [
             Row(
               children: [
-                const Text('馃搳', style: TextStyle(fontSize: 18)),
+                const Text('📊', style: TextStyle(fontSize: 18)),
                 const SizedBox(width: 8),
-                Text('鏈湀姒傝', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: isDark ? MirrorColors.darkTextPrimary : MirrorColors.textPrimary)),
+                Text('本月概览', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: isDark ? MirrorColors.darkTextPrimary : MirrorColors.textPrimary)),
               ],
             ),
             const SizedBox(height: 12),
-            _buildSummaryRow('馃摑 璁板綍澶╂暟', '$total 澶?),
-            _buildSummaryRow('馃幁 涓昏鎯呯华', topEmotion),
-            _buildSummaryRow('猸?骞冲潎璇勫垎', '${avgScore.toStringAsFixed(1)} / 10'),
+            _buildSummaryRow('📝 记录天数', '$total 天'),
+            _buildSummaryRow('🎭 主要情绪', topEmotion),
+            _buildSummaryRow('⭐ 平均评分', '${avgScore.toStringAsFixed(1)} / 10'),
             if (sorted.length >= 2)
-              _buildSummaryRow('馃槉 娆′富瑕?, '${sorted[1].key}'),
+              _buildSummaryRow('😊 次主要', '${sorted[1].key}'),
             const SizedBox(height: 12),
             Text(_getMonthMotto(topEmotion, total), style: TextStyle(fontSize: 13, color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary, height: 1.5)),
           ],
@@ -514,15 +514,15 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
 
   String _getMonthMotto(String topEmotion, int total) {
     switch (topEmotion) {
-      case '寮€蹇?: return '馃尭 杩欎釜鏈堜綘鏈?$total 澶╁甫鐫€闃冲厜鑸殑绗戝锛岀户缁繚鎸侊紒';
-      case '骞抽潤': return '馃崈 杩欎釜鏈堜綘淇濇寔浜?$total 澶╃殑鍐呭績骞抽潤锛岀湡浜嗕笉璧枫€?;
-      case '鍏村': return '鈿?杩欎釜鏈堜綘鍏呮弧浜嗚兘閲忥紝$total 澶╃殑鐑害涓嶅噺锛?;
-      case '鎰熸仼': return '馃挐 杩欎釜鏈堜綘蹇冩€€鎰熸仼搴﹁繃浜?$total 澶╋紝娓╂殩浜嗚韩杈圭殑浜恒€?;
-      case '鐒﹁檻': return '馃 杩欎釜鏈堜綘鏈?$total 澶╃殑璁板綍锛屾瘡涓€姝ヨ瀵熼兘鏄垚闀裤€?;
-      case '闅捐繃': return '馃導锔?杩欎釜鏈堜綘缁忓巻浜?$total 澶╋紝鍏佽鎯呯华娴佸姩灏辨槸鍕囨皵銆?;
-      case '鐢熸皵': return '馃敟 杩欎釜鏈堜綘璁板綍浜?$total 澶╋紝姣忎竴绉嶆儏缁兘鍊煎緱琚湅瑙併€?;
-      case '鐤叉儷': return '馃攱 杩欎釜鏈堜綘鍧氭寔璁板綍浜?$total 澶╋紝鍒繕浜嗙粰鑷繁鍏呯數銆?;
-      default: return '馃寛 杩欎釜鏈堜綘璁板綍浜?$total 澶╋紝姣忎竴娆¤瀵熼兘鏄鑷繁鐨勫叧蹇冦€?;
+      case '开心': return '🌸 这个月你有 $total 天带着阳光般的笑容，继续保持！';
+      case '平静': return '🍃 这个月你保持了 $total 天的内心平静，真了不起。';
+      case '兴奋': return '⚡ 这个月你充满了能量，$total 天的热度不减！';
+      case '感恩': return '💝 这个月你心怀感恩度过了 $total 天，温暖了身边的人。';
+      case '焦虑': return '🦋 这个月你有 $total 天的记录，每一步觉察都是成长。';
+      case '难过': return '🌧️ 这个月你经历了 $total 天，允许情绪流动就是勇气。';
+      case '生气': return '🔥 这个月你记录了 $total 天，每一种情绪都值得被看见。';
+      case '疲惫': return '🔋 这个月你坚持记录了 $total 天，别忘了给自己充电。';
+      default: return '🌈 这个月你记录了 $total 天，每一次觉察都是对自己的关心。';
     }
   }
 
@@ -578,7 +578,7 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    '30澶╂儏缁秼鍔?,
+                    '30天情绪趋势',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 20),
@@ -614,17 +614,17 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
         Row(
           children: [
             Text(
-              '${_currentMonth.year}骞?${_currentMonth.month}鏈?,
+              '${_currentMonth.year}年 ${_currentMonth.month}月',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(width: 8),
-            // 瀵煎嚭鏈堟姤鎸夐挳
+            // 导出月报按钮
             IconButton(
               icon: _isExporting
                   ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                   : const Icon(Icons.picture_as_pdf, size: 20),
               onPressed: _isExporting ? null : _exportMonthlyPdf,
-              tooltip: '瀵煎嚭鏈堟姤 PDF',
+              tooltip: '导出月报 PDF',
             ),
           ],
         ),
@@ -674,4 +674,3 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
     );
   }
 }
-

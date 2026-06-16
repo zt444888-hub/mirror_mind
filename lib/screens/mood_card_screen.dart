@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +12,7 @@ import '../constants/colors.dart';
 import '../constants/emotions.dart';
 import '../services/purchase_service.dart';
 
-/// 蹇冩儏鍗＄墖鐢熸垚鍣細灏嗘儏缁褰曠敓鎴愮簿缇庡崱鐗?
+/// 心情卡片生成器：将情绪记录生成精美卡片
 class MoodCardScreen extends StatefulWidget {
   const MoodCardScreen({super.key});
 
@@ -26,41 +26,41 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
 
   EmotionRecord? _selectedRecord;
   int _templateIndex = 0;
-  bool _showAllTemplates = false; // 0=绠€绾?1=鏂囪壓 2=娓╂殩
+  bool _showAllTemplates = false; // 0=简约 1=文艺 2=温暖
   bool _useCustomText = false;
 
-  static const List<String> _templateNames = ['绠€绾?, '鏂囪壓', '娓╂殩', '娓愬彉', '鏋佺畝', '鎵嬪啓', '鑳剁墖', '绯栨灉', '妫灄', '鏆楀'];
+  static const List<String> _templateNames = ['简约', '文艺', '温暖', '渐变', '极简', '手写', '胶片', '糖果', '森林', '暗夜'];
 
-  // 妯℃澘閰嶈壊锛堟笎鍙樸€佹枃瀛楄壊锛?
-  // 鏍煎紡锛歔鑳屾櫙鑹?, 鑳屾櫙鑹?, 鏂囧瓧鑹? 杈规鑹?鍙€?]
+  // 模板配色（渐变、文字色）
+  // 格式：[背景色1, 背景色2, 文字色, 边框色(可选)]
   static const List<List<Color>> _templateColors = [
-    [Color(0xFFF5F0EB), Color(0xFFE8DDD0), Color(0xFF3C3C3C), Color(0x00000000)], // 绠€绾?
-    [Color(0xFFE8DFF5), Color(0xFFD4C8EB), Color(0xFF3C3C3C), Color(0x00000000)], // 鏂囪壓
-    [Color(0xFFFDF2E3), Color(0xFFF5D6B8), Color(0xFF3C3C3C), Color(0x00000000)], // 娓╂殩
-    [Color(0xFF1A1A2E), Color(0xFF0F3460), Color(0xFFFFFFFF), Color(0x00000000)], // 娓愬彉
-    [Color(0xFFFFFFFF), Color(0xFFFFFFFF), Color(0xFF2D3436), Color(0xFFDFE6E9)], // 鏋佺畝
-    [Color(0xFFFAF0E6), Color(0xFFFAF0E6), Color(0xFF2C1810), Color(0x00000000)], // 鎵嬪啓
-    [Color(0xFF000000), Color(0xFF000000), Color(0xFFFFFFFF), Color(0xFFE17055)], // 鑳剁墖
-  [Color(0xFFFFF0F5), Color(0xFFFFD6E0), Color(0xFF6B4E71), Color(0x00000000)], // 绯栨灉
-  [Color(0xFFE8F5E9), Color(0xFFC8E6C9), Color(0xFF1B5E20), Color(0xFF81C784)], // 妫灄
-  [Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFFE8E8E8), Color(0xFF0F3460)], // 鏆楀
+    [Color(0xFFF5F0EB), Color(0xFFE8DDD0), Color(0xFF3C3C3C), Color(0x00000000)], // 简约
+    [Color(0xFFE8DFF5), Color(0xFFD4C8EB), Color(0xFF3C3C3C), Color(0x00000000)], // 文艺
+    [Color(0xFFFDF2E3), Color(0xFFF5D6B8), Color(0xFF3C3C3C), Color(0x00000000)], // 温暖
+    [Color(0xFF1A1A2E), Color(0xFF0F3460), Color(0xFFFFFFFF), Color(0x00000000)], // 渐变
+    [Color(0xFFFFFFFF), Color(0xFFFFFFFF), Color(0xFF2D3436), Color(0xFFDFE6E9)], // 极简
+    [Color(0xFFFAF0E6), Color(0xFFFAF0E6), Color(0xFF2C1810), Color(0x00000000)], // 手写
+    [Color(0xFF000000), Color(0xFF000000), Color(0xFFFFFFFF), Color(0xFFE17055)], // 胶片
+  [Color(0xFFFFF0F5), Color(0xFFFFD6E0), Color(0xFF6B4E71), Color(0x00000000)], // 糖果
+  [Color(0xFFE8F5E9), Color(0xFFC8E6C9), Color(0xFF1B5E20), Color(0xFF81C784)], // 森林
+  [Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFFE8E8E8), Color(0xFF0F3460)], // 暗夜
   ];
 
-  // 鑷畾涔夐厤鑹诧紙Pro 鐢ㄦ埛鍙慨鏀癸級
+  // 自定义配色（Pro 用户可修改）
   Color? _customBgColor;
   Color? _customTextColor;
 
-  // 鎯呯华瑁呴グ Emoji 鏄犲皠
+  // 情绪装饰 Emoji 映射
   static final Map<String, List<String>> _emotionDecor = {
-    '寮€蹇?: ['鈽€锔?, '馃尰', '馃帀', '鉁?, '馃挍'],
-    '骞抽潤': ['馃寵', '馃崈', '馃', '馃寠', '馃挋'],
-    '鎮蹭激': ['馃導锔?, '鈽侊笍', '馃挧', '馃暞锔?, '馃'],
-    '鎰ゆ€?: ['馃寢', '鈿?, '馃敟', '馃挗', '馃А'],
-    '鐒﹁檻': ['馃', '馃挩', '馃寑', '鈴?, '馃挏'],
-    '鎰熸仼': ['馃寛', '馃挐', '馃晩锔?, '馃専', '馃挌'],
-    '鏈熷緟': ['馃殌', '馃寘', '馃幆', '馃挮', '鉂わ笍'],
-    '鐤叉儷': ['馃泴', '馃寫', '馃暞锔?, '馃', '馃'],
-    '涓€鑸?: ['馃尭', '馃崁', '鈽?, '馃摑', '馃挱'],
+    '开心': ['☀️', '🌻', '🎉', '✨', '💛'],
+    '平静': ['🌙', '🍃', '🧘', '🌊', '💙'],
+    '悲伤': ['🌧️', '☁️', '💧', '🕯️', '🤍'],
+    '愤怒': ['🌋', '⚡', '🔥', '💢', '🧡'],
+    '焦虑': ['🦋', '💨', '🌀', '⏳', '💜'],
+    '感恩': ['🌈', '💝', '🕊️', '🌟', '💚'],
+    '期待': ['🚀', '🌅', '🎯', '💫', '❤️'],
+    '疲惫': ['🛌', '🌑', '🕯️', '🫧', '🤎'],
+    '一般': ['🌸', '🍀', '☕', '📝', '💭'],
   };
 
   @override
@@ -87,19 +87,19 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
   String get _displayText {
     if (_useCustomText) return _textController.text.trim();
     if (_selectedRecord != null) return _selectedRecord!.inputText ?? '';
-    return '浠婂ぉ鐨勫績鎯?..';
+    return '今天的心情...';
   }
 
   String get _displayEmotion {
     if (_selectedRecord != null) return _selectedRecord!.emotion;
-    return '涓€鑸?;
+    return '一般';
   }
 
   List<String> _getDecorEmojis() {
-    return _emotionDecor[_displayEmotion] ?? _emotionDecor['涓€鑸?]!;
+    return _emotionDecor[_displayEmotion] ?? _emotionDecor['一般']!;
   }
 
-  /// 鎴浘骞跺垎浜?
+  /// 截图并分享
   Future<void> _captureAndShare() async {
     try {
       final boundary = _cardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
@@ -111,21 +111,21 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
 
       final pngBytes = byteData.buffer.asUint8List();
 
-      // 閫氳繃 share_plus 鍒嗕韩
+      // 通过 share_plus 分享
       await Share.shareXFiles(
-        [XFile.fromData(pngBytes, mimeType: 'image/png', name: '蹇冮暅_蹇冩儏鍗＄墖.png')],
-        text: '蹇冮暅 路 蹇冩儏鍗＄墖',
+        [XFile.fromData(pngBytes, mimeType: 'image/png', name: '心镜_心情卡片.png')],
+        text: '心镜 · 心情卡片',
       );
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('鎴浘澶辫触锛岃绋嶅悗閲嶈瘯'), backgroundColor: MirrorColors.error),
+          const SnackBar(content: Text('截图失败，请稍后重试'), backgroundColor: MirrorColors.error),
         );
       }
     }
   }
 
-  /// 鎴浘骞朵繚瀛樺埌鐩稿唽
+  /// 截图并保存到相册
   Future<void> _captureAndSave() async {
     try {
       final boundary = _cardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
@@ -144,7 +144,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('鉁?宸蹭繚瀛樺埌鐩稿唽'),
+            content: Text('✅ 已保存到相册'),
             backgroundColor: Color(0xFF4CAF50),
             duration: Duration(seconds: 2),
           ),
@@ -153,7 +153,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('淇濆瓨澶辫触锛?e'), backgroundColor: MirrorColors.error),
+          SnackBar(content: Text('保存失败：$e'), backgroundColor: MirrorColors.error),
         );
       }
     }
@@ -163,43 +163,43 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final colors = _templateColors[_templateIndex];
-    // 瀹夊叏鑾峰彇棰滆壊锛氬厤璐规ā鏉?[bg1,bg2,text,border]锛孭ro 妯℃澘鍚岀悊
+    // 安全获取颜色：免费模板 [bg1,bg2,text,border]，Pro 模板同理
     final decors = _getDecorEmojis();
 
     return Scaffold(
       backgroundColor: isDark ? MirrorColors.darkBackground : MirrorColors.background,
-      appBar: AppBar(title: const Text('蹇冩儏鍗＄墖')),
+      appBar: AppBar(title: const Text('心情卡片')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // 妯℃澘鍒囨崲
+            // 模板切换
             _buildTemplateSelector(isDark),
             const SizedBox(height: 16),
 
-            // 鍗＄墖棰勮
+            // 卡片预览
             RepaintBoundary(
               key: _cardKey,
               child: _buildCardContent(colors, decors, isDark),
             ),
             const SizedBox(height: 16),
 
-            // 鑷畾涔夐厤鑹叉寜閽紙Pro锛?
+            // 自定义配色按钮（Pro）
             _buildCustomColorButton(),
             const SizedBox(height: 12),
 
-            // 鑷畾涔夋枃瀛楄緭鍏?
+            // 自定义文字输入
             _buildCustomTextInput(isDark),
             const SizedBox(height: 20),
 
-            // 鎿嶄綔鎸夐挳
+            // 操作按钮
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => _captureAndShare(),
                     icon: const Icon(Icons.share, size: 18),
-                    label: const Text('鍒嗕韩'),
+                    label: const Text('分享'),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -211,7 +211,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                   child: ElevatedButton.icon(
                     onPressed: () => _captureAndSave(),
                     icon: const Icon(Icons.download_rounded, size: 18),
-                    label: const Text('淇濆瓨'),
+                    label: const Text('保存'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: MirrorColors.secondary,
                       foregroundColor: Colors.white,
@@ -229,7 +229,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
     );
   }
 
-  /// 妯℃澘閫夋嫨鍣紙Pro 鐢ㄦ埛鏄剧ず鍏ㄩ儴 7 涓紝鍏嶈垂鐢ㄦ埛浠呮樉绀哄墠 3 涓?+ 閿佸畾鎻愮ず锛?
+  /// 模板选择器（Pro 用户显示全部 7 个，免费用户仅显示前 3 个 + 锁定提示）
   Widget _buildTemplateSelector(bool isDark) {
     final isPro = PurchaseService().isPro;
     final displayCount = isPro ? _templateNames.length : 3;
@@ -289,7 +289,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                '瑙ｉ攣 4 绉嶇簿缇庢ā鏉?+ 鑷畾涔夐厤鑹?,
+                '解锁 4 种精美模板 + 自定义配色',
                 style: TextStyle(fontSize: 12, color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary),
               ),
               const Spacer(),
@@ -301,7 +301,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                     color: MirrorColors.primary.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text('鍗囩骇', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MirrorColors.primaryDark)),
+                  child: const Text('升级', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MirrorColors.primaryDark)),
                 ),
               ),
             ],
@@ -311,11 +311,11 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
     );
   }
 
-  /// 鏍规嵁妯℃澘绱㈠紩娓叉煋涓嶅悓鐨勫崱鐗囧唴瀹?
+  /// 根据模板索引渲染不同的卡片内容
   Widget _buildCardContent(List<Color> colors, List<String> decors, bool isDark) {
     final isPro = PurchaseService().isPro;
 
-    // Pro 妯℃澘鏈В閿佹椂鏄剧ず閿佸畾鐘舵€?
+    // Pro 模板未解锁时显示锁定状态
     if (_templateIndex >= 3 && !isPro) {
       return _buildLockedCard(isDark);
     }
@@ -329,7 +329,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
     }
   }
 
-  /// 榛樿妯℃澘锛?=绠€绾?1=鏂囪壓 2=娓╂殩锛?
+  /// 默认模板（0=简约 1=文艺 2=温暖）
   Widget _buildDefaultTemplate(List<Color> colors, List<String> decors) {
     final bg = (_customBgColor != null && _templateIndex < 3) ? _customBgColor! : colors[0];
     final bg2 = (_customBgColor != null && _templateIndex < 3) ? _customBgColor! : colors[1];
@@ -370,7 +370,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.5),
+              color: Color(0x80FFFFFF),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -389,7 +389,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
               Text(decors[2], style: const TextStyle(fontSize: 20)),
               const Spacer(),
               Text(
-                'MirrorMind 路 蹇冮暅',
+                'MirrorMind · 心镜',
                 style: TextStyle(fontSize: 11, color: MirrorColors.textSecondary.withValues(alpha: 0.6), letterSpacing: 1),
               ),
             ],
@@ -399,7 +399,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
     );
   }
 
-  /// 娓愬彉妯℃澘锛圥ro #3锛夛細娣辫壊娓愬彉鑳屾櫙 + 鐧借壊鏂囧瓧 + 鍦嗚 16
+  /// 渐变模板（Pro #3）：深色渐变背景 + 白色文字 + 圆角 16
   Widget _buildGradientTemplate(List<String> decors) {
     final bg = _customBgColor ?? const Color(0xFF1A1A2E);
     final fg = _customTextColor ?? const Color(0xFFFFFFFF);
@@ -458,7 +458,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
     );
   }
 
-  /// 鏋佺畝妯℃澘锛圥ro #4锛夛細绾櫧搴曡壊 + 缁嗚竟妗?+ 澶ч噺鐣欑櫧
+  /// 极简模板（Pro #4）：纯白底色 + 细边框 + 大量留白
   Widget _buildMinimalTemplate(List<String> decors) {
     final bg = _customBgColor ?? const Color(0xFFFFFFFF);
     final fg = _customTextColor ?? const Color(0xFF2D3436);
@@ -494,14 +494,14 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           Row(children: [
             Text(decors[0], style: const TextStyle(fontSize: 16)),
             const Spacer(),
-            Text('蹇冮暅', style: TextStyle(fontSize: 10, color: fg.withValues(alpha: 0.3), letterSpacing: 4)),
+            Text('心镜', style: TextStyle(fontSize: 10, color: fg.withValues(alpha: 0.3), letterSpacing: 4)),
           ]),
         ],
       ),
     );
   }
 
-  /// 鎵嬪啓妯℃澘锛圥ro #5锛夛細浠跨焊鑹?+ 澧ㄦ按鑹?+ 鏂滀綋 + 瑁呴グ绾?
+  /// 手写模板（Pro #5）：仿纸色 + 墨水色 + 斜体 + 装饰线
   Widget _buildHandwrittenTemplate(List<String> decors) {
     final bg = _customBgColor ?? const Color(0xFFFAF0E6);
     final fg = _customTextColor ?? const Color(0xFF2C1810);
@@ -518,7 +518,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 瑁呴グ绾?
+          // 装饰线
           Container(height: 3, width: 60, color: fg.withValues(alpha: 0.3)),
           const SizedBox(height: 20),
           Text(
@@ -531,7 +531,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: fg, fontStyle: FontStyle.italic),
           ),
           const SizedBox(height: 20),
-          // 妯嚎瑁呴グ
+          // 横线装饰
           Container(height: 1, width: double.infinity, color: fg.withValues(alpha: 0.1)),
           const SizedBox(height: 20),
           Text(
@@ -544,14 +544,14 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           Row(children: [
             Text(decors[0], style: const TextStyle(fontSize: 18)),
             const Spacer(),
-            Text('蹇冮暅', style: TextStyle(fontSize: 10, color: fg.withValues(alpha: 0.3), fontStyle: FontStyle.italic)),
+            Text('心镜', style: TextStyle(fontSize: 10, color: fg.withValues(alpha: 0.3), fontStyle: FontStyle.italic)),
           ]),
         ],
       ),
     );
   }
 
-  /// 鑳剁墖妯℃澘锛圥ro #6锛夛細榛戣壊搴曡壊 + 鐧借壊鏂囧瓧 + 姗欒壊鏃ユ湡鏍囩
+  /// 胶片模板（Pro #6）：黑色底色 + 白色文字 + 橙色日期标签
   Widget _buildFilmTemplate(List<String> decors) {
     final bg = _customBgColor ?? const Color(0xFF000000);
     final fg = _customTextColor ?? const Color(0xFFFFFFFF);
@@ -565,7 +565,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 姗欒壊鏃ユ湡鏍囩
+          // 橙色日期标签
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
@@ -591,17 +591,17 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           Row(children: [
             Text(decors[0], style: const TextStyle(fontSize: 20)),
             const Spacer(),
-            Text('蹇冮暅', style: TextStyle(fontSize: 10, color: fg.withValues(alpha: 0.3), letterSpacing: 5)),
+            Text('心镜', style: TextStyle(fontSize: 10, color: fg.withValues(alpha: 0.3), letterSpacing: 5)),
           ]),
         ],
       ),
     );
   }
 
-  /// 閿佸畾鍗＄墖锛圥ro 鏈В閿佹椂鐨勯瑙堝崰浣嶏級
+  /// 锁定卡片（Pro 未解锁时的预览占位）
   Widget _buildLockedCard(bool isDark) {
     final colors = _templateColors[_templateIndex];
-    // 瀹夊叏鑾峰彇棰滆壊锛氬厤璐规ā鏉?[bg1,bg2,text,border]锛孭ro 妯℃澘鍚岀悊
+    // 安全获取颜色：免费模板 [bg1,bg2,text,border]，Pro 模板同理
     return Container(
       width: double.infinity,
       height: 300,
@@ -629,7 +629,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                   border: Border.all(color: colors[2].withValues(alpha: 0.4)),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text('瑙ｉ攣 Pro', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                child: const Text('解锁 Pro', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
               ),
             ),
           ],
@@ -638,7 +638,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
     );
   }
 
-  /// 鑷畾涔夐厤鑹叉寜閽紙浠?Pro 鍙锛?
+  /// 自定义配色按钮（仅 Pro 可见）
   Widget _buildCustomColorButton() {
     final isPro = PurchaseService().isPro;
     if (!isPro) return const SizedBox.shrink();
@@ -648,7 +648,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
       child: OutlinedButton.icon(
         onPressed: _showColorPicker,
         icon: const Icon(Icons.palette_outlined, size: 16),
-        label: Text(_customBgColor != null ? '鑷畾涔夐厤鑹?路 宸茶缃? : '鑷畾涔夐厤鑹?),
+        label: Text(_customBgColor != null ? '自定义配色 · 已设置' : '自定义配色'),
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -658,12 +658,12 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
     );
   }
 
-  /// 棰滆壊閫夋嫨鍣ㄥ璇濇
+  /// 颜色选择器对话框
   void _showColorPicker() {
     final isPro = PurchaseService().isPro;
     if (!isPro) return;
 
-    // 棰勮鑹插潡
+    // 预设色块
     final presetColors = [
       const Color(0xFF1A1A2E), const Color(0xFF16213E), const Color(0xFF0F3460),
       const Color(0xFFFAF0E6), const Color(0xFFFFFFFF), const Color(0xFFF5F5F5),
@@ -679,13 +679,13 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text('鑷畾涔夐厤鑹?),
+          title: const Text('自定义配色'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('鑳屾櫙鑹?, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: MirrorColors.textSecondary)),
+                const Text('背景色', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: MirrorColors.textSecondary)),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 10,
@@ -707,7 +707,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                   }).toList(),
                 ),
                 const SizedBox(height: 16),
-                const Text('鏂囧瓧鑹?, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: MirrorColors.textSecondary)),
+                const Text('文字色', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: MirrorColors.textSecondary)),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 10,
@@ -729,7 +729,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                   }).toList(),
                 ),
                 const SizedBox(height: 16),
-                // 棰勮
+                // 预览
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
@@ -738,7 +738,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    '棰勮鏁堟灉',
+                    '预览效果',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16, color: selectedText ?? const Color(0xFF3C3C3C)),
                   ),
@@ -752,7 +752,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                 setState(() { _customBgColor = null; _customTextColor = null; });
                 Navigator.pop(ctx);
               },
-              child: const Text('閲嶇疆榛樿'),
+              child: const Text('重置默认'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -762,7 +762,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                 });
                 Navigator.pop(ctx);
               },
-              child: const Text('纭'),
+              child: const Text('确认'),
             ),
           ],
         ),
@@ -770,7 +770,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
     );
   }
 
-  /// 鑷畾涔夋枃瀛楄緭鍏?
+  /// 自定义文字输入
   Widget _buildCustomTextInput(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -778,7 +778,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
         Row(
           children: [
             Text(
-              '鑷畾涔夋枃瀛?,
+              '自定义文字',
               style: TextStyle(
                 fontSize: 13,
                 color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
@@ -799,7 +799,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  _useCustomText ? '浣跨敤璁板綍' : '鑷畾涔?,
+                  _useCustomText ? '使用记录' : '自定义',
                   style: TextStyle(
                     fontSize: 12,
                     color: _useCustomText ? MirrorColors.primaryDark : MirrorColors.textSecondary,
@@ -819,7 +819,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
               color: isDark ? MirrorColors.darkTextPrimary : MirrorColors.textPrimary,
             ),
             decoration: const InputDecoration(
-              hintText: '鍐欎笅鎯虫斁鍦ㄥ崱鐗囦笂鐨勮瘽...',
+              hintText: '写下想放在卡片上的话...',
               contentPadding: EdgeInsets.all(12),
             ),
           ),
@@ -834,4 +834,3 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
 
 
 }
-

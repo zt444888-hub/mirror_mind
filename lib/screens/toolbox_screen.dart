@@ -1,22 +1,49 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../constants/colors.dart';
-
-class ToolboxScreen extends StatelessWidget {
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/purchase_service.dart';
+class _ToolItem {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color color;
+  final String route;
+  const _ToolItem(this.icon, this.title, this.subtitle, this.color, this.route);
+}
+class ToolboxScreen extends StatefulWidget {
   const ToolboxScreen({super.key});
-
-  static const _tools = [
-    _ToolItem(Icons.air, '鍛煎惛缁冧範', '鐢ㄥ懠鍚告壘鍥炲钩闈欙紝姣忔鍙渶1鍒嗛挓', MirrorColors.secondary, '/breathing'),
-    _ToolItem(Icons.auto_stories, '璁ょ煡閲嶆瀯鍗＄墖', '20寮犲績鐞嗗鍗＄墖锛屾崲涓搴︾湅闂', MirrorColors.primary, '/cards'),
-    _ToolItem(Icons.favorite_border, '鎰熸仼涓変欢浜?, '姣忓ぉ璁板綍涓変欢鍊煎緱鎰熸仼鐨勪簨', MirrorColors.accent, '/gratitude'),
-    _ToolItem(Icons.healing, '鎯呯华鎬ユ晳鍖?, '鏍规嵁褰撳墠蹇冩儏锛屽嵆鏃惰幏鍙栧簲瀵瑰缓璁?, MirrorColors.warm, '/emergency'),
-    _ToolItem(Icons.self_improvement, '鍐ユ兂寮曞', '鏂囧瓧寮曞 + 璁℃椂鍣紝鏀剧┖蹇冪伒', Color(0xFF7B8BA6), '/meditation'),
-    _ToolItem(Icons.auto_awesome, '鏄熷骇杩愬娍', '姣忔棩鏄熷骇杩愬娍', Color(0xFF9C27B0), '/horoscope'),
-    _ToolItem(Icons.dashboard_customize, '蹇冩儏鍗＄墖', '鎶婁粖澶╃殑蹇冩儏鍋氭垚涓€寮犵簿缇庡崱鐗?, MirrorColors.primaryDark, '/mood-card'),
-    _ToolItem(Icons.menu_book, '鎯呯华璇嶅簱', '60+绮惧噯璇嶆眹锛屾彁鍗囨儏缁矑搴?, Color(0xFF8D6E63), '/emotion-vocabulary'),
-    _ToolItem(Icons.bedtime_rounded, '鍔╃湢', '鏀炬澗韬績锛屽畨鐒跺叆鐪?, Color(0xFF5C6BC0), '/sleep'),
-    _ToolItem(Icons.track_changes, '7澶╂儏缁寫鎴?, '杩炵画7澶╂墦鍗★紝鍩瑰吇绉瀬鎯呯华涔犳儻', Color(0xFFD4A017), '/emotion-challenge'),
+  static final _tools = [
+    _ToolItem(Icons.air, '呼吸练习', '用呼吸找回平静，每次只需1分钟', MirrorColors.secondary, '/breathing'),
+    _ToolItem(Icons.auto_stories, '认知重构卡片', '20张心理学卡片，换个角度看问题', MirrorColors.primary, '/cards'),
+    _ToolItem(Icons.favorite_border, '感恩三件事', '每天记录三件值得感恩的事', MirrorColors.accent, '/gratitude'),
+    _ToolItem(Icons.healing, '情绪急救包', '根据当前心情，即时获取应对建议', MirrorColors.warm, '/emergency'),
+    _ToolItem(Icons.self_improvement, '冥想引导', '文字引导 + 计时器，放空心灵', Color(0xFF7B8BA6), '/meditation'),
+    _ToolItem(Icons.auto_awesome, '星座运势', '每日星座运势', Color(0xFF9C27B0), '/horoscope'),
+    _ToolItem(Icons.dashboard_customize, '心情卡片', '把今天的心情做成一张精美卡片', MirrorColors.primaryDark, '/mood-card'),
+    _ToolItem(Icons.menu_book, '情绪词库', '60+精准词汇，提升情绪粒度', Color(0xFF8D6E63), '/emotion-vocabulary'),
+    _ToolItem(Icons.bedtime_rounded, '助眠', '放松身心，安然入眠', Color(0xFF5C6BC0), '/sleep'),
+    _ToolItem(Icons.track_changes, '7天情绪挑战', '连续7天打卡，培养积极情绪习惯', Color(0xFFD4A017), '/emotion-challenge'),
+    _ToolItem(Icons.favorite, '支持心镜', '打赏 \u00a568 支持开发', MirrorColors.primary, '/donate'),
+    _ToolItem(Icons.feedback, "意见反馈", "联系我们", Color(0xFF9C27B0), "/feedback"),
   ];
-
+  @override
+  State<ToolboxScreen> createState() => _ToolboxScreenState();
+}
+class _ToolboxScreenState extends State<ToolboxScreen> {
+  bool _isDonated = false;
+  String _donationNumber = "";
+  @override
+  void initState() {
+    super.initState();
+    _loadDonation();
+  }
+  Future<void> _loadDonation() async {
+    final p = await SharedPreferences.getInstance();
+    if (mounted) setState(() {
+      _isDonated = p.getBool("has_donated") ?? false;
+      _donationNumber = p.getString("donation_number") ?? "";
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -26,7 +53,7 @@ class ToolboxScreen extends StatelessWidget {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              '閫夋嫨涓€绉嶆柟寮忕収椤捐嚜宸?,
+              '选择一种方式照顾自己',
               style: TextStyle(fontSize: 15, color: MirrorColors.textSecondary),
             ),
           ),
@@ -40,62 +67,110 @@ class ToolboxScreen extends StatelessWidget {
               crossAxisSpacing: 12,
               childAspectRatio: 0.92,
             ),
-            itemCount: _tools.length,
-            itemBuilder: (context, index) => _buildGridCard(context, _tools[index]),
+            itemCount: ToolboxScreen._tools.length,
+            itemBuilder: (context, index) => _buildGridCard(context, ToolboxScreen._tools[index]),
           ),
         ),
-        _buildDonateCard(context),
-        const SizedBox(height: 8),
-        const SizedBox(height: 8),
       ],
     );
   }
-
   Widget _buildGridCard(BuildContext context, _ToolItem tool) {
+        if (tool.route == "/feedback") {
+      return Card(
+        child: InkWell(
+          onTap: () => _showFeedbackDialog(context),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.feedback, size: 28, color: Color(0xFF9C27B0)),
+                const SizedBox(height: 6),
+                const Text("意见反馈", style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600), textAlign: TextAlign.center, maxLines: 1),
+                const SizedBox(height: 2),
+                const Text("联系我们", style: TextStyle(fontSize: 9, color: MirrorColors.textHint), textAlign: TextAlign.center, maxLines: 1),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    if (tool.route == '/donate') {
+      return Card(
+        child: InkWell(
+          onTap: _isDonated ? () => _showAppreciationDialog(context) : () => _handleDonateTap(context),
+          borderRadius: BorderRadius.circular(12),
+          child: _buildDonateMiniCard(),
+        ),
+      );
+    }
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
       child: InkWell(
         onTap: () => Navigator.pushNamed(context, tool.route),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: tool.color.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(tool.icon, color: tool.color, size: 26),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                tool.title,
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                textAlign: TextAlign.center,
-              ),
+              Icon(tool.icon, size: 28, color: tool.color),
               const SizedBox(height: 6),
-              Text(
-                tool.subtitle,
-                style: TextStyle(
-                  fontSize: 11,
-                  height: 1.3,
-                  color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+              Text(tool.title, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isDark ? MirrorColors.darkTextPrimary : MirrorColors.textPrimary), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
+              const SizedBox(height: 2),
+              Text(tool.subtitle, style: const TextStyle(fontSize: 9, color: MirrorColors.textHint), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
             ],
           ),
         ),
       ),
     );
   }
-
+  Widget _buildDonateMiniCard() {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 36, height: 36,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(colors: [MirrorColors.primaryLight, MirrorColors.primary], begin: Alignment.topLeft, end: Alignment.bottomRight),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(Icons.favorite, color: Colors.white, size: 20),
+          ),
+          const SizedBox(height: 6),
+          const Text('支持心镜', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: MirrorColors.primaryDark), textAlign: TextAlign.center, maxLines: 1),
+          const SizedBox(height: 2),
+          const Text('\u00a568', style: TextStyle(fontSize: 9, color: MirrorColors.primary), textAlign: TextAlign.center),
+        ],
+      ),
+    );
+  }
+  Widget _buildDonatedMiniCard() {
+    final number = PurchaseService().donationNumber;
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(colors: [MirrorColors.primaryLight, MirrorColors.primary], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 36, height: 36,
+            decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0x40FFFFFF)),
+            child: const Icon(Icons.favorite, color: Colors.white, size: 20),
+          ),
+          const SizedBox(height: 6),
+          const Text('已支持', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.white), textAlign: TextAlign.center),
+          Text('#$number', style: const TextStyle(fontSize: 8, color: Color(0xD9FFFFFF)), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
+        ],
+      ),
+    );
+  }
   Widget _buildQuote() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -114,7 +189,7 @@ class ToolboxScreen extends StatelessWidget {
       child: const Column(
         children: [
           Text(
-            '"鐓ч【濂借嚜宸憋紝涓嶆槸鑷锛屾槸鏅烘収銆?',
+            '"照顾好自己，不是自私，是智慧。"',
             style: TextStyle(
               fontSize: 15,
               fontStyle: FontStyle.italic,
@@ -124,189 +199,179 @@ class ToolboxScreen extends StatelessWidget {
           ),
           SizedBox(height: 8),
           Text(
-            '鈥斺€?蹇冮暅',
+            '—— 心镜',
             style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary),
           ),
         ],
       ),
     );
   }
-}
-
-
-  Widget _buildDonateCard(BuildContext context) {
-    return FutureBuilder<bool>(
-      future: PurchaseService.hasDonated(),
-      builder: (_, snap) {
-        if (snap.data == true) return _thankCard();
-        return _donateCard(context);
-      },
-    );
-  }
-
-  Widget _thankCard() {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Container(width: 56,height: 56,decoration: BoxDecoration(gradient: const LinearGradient(colors: [MirrorColors.primaryLight,MirrorColors.primary],begin: Alignment.topLeft,end: Alignment.bottomRight),borderRadius: BorderRadius.circular(16)),
-              child: const Icon(Icons.favorite,color: Colors.white,size: 28)),
-            const SizedBox(height: 12),
-            const Text('"Dreams are the seedlings of realities."',textAlign: TextAlign.center,style: TextStyle(fontSize: 14,fontStyle: FontStyle.italic,height: 1.5,color: MirrorColors.primaryDark)),
-            const SizedBox(height: 4),
-            const Text('姊︽兂鏄幇瀹炵殑钀岃娊',textAlign: TextAlign.center,style: TextStyle(fontSize: 14,height: 1.5,color: MirrorColors.primaryDark)),
-            const SizedBox(height: 12),
-            Container(padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 3),decoration: BoxDecoration(color: MirrorColors.warm.withValues(alpha: 0.2),borderRadius: BorderRadius.circular(10)),
-              child: const Text('鎰熻阿鎮ㄧ殑鏀寔',style: TextStyle(fontSize: 11,color: MirrorColors.accentDark))),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _donateCard(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      child: InkWell(
-        onTap: () => Navigator.pushNamed(context, '/pro'),
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(width: 48,height: 48,decoration: BoxDecoration(gradient: const LinearGradient(colors: [MirrorColors.primaryLight,MirrorColors.primary],begin: Alignment.topLeft,end: Alignment.bottomRight),borderRadius: BorderRadius.circular(14)),
-                child: const Icon(Icons.favorite,color: Colors.white,size: 24)),
-              const SizedBox(width: 12),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
-                const Text('鎵撹祻 楼68',style: TextStyle(fontSize: 16,fontWeight: FontWeight.w700,color: MirrorColors.primaryDark)),
-                const SizedBox(height: 2),
-                const Text('鎴愪负缁堣韩鍏嶈垂浼氬憳 路 鏀寔蹇冮暅鍙戝睍',style: TextStyle(fontSize: 12,color: MirrorColors.textSecondary)),
-              ])),
-              Container(width: 28,height: 28,decoration: BoxDecoration(color: Color(0x80D4C5E2),borderRadius: BorderRadius.circular(10)),
-                child: const Icon(Icons.chevron_right,color: MirrorColors.primary,size: 18)),
-            ],
+  Future<void> _handleDonateTap(BuildContext context) async {
+    final paid = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(24),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(colors: [MirrorColors.primaryLight, MirrorColors.primary], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+            borderRadius: BorderRadius.all(Radius.circular(24)),
           ),
+          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 32),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Container(width: 72, height: 72, decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0x40FFFFFF)), child: const Icon(Icons.favorite, size: 36, color: Colors.white)),
+            const SizedBox(height: 20),
+            const Text('支持心镜', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 2)),
+            const SizedBox(height: 8),
+            const Text('支持心镜即可成为\n永久终身会员', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Color(0xE6FFFFFF), height: 1.6)),
+            const SizedBox(height: 28),
+            SizedBox(width: double.infinity, height: 48, child: ElevatedButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: MirrorColors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+              child: const Text('\u00a568 成为永久会员', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            )),
+            const SizedBox(height: 10),
+            TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('暂不考虑', style: TextStyle(fontSize: 13, color: Color(0xB3FFFFFF)))),
+          ]),
+        ),
+      ),
+    );
+    if (paid != true || !context.mounted) return;
+    final prefs = await SharedPreferences.getInstance();
+    final counter = (prefs.getInt('donation_counter') ?? 0) + 1;
+    _donationNumber = counter.toString().padLeft(6, '0');
+    _isDonated = true;
+    await prefs.setBool('has_donated', true);
+    await prefs.setString('donation_number', _donationNumber);
+    await prefs.setInt('donation_counter', counter);
+    if (context.mounted) {
+      setState(() {});
+      _showAppreciationDialog(context);
+    }
+  }
+  void _showAppreciationDialog(BuildContext context) {
+    showDialog(context: context, barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(24),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(colors: [MirrorColors.primaryLight, MirrorColors.primary], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+            borderRadius: BorderRadius.all(Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 32),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Container(width: 72, height: 72,
+              decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0x40FFFFFF)),
+              child: const Icon(Icons.favorite, size: 36, color: Colors.white),
+            ),
+            const SizedBox(height: 24),
+            const Text('心镜 MirrorMind', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 2)),
+            const SizedBox(height: 16),
+            const Text('Appreciation enriches our own mind.\n欣赏他人，丰盈自己', textAlign: TextAlign.center, style: TextStyle(fontSize: 15, color: Color(0xE6FFFFFF), height: 1.6)),
+            const SizedBox(height: 24),
+            Text('唯一 #$_donationNumber', style: const TextStyle(fontSize: 13, color: Color(0xD9FFFFFF), letterSpacing: 2)),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: MirrorColors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14)),
+              child: const Text('感谢你的支持 \u2764\ufe0f'),
+            ),
+          ]),
         ),
       ),
     );
   }
-    return FutureBuilder<bool>(
-      future: PurchaseService.hasDonated(),
-      builder: (context, snapshot) {
-        final donated = snapshot.data ?? false;
-        if (donated) return _buildThankYouCard();
-        return _buildDonatePrompt(context);
-      },
+  void _showDonatedDialog(BuildContext context) {
+    showDialog(context: context, barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(24),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(colors: [MirrorColors.primaryLight, MirrorColors.primary], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+            borderRadius: BorderRadius.all(Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 32),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Container(width: 72, height: 72,
+              decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0x40FFFFFF)),
+              child: const Icon(Icons.favorite, size: 36, color: Colors.white),
+            ),
+            const SizedBox(height: 24),
+            const Text('心镜 MirrorMind', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 2)),
+            const SizedBox(height: 16),
+            const Text('Appreciation enriches our own mind.\n欣赏他人，丰盈自己', textAlign: TextAlign.center, style: TextStyle(fontSize: 15, color: Color(0xE6FFFFFF), height: 1.6)),
+            const SizedBox(height: 24),
+            Text('唯一 #$_donationNumber', style: const TextStyle(fontSize: 13, color: Color(0xD9FFFFFF), letterSpacing: 2)),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: MirrorColors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14)),
+              child: const Text('\u2764\ufe0f'),
+            ),
+          ]),
+        ),
+      ),
     );
   }
-
-  Widget _buildThankYouCard() {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+}
+void _showFeedbackDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (ctx) => Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 64, height: 64,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(colors: [MirrorColors.primaryLight, MirrorColors.primary], begin: Alignment.topLeft, end: Alignment.bottomRight),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Icon(Icons.favorite, color: Colors.white, size: 32),
+            Container(width: 64, height: 64,
+              decoration: const BoxDecoration(color: Color(0xFFF3E5F5), shape: BoxShape.circle),
+              child: const Icon(Icons.feedback, size: 32, color: Color(0xFF9C27B0)),
             ),
             const SizedBox(height: 16),
-            Text(
-              '"Dreams are the seedlings of realities.\n\u68a6\u60f3\u662f\u73b0\u5b9e\u7684\u8404\u82bd"',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 15,
-                height: 1.6,
-                fontStyle: FontStyle.italic,
-                color: MirrorColors.primaryDark.withValues(alpha: 0.9),
-              ),
-            ),
+            const Text("意见反馈", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 20),
+            _buildContactRow(Icons.email_outlined, "邮箱", "934491877@qq.com"),
             const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-              decoration: BoxDecoration(
-                color: MirrorColors.warm.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Text("\u611f\u8c22\u60a8\u7684\u652f\u6301", style: TextStyle(fontSize: 12, color: MirrorColors.accentDark)),
+            _buildContactRow(Icons.chat_outlined, "微信", "Leo--44"),
+            const SizedBox(height: 24),
+            const Text(
+              "欢迎随时联系我们，您的每一条建议都将让心镜变得更好",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 13, color: MirrorColors.textSecondary, height: 1.5),
             ),
+            const SizedBox(height: 20),
+            SizedBox(width: double.infinity, child: ElevatedButton(
+              onPressed: () => Navigator.pop(ctx),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: MirrorColors.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+              child: const Text("知道了"),
+            )),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildDonatePrompt(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      child: InkWell(
-        onTap: () => Navigator.pushNamed(context, '/pro'),
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(width: 48, height: 48,
-                decoration: BoxDecoration(gradient: const LinearGradient(colors: [MirrorColors.primaryLight, MirrorColors.primary], begin: Alignment.topLeft, end: Alignment.bottomRight), borderRadius: BorderRadius.circular(14)),
-                child: const Icon(Icons.favorite, color: Colors.white, size: 24)),
-              const SizedBox(width: 12),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Text("鎵撹祻 \u00a568", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: MirrorColors.primaryDark)),
-                const SizedBox(height: 2),
-                const Text("鎴愪负缁堣韩鍏嶈垂浼氬憳 \u00b7 鏀寔蹇冮暅鍙戝睍", style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary)),
-              ])),
-              Container(width: 28, height: 28,
-                decoration: BoxDecoration(color: Color(0x80D4C5E2), borderRadius: BorderRadius.circular(10)),
-                child: const Icon(Icons.chevron_right, color: MirrorColors.primary, size: 18)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      child: InkWell(
-        onTap: () => Navigator.pushNamed(context, "/pro"),
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(width: 48, height: 48,
-                decoration: BoxDecoration(gradient: const LinearGradient(colors: [MirrorColors.primaryLight, MirrorColors.primary], begin: Alignment.topLeft, end: Alignment.bottomRight), borderRadius: BorderRadius.circular(14)),
-                child: const Icon(Icons.favorite, color: Colors.white, size: 24)),
-              const SizedBox(width: 12),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Text("鎵撹祻 楼68", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: MirrorColors.primaryDark)),
-                const SizedBox(height: 2),
-                const Text("鎴愪负缁堣韩鍏嶈垂浼氬憳 路 鏀寔蹇冮暅鍙戝睍", style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary)),
-              ])),
-              Container(width: 28, height: 28,
-                decoration: BoxDecoration(color: Color(0x80D4C5E2), borderRadius: BorderRadius.circular(10)),
-                child: const Icon(Icons.chevron_right, color: MirrorColors.primary, size: 18)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-class _ToolItem {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Color color;
-  final String route;
-
-  const _ToolItem(this.icon, this.title, this.subtitle, this.color, this.route);
+    ),
+  );
 }
-
+Widget _buildContactRow(IconData icon, String label, String value) {
+  return Container(
+    padding: const EdgeInsets.all(14),
+    decoration: BoxDecoration(color: MirrorColors.background, borderRadius: BorderRadius.circular(12)),
+    child: Row(
+      children: [
+        Icon(icon, size: 22, color: MirrorColors.primary),
+        const SizedBox(width: 12),
+        Text(label, style: const TextStyle(fontSize: 14, color: MirrorColors.textSecondary)),
+        const Spacer(),
+        Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: MirrorColors.primaryDark)),
+      ],
+    ),
+  );
+}

@@ -1,10 +1,10 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../services/purchase_service.dart';
 
-/// 鍐ユ兂寮曞椤碉細鏂囧瓧寮曞 + Canvas 璁℃椂鍣?+ 鏌斿拰鍔ㄧ敾
+/// 冥想引导页：文字引导 + Canvas 计时器 + 柔和动画
 class MeditationScreen extends StatefulWidget {
   const MeditationScreen({super.key});
 
@@ -14,290 +14,290 @@ class MeditationScreen extends StatefulWidget {
 
 class _MeditationScreenState extends State<MeditationScreen>
     with TickerProviderStateMixin {
-  // 棰勮鏃堕暱閫夐」锛堢锛?
+  // 预设时长选项（秒）
   bool _isPro = false;
-  static const List<int> _durationOptions = [300, 600, 900, 1200, 1800]; // 5, 10, 15, 20, 30鍒嗛挓
+  static const List<int> _durationOptions = [300, 600, 900, 1200, 1800]; // 5, 10, 15, 20, 30分钟
   
-  // Pro 涓撳睘妯″紡鍒楄〃
+  // Pro 专属模式列表
   static List<_MeditationMode> get _proModes => [
     const _MeditationMode(
-      title: '鐒﹁檻缂撹В',
-      description: '骞冲绱у紶鎯呯华',
+      title: '焦虑缓解',
+      description: '平复紧张情绪',
       icon: Icons.wind_power,
       color: Color(0xFF6BB3A5),
       defaultDuration: 300,
-      phrases: ['鎵句竴涓畨闈欑殑鍦版柟锛屽潗涓嬫垨韬轰笅', '灏嗘墜鏀惧湪鑵归儴锛屾劅鍙楀懠鍚哥殑璧蜂紡', '鍚告皵鏁扮锛屾劅鍙楄吂閮ㄥ儚姘旂悆涓€鏍烽紦璧?, '鍛兼皵鏁扮锛屾參鎱㈤噴鏀炬墍鏈夌殑绱у紶', '褰撶劍铏戝嚭鐜版椂锛屽彧鏄瀵熷畠锛屼笉璇勫垽', '鎯宠薄鐒﹁檻鍍忎竴鐗囦箤浜戯紝鎱㈡參椋樿蛋', '閲嶅锛氭垜姝ゅ埢鏄畨鍏ㄧ殑锛屼竴鍒囬兘浼氬ソ璧锋潵', '鎰熷彈鍙岃剼涓庡湴闈㈢殑杩炴帴锛屾壘鍥炵ǔ瀹氭劅', '缁х画娣卞懠鍚革紝璁╁钩闈欏厖婊″唴蹇?, '褰撳噯澶囧ソ鏃讹紝鎱㈡參鐫佸紑鐪肩潧'],
+      phrases: ['找一个安静的地方，坐下或躺下', '将手放在腹部，感受呼吸的起伏', '吸气数秒，感受腹部像气球一样鼓起', '呼气数秒，慢慢释放所有的紧张', '当焦虑出现时，只是观察它，不评判', '想象焦虑像一片乌云，慢慢飘走', '重复：我此刻是安全的，一切都会好起来', '感受双脚与地面的连接，找回稳定感', '继续深呼吸，让平静充满内心', '当准备好时，慢慢睁开眼睛'],
     ),
     const _MeditationMode(
-      title: '鍘嬪姏閲婃斁',
-      description: '鍗镐笅韬績璐熸媴',
+      title: '压力释放',
+      description: '卸下身心负担',
       icon: Icons.anchor,
       color: Color(0xFF8FA8D0),
       defaultDuration: 600,
-      phrases: ['浠ヨ垝閫傜殑濮垮娍鍧愪笅锛岄棴涓婄溂鐫?, '鍥炲繂浠婂ぉ鎴栨渶杩戣浣犳劅鍒板帇鍔涚殑浜嬫儏', '鎵胯杩欎簺鍘嬪姏鐨勫瓨鍦紝涓嶆姉鎷?, '鎯宠薄灏嗗帇鍔涘啓鍦ㄤ竴寮犵焊涓?, '鐜板湪锛屾妸杩欏紶绾告弶鎴愪竴鍥?, '鎯宠薄灏嗗畠鎵旇繘鍨冨溇妗讹紝褰诲簳鎵旀帀', '鎰熷彈韬綋鍙樺緱杞荤泩锛屽帇鍔涙鍦ㄧ寮€', '娣卞懠鍚革紝鍚稿叆骞抽潤锛屽懠鍑哄帇鍔?, '閲嶅鍑犳锛岀洿鍒版劅瑙夎交鏉句竴浜?, '鎰熻阿鑷繁閲婃斁浜嗚繖浜涜礋鎷?],
+      phrases: ['以舒适的姿势坐下，闭上眼睛', '回忆今天或最近让你感到压力的事情', '承认这些压力的存在，不抗拒', '想象将压力写在一张纸上', '现在，把这张纸揉成一团', '想象将它扔进垃圾桶，彻底扔掉', '感受身体变得轻盈，压力正在离开', '深呼吸，吸入平静，呼出压力', '重复几次，直到感觉轻松一些', '感谢自己释放了这些负担'],
     ),
     const _MeditationMode(
-      title: '鎰熸仼鍐ユ兂',
-      description: '鍩瑰吇鎰熸仼涔嬪績',
+      title: '感恩冥想',
+      description: '培养感恩之心',
       icon: Icons.favorite_outline,
       color: Color(0xFFC49B8C),
       defaultDuration: 600,
-      phrases: ['浠ヨ垝閫傜殑濮垮娍鍧愪笅', '鍥炴兂浠婂ぉ鍊煎緱鎰熸仼鐨勪笁浠朵簨', '鎰熷彈姣忎竴娆″懠鍚稿甫鏉ョ殑鐢熷懡鑳介噺', '鎰熻阿鐢熷懡涓殑姣忎竴涓汉鍜屼簨', '鎶婃劅鎭╃殑鑳介噺浼犻€掔粰韬竟鐨勪汉', '娓╂煍鍦扮粨鏉熻繖娆″啣鎯?],
+      phrases: ['以舒适的姿势坐下', '回想今天值得感恩的三件事', '感受每一次呼吸带来的生命能量', '感谢生命中的每一个人和事', '把感恩的能量传递给身边的人', '温柔地结束这次冥想'],
     ),
   ];
 
-  /// 鑾峰彇褰撳墠鍙敤鐨勫啣鎯虫ā寮忓垪琛紙鏍规嵁 Pro 鐘舵€佽繃婊わ級
+  /// 获取当前可用的冥想模式列表（根据 Pro 状态过滤）
   static List<_MeditationMode> getModes(bool isPro) {
     if (isPro) return _modes + _proModes;
     return _modes;
   }
 
-  // 鑾峰彇鏃堕暱鏄剧ず鏂囧瓧
+  // 获取时长显示文字
   String _getDurationLabel(int seconds) {
-    if (seconds < 60) return '$seconds 绉?;
-    return '${seconds ~/ 60} 鍒嗛挓';
+    if (seconds < 60) return '$seconds 秒';
+    return '${seconds ~/ 60} 分钟';
   }
 
-  // 鍐ユ兂妯″紡瀹氫箟
+  // 冥想模式定义
   static final List<_MeditationMode> _modes = [
     const _MeditationMode(
-      title: '鏅ㄩ棿鍞ら啋',
-      description: '寮€鍚編濂戒竴澶?,
+      title: '晨间唤醒',
+      description: '开启美好一天',
       icon: Icons.wb_sunny_outlined,
       color: Color(0xFFD4A574),
       defaultDuration: 180,
       phrases: [
-        '闂笂鐪肩潧锛屾劅鍙楁竻鏅ㄧ殑姘旀伅',
-        '鎰熸仼鏂扮殑涓€澶╋紝鐢熷懡涓殑绀肩墿',
-        '璁惧畾浠婂ぉ鐨勬剰鍥撅紝浣犳兂瑕佹€庢牱鐨勪綋楠?,
-        '娣卞懠鍚镐笁娆★紝璁╄兘閲忓厖婊″叏韬?,
-        '鎰熷彈闃冲厜娓╂殩浣犵殑鑲岃偆',
-        '鎱㈡參鐫佸紑鐪肩潧锛屽甫鐫€骞抽潤寮€濮嬫柊鐨勪竴澶?,
+        '闭上眼睛，感受清晨的气息',
+        '感恩新的一天，生命中的礼物',
+        '设定今天的意图，你想要怎样的体验',
+        '深呼吸三次，让能量充满全身',
+        '感受阳光温暖你的肌肤',
+        '慢慢睁开眼睛，带着平静开始新的一天',
       ],
     ),
     const _MeditationMode(
-      title: '鍗堥棿灏忔啯',
-      description: '涓轰笅鍗堝厖鐢?,
+      title: '午间小憩',
+      description: '为下午充电',
       icon: Icons.wb_cloudy_outlined,
       color: MirrorColors.primary,
       defaultDuration: 300,
       phrases: [
-        '鎵句竴涓垝閫傜殑濮垮娍锛岄棴涓婄溂鐫?,
-        '鍏虫敞浣犵殑鍛煎惛锛岃嚜鐒剁殑鑺傚',
-        '鍚告皵...鎰熷彈绌烘皵杩涘叆韬綋',
-        '鍛兼皵...閲婃斁涓婂崍鐨勭柌鎯?,
-        '浠庡ご鍒拌剼鍋氫竴娆¤韩浣撴壂鎻?,
-        '鏀炬澗浣犵殑鑲╄唨锛屾斁涓嬬揣缁?,
-        '鏀炬澗浣犵殑鑳岄儴锛岃垝灞曡剨妞?,
-        '鎰熷彈姝ゅ埢鐨勫畞闈?,
-        '璁╂€濈华鍍忎簯鏈典竴鏍烽杩?,
-        '鎱㈡參鍦板洖鍒板綋涓嬶紝甯︾潃娓呴啋涓庤兘閲?,
+        '找一个舒适的姿势，闭上眼睛',
+        '关注你的呼吸，自然的节奏',
+        '吸气...感受空气进入身体',
+        '呼气...释放上午的疲惫',
+        '从头到脚做一次身体扫描',
+        '放松你的肩膀，放下紧绷',
+        '放松你的背部，舒展脊椎',
+        '感受此刻的宁静',
+        '让思绪像云朵一样飘过',
+        '慢慢地回到当下，带着清醒与能量',
       ],
     ),
     const _MeditationMode(
-      title: '鐫″墠鏀炬澗',
-      description: '娓╂煍鍏ョ潯',
+      title: '睡前放松',
+      description: '温柔入睡',
       icon: Icons.nightlight_round,
       color: Color(0xFF7B8BA6),
       defaultDuration: 300,
       phrases: [
-        '鏀炬參浣犵殑鍛煎惛鑺傚',
-        '閲婃斁浠婂ぉ鎵€鏈夌殑鍘嬪姏涓庣柌鎯?,
-        '鎰熷彈韬綋娓愭笎娌夊叆搴婂灚',
-        '璁╂瘡涓€涓粏鑳為兘鏀炬澗涓嬫潵',
-        '鍥為【浠婂ぉ鍊煎緱鎰熸仼鐨勪笁涓灛闂?,
-        '鎰熻阿浠婂ぉ鐨勮嚜宸憋紝浣犲凡缁忚冻澶熷姫鍔?,
-        '鏀句笅瀵规槑澶╃殑鎷呭咖',
-        '鎯宠薄娓╂殩鐨勫厜鎷ユ姳浣犵殑鍏ㄨ韩',
-        '姣忎竴娆″懠鍚搁兘甯︿綘鏇存繁鍦版斁鏉?,
-        '瀹夊績鍦拌繘鍏ユⅵ涔?,
+        '放慢你的呼吸节奏',
+        '释放今天所有的压力与疲惫',
+        '感受身体渐渐沉入床垫',
+        '让每一个细胞都放松下来',
+        '回顾今天值得感恩的三个瞬间',
+        '感谢今天的自己，你已经足够努力',
+        '放下对明天的担忧',
+        '想象温暖的光拥抱你的全身',
+        '每一次呼吸都带你更深地放松',
+        '安心地进入梦乡',
       ],
     ),
     const _MeditationMode(
-      title: '鐒﹁檻缂撹В',
-      description: '骞冲绱у紶鎯呯华',
+      title: '焦虑缓解',
+      description: '平复紧张情绪',
       icon: Icons.wind_power,
       color: Color(0xFF6BB3A5),
       defaultDuration: 300,
       phrases: [
-        '鎵句竴涓畨闈欑殑鍦版柟锛屽潗涓嬫垨韬轰笅',
-        '灏嗘墜鏀惧湪鑵归儴锛屾劅鍙楀懠鍚哥殑璧蜂紡',
-        '鍚告皵鏁扮锛屾劅鍙楄吂閮ㄥ儚姘旂悆涓€鏍烽紦璧?,
-        '鍛兼皵鏁扮锛屾參鎱㈤噴鏀炬墍鏈夌殑绱у紶',
-        '褰撶劍铏戝嚭鐜版椂锛屽彧鏄瀵熷畠锛屼笉璇勫垽',
-        '鎯宠薄鐒﹁檻鍍忎竴鐗囦箤浜戯紝鎱㈡參椋樿蛋',
-        '閲嶅锛氭垜姝ゅ埢鏄畨鍏ㄧ殑锛屼竴鍒囬兘浼氬ソ璧锋潵',
-        '鎰熷彈鍙岃剼涓庡湴闈㈢殑杩炴帴锛屾壘鍥炵ǔ瀹氭劅',
-        '缁х画娣卞懠鍚革紝璁╁钩闈欏厖婊″唴蹇?,
-        '褰撳噯澶囧ソ鏃讹紝鎱㈡參鐫佸紑鐪肩潧',
+        '找一个安静的地方，坐下或躺下',
+        '将手放在腹部，感受呼吸的起伏',
+        '吸气数秒，感受腹部像气球一样鼓起',
+        '呼气数秒，慢慢释放所有的紧张',
+        '当焦虑出现时，只是观察它，不评判',
+        '想象焦虑像一片乌云，慢慢飘走',
+        '重复：我此刻是安全的，一切都会好起来',
+        '感受双脚与地面的连接，找回稳定感',
+        '继续深呼吸，让平静充满内心',
+        '当准备好时，慢慢睁开眼睛',
       ],
     ),
     const _MeditationMode(
-      title: '鍘嬪姏閲婃斁',
-      description: '鍗镐笅韬績璐熸媴',
+      title: '压力释放',
+      description: '卸下身心负担',
       icon: Icons.anchor,
       color: Color(0xFF8FA8D0),
       defaultDuration: 600,
       phrases: [
-        '浠ヨ垝閫傜殑濮垮娍鍧愪笅锛岄棴涓婄溂鐫?,
-        '鍥炲繂浠婂ぉ鎴栨渶杩戣浣犳劅鍒板帇鍔涚殑浜嬫儏',
-        '鎵胯杩欎簺鍘嬪姏鐨勫瓨鍦紝涓嶆姉鎷?,
-        '鎯宠薄灏嗗帇鍔涘啓鍦ㄤ竴寮犵焊涓?,
-        '鐜板湪锛屾妸杩欏紶绾告弶鎴愪竴鍥?,
-        '鎯宠薄灏嗗畠鎵旇繘鍨冨溇妗讹紝褰诲簳鎵旀帀',
-        '鎰熷彈韬綋鍙樺緱杞荤泩锛屽帇鍔涙鍦ㄧ寮€',
-        '娣卞懠鍚革紝鍚稿叆骞抽潤锛屽懠鍑哄帇鍔?,
-        '閲嶅鍑犳锛岀洿鍒版劅瑙夎交鏉句竴浜?,
-        '鎰熻阿鑷繁閲婃斁浜嗚繖浜涜礋鎷?,
+        '以舒适的姿势坐下，闭上眼睛',
+        '回忆今天或最近让你感到压力的事情',
+        '承认这些压力的存在，不抗拒',
+        '想象将压力写在一张纸上',
+        '现在，把这张纸揉成一团',
+        '想象将它扔进垃圾桶，彻底扔掉',
+        '感受身体变得轻盈，压力正在离开',
+        '深呼吸，吸入平静，呼出压力',
+        '重复几次，直到感觉轻松一些',
+        '感谢自己释放了这些负担',
       ],
     ),
     const _MeditationMode(
-      title: '鎰熸仼鍐ユ兂',
-      description: '鍩瑰吇鎰熸仼涔嬪績',
+      title: '感恩冥想',
+      description: '培养感恩之心',
       icon: Icons.favorite_outline,
       color: Color(0xFFE8A8A8),
       defaultDuration: 300,
       phrases: [
-        '闂笂鐪肩潧锛屽洖蹇嗕粖澶╁彂鐢熺殑缇庡ソ灏忎簨',
-        '鎰熸仼闃冲厜銆佺┖姘斿拰姘达紝缁欎簣鐢熷懡婊嬪吇',
-        '鎰熸仼韬竟鐨勪汉锛屼粬浠殑闄即鍜屾敮鎸?,
-        '鎰熸仼鑷繁鐨勮韩浣擄紝瀹冧竴鐩村湪鍔姏宸ヤ綔',
-        '鎰熸仼閬囧埌鐨勬寫鎴橈紝瀹冧滑璁╀綘鎴愰暱',
-        '鎰熸仼姝ゅ埢鐨勫钩闈欙紝杩欐槸涓€浠界ぜ鐗?,
-        '鍦ㄥ績閲岄粯蹇碉細璋㈣阿浣狅紝璋㈣阿浣狅紝璋㈣阿浣?,
-        '鎰熷彈鎰熸仼涔嬫儏鍦ㄥ績涓崌璧?,
-        '灏嗚繖浠芥劅鎭╀紶閫掔粰姣忎竴涓汉',
-        '鎱㈡參鐫佸紑鐪肩潧锛屽甫鐫€鎰熸仼鐨勫績缁х画涓€澶?,
+        '闭上眼睛，回忆今天发生的美好小事',
+        '感恩阳光、空气和水，给予生命滋养',
+        '感恩身边的人，他们的陪伴和支持',
+        '感恩自己的身体，它一直在努力工作',
+        '感恩遇到的挑战，它们让你成长',
+        '感恩此刻的平静，这是一份礼物',
+        '在心里默念：谢谢你，谢谢你，谢谢你',
+        '感受感恩之情在心中升起',
+        '将这份感恩传递给每一个人',
+        '慢慢睁开眼睛，带着感恩的心继续一天',
       ],
     ),
-    // --- Pro 妯″紡 ---
+    // --- Pro 模式 ---
     const _MeditationMode(
-      title: '涓撴敞鍔涜缁?,
-      description: '娣卞害鑱氱劍',
+      title: '专注力训练',
+      description: '深度聚焦',
       icon: Icons.center_focus_strong,
       color: Color(0xFF5B8C85),
       defaultDuration: 600,
       isPro: true,
       phrases: [
-        '鎵惧埌涓€涓垝閫傜殑鍧愬Э锛岃交杞婚棴涓婄溂鐫?,
-        '鎶婃敞鎰忓姏甯﹀埌鑷劧鐨勫懠鍚镐笂锛屼笉瑕佹帶鍒跺畠',
-        '寮€濮嬫暟鍛煎惛锛氬惛姘?..1...鍛兼皵...2...',
-        '褰撴€濈华椋樿蛋鏃讹紝涓嶉渶瑕佽矗澶囪嚜宸?,
-        '娓╂煍鍦版妸娉ㄦ剰鍔涘甫鍥炲懠鍚革紝閲嶆柊寮€濮嬫暟鏁?,
-        '鎰熷彈姣忎竴娆″懠鍚稿甫鏉ョ殑瀹夊畾涓庡钩闈?,
-        '缁х画鍏虫敞鍛煎惛鐨勮妭濂忥紝涓€鍛间竴鍚?,
-        '濡傛灉鏁板埌10锛屼粠1閲嶆柊寮€濮?,
-        '鎰熷彈涓撴敞鍔涘儚鑲岃倝涓€鏍峰湪閿荤偧涓彉寮?,
-        '鎱㈡參鐫佸紑鐪肩潧锛屽甫鐫€杩欎唤娓呮槑鍥炲埌褰撲笅',
+        '找到一个舒适的坐姿，轻轻闭上眼睛',
+        '把注意力带到自然的呼吸上，不要控制它',
+        '开始数呼吸：吸气...1...呼气...2...',
+        '当思绪飘走时，不需要责备自己',
+        '温柔地把注意力带回呼吸，重新开始数数',
+        '感受每一次呼吸带来的安定与平静',
+        '继续关注呼吸的节奏，一呼一吸',
+        '如果数到10，从1重新开始',
+        '感受专注力像肌肉一样在锻炼中变强',
+        '慢慢睁开眼睛，带着这份清明回到当下',
       ],
     ),
     const _MeditationMode(
-      title: '韬綋鎵弿',
-      description: '娣卞害鏀炬澗',
+      title: '身体扫描',
+      description: '深度放松',
       icon: Icons.accessibility_new,
       color: Color(0xFF8B6F9E),
       defaultDuration: 900,
       isPro: true,
       phrases: [
-        '骞宠汉鎴栬垝閫傚湴鍧愮潃锛岄棴涓婄溂鐫?,
-        '鎶婃敞鎰忓姏甯﹀埌鍙岃剼锛屾劅鍙楄剼搴曚笌鍦伴潰鐨勬帴瑙?,
-        '缂撶紦鍚戜笂绉诲姩娉ㄦ剰鍔涘埌鍙岃吙锛屾劅鍙楄吙閮ㄧ殑閲嶉噺',
-        '鍏虫敞鑵归儴锛屾劅鍙楀懠鍚告椂鑵归儴鐨勮捣浼?,
-        '鎶婃敞鎰忓姏甯﹀埌鑳搁儴锛屾劅鍙楀績璺崇殑鑺傚',
-        '鏀炬澗鑲╄唨锛屾斁涓嬫墍鏈夌殑绱х环鍜屽帇鍔?,
-        '鎰熷彈棰堥儴涓庡ご閮紝璁╂瘡涓€涓儴浣嶉兘鏀炬澗涓嬫潵',
-        '浠庡ご鍒拌剼鍋氫竴娆″畬鏁寸殑鎵弿',
-        '鎰熷彈韬綋浣滀负涓€涓暣浣撶殑杞绘澗涓庡拰璋?,
-        '濡傛灉鏌愪釜閮ㄤ綅绱х环锛屾繁鍛煎惛鎶婃斁鏉惧甫鍒伴偅閲?,
-        '鍐嶆鎵弿鍏ㄨ韩锛屾劅鍙楁斁鏉剧殑娣卞害',
-        '鎱㈡參娲诲姩鎵嬫寚鑴氳毒锛屽甫鐫€瑙夊療鍥炲埌褰撲笅',
+        '平躺或舒适地坐着，闭上眼睛',
+        '把注意力带到双脚，感受脚底与地面的接触',
+        '缓缓向上移动注意力到双腿，感受腿部的重量',
+        '关注腹部，感受呼吸时腹部的起伏',
+        '把注意力带到胸部，感受心跳的节奏',
+        '放松肩膀，放下所有的紧绷和压力',
+        '感受颈部与头部，让每一个部位都放松下来',
+        '从头到脚做一次完整的扫描',
+        '感受身体作为一个整体的轻松与和谐',
+        '如果某个部位紧绷，深呼吸把放松带到那里',
+        '再次扫描全身，感受放松的深度',
+        '慢慢活动手指脚趾，带着觉察回到当下',
       ],
     ),
     const _MeditationMode(
-      title: '鎱堟偛鍐ユ兂',
-      description: '婊嬪吇蹇冪伒',
+      title: '慈悲冥想',
+      description: '滋养心灵',
       icon: Icons.volunteer_activism,
       color: Color(0xFFC48793),
       defaultDuration: 600,
       isPro: true,
       phrases: [
-        '鎵惧埌涓€涓垝閫傜殑濮垮娍锛岄棴涓婄溂鐫?,
-        '鎶婃墜杞昏交鏀惧湪蹇冨彛锛屾劅鍙楀績鐨勬俯搴?,
-        '榛樺康锛氭効鎴戝钩瀹夛紝鎰挎垜鍋ュ悍锛屾効鎴戝揩涔?,
-        '鎯宠薄涓€涓綘娣辩埍鐨勪汉锛岄粯蹇碉細鎰夸綘骞冲畨锛屾効鎴戝仴搴凤紝鎰夸綘蹇箰',
-        '鎯宠薄涓€涓櫘閫氱殑鏈嬪弸鎴栫啛浜猴紝鍚屾牱閫佸嚭绁濈',
-        '鎯宠薄涓€涓笌浣犳湁鐭涚浘鐨勪汉锛屽皾璇曢€佸嚭鎱堟偛涓庣悊瑙?,
-        '灏嗚繖浠芥厛鎮叉墿灞曞埌鎵€鏈夎璇嗙殑浜?,
-        '鏈€鍚庯紝绁濇効涓栫晫涓婄殑姣忎竴涓汉骞冲畨銆佸仴搴枫€佸揩涔?,
-        '鎰熷彈鎱堟偛浠庡績閲屾祦娣屽嚭鏉ワ紝娓╂殩浣犺嚜宸?,
-        '鎱㈡參鐫佸紑鐪肩潧锛屽甫鐫€杩欎唤鎱堟偛鍥炲埌鏃ュ父',
+        '找到一个舒适的姿势，闭上眼睛',
+        '把手轻轻放在心口，感受心的温度',
+        '默念：愿我平安，愿我健康，愿我快乐',
+        '想象一个你深爱的人，默念：愿你平安，愿我健康，愿你快乐',
+        '想象一个普通的朋友或熟人，同样送出祝福',
+        '想象一个与你有矛盾的人，尝试送出慈悲与理解',
+        '将这份慈悲扩展到所有认识的人',
+        '最后，祝愿世界上的每一个人平安、健康、快乐',
+        '感受慈悲从心里流淌出来，温暖你自己',
+        '慢慢睁开眼睛，带着这份慈悲回到日常',
       ],
     ),
     const _MeditationMode(
-      title: '鑷垜鍏崇埍',
-      description: '鎺ョ撼涓庡杽寰呰嚜宸?,
+      title: '自我关爱',
+      description: '接纳与善待自己',
       icon: Icons.self_improvement,
       color: Color(0xFFD4A5B7),
       defaultDuration: 600,
       isPro: true,
       phrases: [
-        '浠ユ俯鏌旂殑鏂瑰紡瀵瑰緟鑷繁锛屽儚瀵瑰緟濂芥湅鍙嬩竴鏍?,
-        '鎵句竴涓畨闈欑殑绌洪棿锛岄棴涓婄溂鐫?,
-        '鎶婃墜鏀惧湪蹇冨彛锛屾劅鍙楀績鑴忕殑璺冲姩',
-        '榛樺康锛氭垜鍊煎緱琚埍锛屾垜瓒冲濂?,
-        '鍥炲繂鑷繁鐨勪紭鐐瑰拰鎴愬氨锛岃偗瀹氳嚜宸?,
-        '鍘熻皡鑷繁鐨勪笉瓒冲拰閿欒锛屽畠浠浣犳垚闀?,
-        '鎯宠薄缁欒嚜宸变竴涓俯鏆栫殑鎷ユ姳',
-        '鎰熷彈杩欎唤鑷垜鍏崇埍鐨勮兘閲?,
-        '鎵胯姣忓ぉ閮借鍠勫緟鑷繁',
-        '鎱㈡參鐫佸紑鐪肩潧锛屽甫鐫€杩欎唤鐖辩户缁墠琛?,
+        '以温柔的方式对待自己，像对待好朋友一样',
+        '找一个安静的空间，闭上眼睛',
+        '把手放在心口，感受心脏的跳动',
+        '默念：我值得被爱，我足够好',
+        '回忆自己的优点和成就，肯定自己',
+        '原谅自己的不足和错误，它们让你成长',
+        '想象给自己一个温暖的拥抱',
+        '感受这份自我关爱的能量',
+        '承诺每天都要善待自己',
+        '慢慢睁开眼睛，带着这份爱继续前行',
       ],
     ),
     const _MeditationMode(
-      title: '姝ｅ康鍛煎惛',
-      description: '娲诲湪褰撲笅',
+      title: '正念呼吸',
+      description: '活在当下',
       icon: Icons.air_outlined,
       color: Color(0xFF7AB893),
       defaultDuration: 600,
       isPro: true,
       phrases: [
-        '浠ヨ垝閫傜殑濮垮娍鍧愪笅锛屾尯鐩磋叞鑳?,
-        '灏嗘敞鎰忓姏闆嗕腑鍦ㄩ蓟灏栵紝鎰熷彈鍛煎惛鐨勮繘鍑?,
-        '涓嶈瘯鍥炬敼鍙樺懠鍚革紝鍙槸瑙傚療瀹?,
-        '鍚告皵鏃舵劅鍙楃┖姘旂殑娓呭噳锛屽懠姘旀椂鎰熷彈娓╂殩',
-        '褰撴€濈华椋樿蛋鏃讹紝杞昏交鎷夊洖鏉?,
-        '涓嶈瘎鍒わ紝涓嶆墽鐫€锛屽彧鏄瀵?,
-        '鎰熷彈鍛煎惛鐨勮嚜鐒惰妭濂忥紝涓€鍛间竴鍚?,
-        '璁╂墍鏈夌殑蹇靛ご鍍忎簯鏈典竴鏍烽杩?,
-        '涓撴敞浜庢鍒伙紝涓撴敞浜庡懠鍚?,
-        '鎱㈡參鐫佸紑鐪肩潧锛屼繚鎸佽繖浠借瀵?,
+        '以舒适的姿势坐下，挺直腰背',
+        '将注意力集中在鼻尖，感受呼吸的进出',
+        '不试图改变呼吸，只是观察它',
+        '吸气时感受空气的清凉，呼气时感受温暖',
+        '当思绪飘走时，轻轻拉回来',
+        '不评判，不执着，只是觉察',
+        '感受呼吸的自然节奏，一呼一吸',
+        '让所有的念头像云朵一样飘过',
+        '专注于此刻，专注于呼吸',
+        '慢慢睁开眼睛，保持这份觉察',
       ],
     ),
     const _MeditationMode(
-      title: '鎯呯华骞宠　',
-      description: '鎵惧洖鍐呭績骞抽潤',
+      title: '情绪平衡',
+      description: '找回内心平静',
       icon: Icons.balance,
       color: Color(0xFF9AA5D1),
       defaultDuration: 900,
       isPro: true,
       phrases: [
-        '瀹夐潤鍦板潗涓嬶紝鎰熷彈褰撲笅鐨勬儏缁?,
-        '涓嶆姉鎷掍换浣曟儏缁紝鍙槸鍏佽瀹冨瓨鍦?,
-        '缁欐儏缁懡鍚嶏細杩欐槸鎰ゆ€掞紝杩欐槸鎮蹭激锛岃繖鏄枩鎮?,
-        '鎰熷彈鎯呯华鍦ㄨ韩浣撲腑鐨勪綅缃?,
-        '娣卞懠鍚革紝璁╂儏缁殢鐫€鍛煎惛娴佸姩',
-        '鎯宠薄鎯呯华鍍忔按涓€鏍锋祦杩囦綘鐨勮韩浣?,
-        '鎺ョ撼鎵€鏈夌殑鎯呯华锛屽畠浠兘鏄綘鐨勪竴閮ㄥ垎',
-        '鎰熷彈鎯呯华閫愭笎骞抽潤涓嬫潵',
-        '鎵惧洖鍐呭績鐨勫钩琛′笌瀹侀潤',
-        '甯︾潃杩欎唤骞抽潤鍥炲埌褰撲笅',
+        '安静地坐下，感受当下的情绪',
+        '不抗拒任何情绪，只是允许它存在',
+        '给情绪命名：这是愤怒，这是悲伤，这是喜悦',
+        '感受情绪在身体中的位置',
+        '深呼吸，让情绪随着呼吸流动',
+        '想象情绪像水一样流过你的身体',
+        '接纳所有的情绪，它们都是你的一部分',
+        '感受情绪逐渐平静下来',
+        '找回内心的平衡与宁静',
+        '带着这份平静回到当下',
       ],
     ),
   ];
 
-  // 鐘舵€佸彉閲?
+  // 状态变量
   _MeditationMode? _selectedMode;
-  int? _selectedDuration; // 鐢ㄦ埛閫夋嫨鐨勬椂闀匡紙绉掞級
+  int? _selectedDuration; // 用户选择的时长（秒）
   Timer? _timer;
   Timer? _phraseTimer;
   late AnimationController _progressController;
@@ -332,13 +332,13 @@ class _MeditationScreenState extends State<MeditationScreen>
     super.dispose();
   }
 
-  // 閫夋嫨妯″紡骞舵樉绀烘椂闀块€夋嫨鍣?
+  // 选择模式并显示时长选择器
   void _selectMode(_MeditationMode mode) {
     if (mode.isPro && !PurchaseService().isPro) {
       Navigator.pushNamed(
         context,
         '/pro',
-        arguments: {'hint': '瑙ｉ攣楂樼骇鍐ユ兂锛屽寘鍚笓娉ㄥ姏璁粌銆佽韩浣撴壂鎻忕瓑涓撲笟璇剧▼'},
+        arguments: {'hint': '解锁高级冥想，包含专注力训练、身体扫描等专业课程'},
       );
       return;
     }
@@ -349,7 +349,7 @@ class _MeditationScreenState extends State<MeditationScreen>
     });
   }
 
-  // 寮€濮嬪啣鎯?
+  // 开始冥想
   void _startMeditation() {
     final mode = _selectedMode!;
     final durationSeconds = _selectedDuration ?? mode.defaultDuration;
@@ -367,10 +367,10 @@ class _MeditationScreenState extends State<MeditationScreen>
 
     _fadeController.forward(from: 0);
 
-    // 璁＄畻寮曞鏂囧瓧鍒囨崲闂撮殧
+    // 计算引导文字切换间隔
     final phraseInterval = durationSeconds ~/ mode.phrases.length;
 
-    // 姣忕鏇存柊璁℃椂鍣?
+    // 每秒更新计时器
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) return;
       setState(() {
@@ -382,7 +382,7 @@ class _MeditationScreenState extends State<MeditationScreen>
       });
     });
 
-    // 鏍规嵁鏃堕暱鍔ㄦ€佽皟鏁村紩瀵兼枃瀛楀垏鎹㈤鐜?
+    // 根据时长动态调整引导文字切换频率
     _phraseTimer = Timer.periodic(Duration(seconds: phraseInterval), (_) {
       if (!mounted || _isCompleted) return;
       _fadeController.reverse().then((_) {
@@ -396,7 +396,7 @@ class _MeditationScreenState extends State<MeditationScreen>
     });
   }
 
-  // 瀹屾垚鍐ユ兂
+  // 完成冥想
   void _completeMeditation() {
     _timer?.cancel();
     _phraseTimer?.cancel();
@@ -408,7 +408,7 @@ class _MeditationScreenState extends State<MeditationScreen>
     _showCompletionDialog();
   }
 
-  // 鏆傚仠
+  // 暂停
   void _pause() {
     _timer?.cancel();
     _phraseTimer?.cancel();
@@ -416,7 +416,7 @@ class _MeditationScreenState extends State<MeditationScreen>
     setState(() => _isPlaying = false);
   }
 
-  // 缁х画
+  // 继续
   void _resume() {
     setState(() => _isPlaying = true);
 
@@ -453,7 +453,7 @@ class _MeditationScreenState extends State<MeditationScreen>
     });
   }
 
-  // 杩斿洖妯″紡閫夋嫨
+  // 返回模式选择
   void _backToModeSelection() {
     _timer?.cancel();
     _phraseTimer?.cancel();
@@ -470,13 +470,13 @@ class _MeditationScreenState extends State<MeditationScreen>
     });
   }
 
-  // 瀹屾垚寮圭獥
+  // 完成弹窗
   void _showCompletionDialog() {
     final mode = _selectedMode!;
     final effectiveDuration = _selectedDuration ?? mode.defaultDuration;
     final minutes = effectiveDuration ~/ 60;
     final seconds = effectiveDuration % 60;
-    final durationStr = minutes > 0 ? '$minutes 鍒嗛挓' : '$seconds 绉?;
+    final durationStr = minutes > 0 ? '$minutes 分钟' : '$seconds 秒';
 
     showDialog(
       context: context,
@@ -486,29 +486,29 @@ class _MeditationScreenState extends State<MeditationScreen>
           children: [
             Icon(Icons.self_improvement, color: MirrorColors.primary, size: 28),
             SizedBox(width: 10),
-            Text('鍐ユ兂瀹屾垚'),
+            Text('冥想完成'),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              '浣犲仛寰楀緢妫?,
+              '你做得很棒',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             Text(
-              '鏈鍐ユ兂锛?durationStr',
+              '本次冥想：$durationStr',
               style: const TextStyle(fontSize: 14, color: MirrorColors.textSecondary),
             ),
             const SizedBox(height: 4),
             Text(
-              '妯″紡锛?{mode.title}',
+              '模式：${mode.title}',
               style: const TextStyle(fontSize: 14, color: MirrorColors.textSecondary),
             ),
             const SizedBox(height: 16),
             const Text(
-              '鑺变竴鐐规椂闂存劅鍙楁鍒荤殑骞抽潤锛屽甫鐫€杩欎唤瀹侀潤缁х画浣犵殑涓€澶┿€?,
+              '花一点时间感受此刻的平静，带着这份宁静继续你的一天。',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13, color: MirrorColors.textSecondary, height: 1.5),
             ),
@@ -520,14 +520,14 @@ class _MeditationScreenState extends State<MeditationScreen>
               Navigator.pop(ctx);
               _backToModeSelection();
             },
-            child: const Text('瀹屾垚'),
+            child: const Text('完成'),
           ),
         ],
       ),
     );
   }
 
-  // 鏍煎紡鍖栨椂闂?
+  // 格式化时间
   String _formatTime(int totalSeconds) {
     final minutes = totalSeconds ~/ 60;
     final seconds = totalSeconds % 60;
@@ -541,7 +541,7 @@ class _MeditationScreenState extends State<MeditationScreen>
     return Scaffold(
       backgroundColor: isDark ? MirrorColors.darkBackground : MirrorColors.background,
       appBar: AppBar(
-        title: const Text('鍐ユ兂寮曞'),
+        title: const Text('冥想引导'),
         leading: _showDurationPicker
             ? IconButton(
                 icon: const Icon(Icons.arrow_back),
@@ -553,7 +553,7 @@ class _MeditationScreenState extends State<MeditationScreen>
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: _backToModeSelection,
-              tooltip: '閲嶆柊閫夋嫨',
+              tooltip: '重新选择',
             ),
         ],
       ),
@@ -567,7 +567,7 @@ class _MeditationScreenState extends State<MeditationScreen>
     );
   }
 
-  /// 妯″紡閫夋嫨椤?
+  /// 模式选择页
   Widget _buildModeSelection(bool isDark) {
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -575,7 +575,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         const Padding(
           padding: EdgeInsets.only(bottom: 12),
           child: Text(
-            '閫夋嫨涓€绉嶅啣鎯虫ā寮?,
+            '选择一种冥想模式',
             style: TextStyle(fontSize: 15, color: MirrorColors.textSecondary),
           ),
         ),
@@ -632,7 +632,7 @@ class _MeditationScreenState extends State<MeditationScreen>
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${_getDurationLabel(mode.defaultDuration)} 路 ${mode.description}',
+                              '${_getDurationLabel(mode.defaultDuration)} · ${mode.description}',
                               style: TextStyle(
                                 fontSize: 13,
                                 color: isDark
@@ -659,14 +659,14 @@ class _MeditationScreenState extends State<MeditationScreen>
     );
   }
 
-  /// 鏃堕暱閫夋嫨椤?
+  /// 时长选择页
   Widget _buildDurationPicker(bool isDark) {
     final mode = _selectedMode!;
 
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        // 妯″紡淇℃伅鍗＄墖
+        // 模式信息卡片
         Card(
           margin: const EdgeInsets.only(bottom: 24),
           child: Padding(
@@ -709,16 +709,16 @@ class _MeditationScreenState extends State<MeditationScreen>
           ),
         ),
 
-        // 鏍囬
+        // 标题
         const Padding(
           padding: EdgeInsets.only(bottom: 16),
           child: Text(
-            '閫夋嫨鍐ユ兂鏃堕暱',
+            '选择冥想时长',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
         ),
 
-        // 鏃堕暱閫夐」缃戞牸
+        // 时长选项网格
         GridView.count(
           shrinkWrap: true,
           crossAxisCount: 2,
@@ -726,9 +726,9 @@ class _MeditationScreenState extends State<MeditationScreen>
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
           children: [
-            // 榛樿鏃堕暱閫夐」锛堟斁鍦ㄧ涓€涓級
+            // 默认时长选项（放在第一个）
             _buildDurationButton(mode.defaultDuration, mode, isDark, isDefault: true),
-            // 鍏朵粬棰勮鏃堕暱閫夐」
+            // 其他预设时长选项
             ..._durationOptions
                 .where((d) => d != mode.defaultDuration)
                 .map((duration) => _buildDurationButton(duration, mode, isDark)),
@@ -737,7 +737,7 @@ class _MeditationScreenState extends State<MeditationScreen>
 
         const SizedBox(height: 32),
 
-        // 寮€濮嬫寜閽?
+        // 开始按钮
         SizedBox(
           width: double.infinity,
           height: 56,
@@ -749,7 +749,7 @@ class _MeditationScreenState extends State<MeditationScreen>
               elevation: 4,
             ),
             child: const Text(
-              '寮€濮嬪啣鎯?,
+              '开始冥想',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
             ),
           ),
@@ -758,7 +758,7 @@ class _MeditationScreenState extends State<MeditationScreen>
     );
   }
 
-  /// 鏃堕暱閫夐」鎸夐挳
+  /// 时长选项按钮
   Widget _buildDurationButton(int duration, _MeditationMode mode, bool isDark, {bool isDefault = false}) {
     final isSelected = _selectedDuration == duration;
 
@@ -798,7 +798,7 @@ class _MeditationScreenState extends State<MeditationScreen>
     );
   }
 
-  /// 鍐ユ兂杩涜涓?
+  /// 冥想进行中
   Widget _buildMeditationSession(bool isDark) {
     final mode = _selectedMode!;
     final currentPhrase = mode.phrases[_currentPhraseIndex];
@@ -808,14 +808,14 @@ class _MeditationScreenState extends State<MeditationScreen>
       children: [
         const Spacer(flex: 2),
 
-        // Canvas 鍊掕鏃跺渾鐜?
+        // Canvas 倒计时圆环
         SizedBox(
           width: 220,
           height: 220,
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // 鑳屾櫙鍦嗙幆
+              // 背景圆环
               CustomPaint(
                 size: const Size(220, 220),
                 painter: _CirclePainter(
@@ -824,7 +824,7 @@ class _MeditationScreenState extends State<MeditationScreen>
                   strokeWidth: 6,
                 ),
               ),
-              // 杩涘害鍦嗙幆
+              // 进度圆环
               if (_elapsedSeconds > 0)
                 AnimatedBuilder(
                   animation: _progressController,
@@ -840,7 +840,7 @@ class _MeditationScreenState extends State<MeditationScreen>
                     );
                   },
                 ),
-              // 涓績鏂囧瓧
+              // 中心文字
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -868,7 +868,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         ),
         const SizedBox(height: 40),
 
-        // 寮曞鏂囧瓧锛堟贰鍏ユ贰鍑哄姩鐢伙級
+        // 引导文字（淡入淡出动画）
         SizedBox(
           height: 80,
           child: FadeTransition(
@@ -900,13 +900,13 @@ class _MeditationScreenState extends State<MeditationScreen>
 
         const Spacer(),
 
-        // 鎺у埗鎸夐挳
+        // 控制按钮
         Padding(
           padding: const EdgeInsets.only(bottom: 60),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // 閲嶇疆
+              // 重置
               IconButton(
                 onPressed: _backToModeSelection,
                 icon: const Icon(Icons.replay),
@@ -914,7 +914,7 @@ class _MeditationScreenState extends State<MeditationScreen>
                 color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
               ),
               const SizedBox(width: 24),
-              // 鎾斁/鏆傚仠
+              // 播放/暂停
               Container(
                 width: 64,
                 height: 64,
@@ -939,7 +939,7 @@ class _MeditationScreenState extends State<MeditationScreen>
                 ),
               ),
               const SizedBox(width: 24),
-              const SizedBox(width: 48), // 鍗犱綅淇濇寔灞呬腑
+              const SizedBox(width: 48), // 占位保持居中
             ],
           ),
         ),
@@ -948,7 +948,7 @@ class _MeditationScreenState extends State<MeditationScreen>
   }
 }
 
-/// 鍐ユ兂妯″紡鏁版嵁绫?
+/// 冥想模式数据类
 class _MeditationMode {
   final String title;
   final String description;
@@ -969,7 +969,7 @@ class _MeditationMode {
   });
 }
 
-/// Canvas 缁樺埗鍊掕鏃跺渾鐜?
+/// Canvas 绘制倒计时圆环
 class _CirclePainter extends CustomPainter {
   final double progress;
   final Color color;
@@ -992,7 +992,7 @@ class _CirclePainter extends CustomPainter {
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
 
-    // 浠庨《閮紙-蟺/2锛夊紑濮嬬粯鍒跺姬绾?
+    // 从顶部（-π/2）开始绘制弧线
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       -pi / 2,
@@ -1007,4 +1007,3 @@ class _CirclePainter extends CustomPainter {
     return oldDelegate.progress != progress || oldDelegate.color != color;
   }
 }
-

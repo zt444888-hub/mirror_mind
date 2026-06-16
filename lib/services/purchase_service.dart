@@ -85,6 +85,15 @@ class PurchaseService {
           await _setPro(true);
           _proStatusController.add(true);
         }
+        if (!_hasDonated) {
+          _hasDonated = true;
+          final prefs = await SharedPreferences.getInstance();
+          final counter = (prefs.getInt("donation_counter") ?? 0) + 1;
+          _donationNumber = counter.toString().padLeft(6, "0");
+          await prefs.setBool("has_donated", true);
+          await prefs.setString("donation_number", _donationNumber);
+          await prefs.setInt("donation_counter", counter);
+        }
         if (purchase.pendingCompletePurchase) {
           await _iap.completePurchase(purchase);
         }
@@ -149,6 +158,7 @@ class PurchaseService {
   Future<String?> buyPro() async {
     if (!_isAvailable) {
       _hasDonated = true;
+      _proStatusController.add(true);
       return null;
     }
     if (_productDetails == null) {

@@ -1,10 +1,10 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../services/purchase_service.dart';
 import '../constants/colors.dart';
 
-/// 浠樿垂澧欓〉闈細瑙ｉ攣蹇冮暅 Pro
+/// 付费墙页面：解锁心镜 Pro
 class ProScreen extends StatefulWidget {
-  /// 鍙€夋彁绀烘枃瀛楋紙濡?瑙ｉ攣楂樼骇鍐ユ兂"锛夛紝鏄剧ず鍦ㄩ《閮?
+  /// 可选提示文字（如"解锁高级冥想"），显示在顶部
   final String? hint;
 
   const ProScreen({super.key, this.hint});
@@ -16,12 +16,12 @@ class ProScreen extends StatefulWidget {
 class _ProScreenState extends State<ProScreen> {
   bool _isBuying = false;
   bool _isRestoring = false;
-  bool _isPro = false;
+  bool _donated = false;
 
   @override
   void initState() {
     super.initState();
-    _isPro = PurchaseService().isPro;
+    _donated = PurchaseService().donated;
   }
 
   Future<void> _handleBuy() async {
@@ -29,13 +29,13 @@ class _ProScreenState extends State<ProScreen> {
     try {
       final errorMsg = await PurchaseService().buyPro();
       if (errorMsg == null) {
-        // 璐拱璇锋眰宸插彂鍑猴紝缁撴灉閫氳繃 purchase stream 寮傛杩斿洖
+        // 购买请求已发出，结果通过 purchase stream 异步返回
         await Future.delayed(const Duration(seconds: 3));
         if (mounted) {
           _checkProStatus();
         }
       } else {
-        // 璐拱鍙戣捣澶辫触
+        // 购买发起失败
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -62,14 +62,13 @@ class _ProScreenState extends State<ProScreen> {
   }
 
   void _checkProStatus() {
-    final isPro = PurchaseService().isPro;
-    if (isPro) {
-      setState(() => _isPro = true);
+    if (PurchaseService().donated) {
+      setState(() => _donated = true);
       _showSuccessAndPop();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('璐拱灏氭湭瀹屾垚锛岃绋嶅悗閲嶈瘯鎴栨仮澶嶈喘涔?),
+          content: Text('购买尚未完成，请稍后重试或恢复购买'),
           backgroundColor: MirrorColors.warm,
         ),
       );
@@ -100,12 +99,12 @@ class _ProScreenState extends State<ProScreen> {
               ),
               const SizedBox(height: 20),
               const Text(
-                '鎭枩锛佸凡瑙ｉ攣蹇冮暅 Pro',
+                '恭喜！已解锁心镜 Pro',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: MirrorColors.textPrimary),
               ),
               const SizedBox(height: 8),
               const Text(
-                '鍏ㄩ儴楂樼骇鍔熻兘宸叉案涔呮縺娲籠n鎰夸綘涓庡績闀滀竴璺悓琛?,
+                '全部高级功能已永久激活\n愿你与心镜一路同行',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14, color: MirrorColors.textSecondary, height: 1.6),
               ),
@@ -119,7 +118,7 @@ class _ProScreenState extends State<ProScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
-                child: const Text('寮€濮嬩綋楠?),
+                child: const Text('开始体验'),
               ),
             ],
           ),
@@ -132,20 +131,62 @@ class _ProScreenState extends State<ProScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    if (_isPro) {
+    if (_donated) {
       return Scaffold(
         backgroundColor: isDark ? MirrorColors.darkBackground : MirrorColors.background,
-        appBar: AppBar(title: const Text('蹇冮暅 Pro')),
-        body: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.verified, size: 64, color: MirrorColors.secondary),
-              SizedBox(height: 16),
-              Text('蹇冮暅 Pro 路 宸茶В閿?, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-              SizedBox(height: 8),
-              Text('鎰熻阿浣犵殑鏀寔', style: TextStyle(fontSize: 14, color: MirrorColors.textSecondary)),
-            ],
+        appBar: AppBar(
+          title: const Text('支持心镜'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [MirrorColors.primaryLight, MirrorColors.primary],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0x40FFFFFF),
+                    ),
+                    child: const Icon(Icons.favorite, size: 40, color: Colors.white),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    '心镜 MirrorMind',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Appreciation enriches our own mind.\n欣赏他人，丰盈自己',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xE6FFFFFF),
+                      height: 1.6,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       );
@@ -153,12 +194,12 @@ class _ProScreenState extends State<ProScreen> {
 
     return Scaffold(
       backgroundColor: isDark ? MirrorColors.darkBackground : MirrorColors.background,
-      appBar: AppBar(title: const Text('瑙ｉ攣蹇冮暅 Pro')),
+      appBar: AppBar(title: const Text('解锁心镜 Pro')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // 椤堕儴鏍囪
+            // 顶部标语
             if (widget.hint != null) ...[
               Container(
                 width: double.infinity,
@@ -183,7 +224,7 @@ class _ProScreenState extends State<ProScreen> {
               const SizedBox(height: 20),
             ],
 
-            // 鏍囬鍖?
+            // 标题区
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(24),
@@ -208,12 +249,12 @@ class _ProScreenState extends State<ProScreen> {
                   ),
                   const SizedBox(height: 12),
                   const Text(
-                    '蹇冮暅 Pro',
+                    '心镜 Pro',
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 1),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '涓€娆¤喘涔帮紝缁堣韩浣跨敤',
+                    '一次购买，终身使用',
                     style: TextStyle(fontSize: 14, color: Color(0xD9FFFFFF)),
                   ),
                 ],
@@ -221,13 +262,13 @@ class _ProScreenState extends State<ProScreen> {
             ),
             const SizedBox(height: 24),
 
-            // 鍔熻兘瀵规瘮
-            _buildSectionTitle('鍏嶈垂鐗?vs Pro'),
+            // 功能对比
+            _buildSectionTitle('免费版 vs Pro'),
             const SizedBox(height: 12),
             _buildComparisonCard(isDark),
             const SizedBox(height: 28),
 
-            // 浠锋牸鍗＄墖
+            // 价格卡片
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(24),
@@ -246,17 +287,17 @@ class _ProScreenState extends State<ProScreen> {
               child: Column(
                 children: [
                   const Text(
-                    '涓€娆℃€ц喘涔?,
+                    '一次性购买',
                     style: TextStyle(fontSize: 14, color: MirrorColors.textSecondary),
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    '楼68',
+                    '¥68',
                     style: TextStyle(fontSize: 44, fontWeight: FontWeight.w800, color: MirrorColors.primaryDark, height: 1),
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    '姘镐箙瑙ｉ攣鍏ㄩ儴楂樼骇鍔熻兘',
+                    '永久解锁全部高级功能',
                     style: TextStyle(fontSize: 14, color: MirrorColors.textSecondary),
                   ),
                   const SizedBox(height: 20),
@@ -274,7 +315,7 @@ class _ProScreenState extends State<ProScreen> {
                       ),
                       child: _isBuying
                           ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                          : const Text('绔嬪嵆璐拱'),
+                          : const Text('立即购买'),
                     ),
                   ),
                 ],
@@ -282,18 +323,18 @@ class _ProScreenState extends State<ProScreen> {
             ),
             const SizedBox(height: 20),
 
-            // 鎭㈠璐拱
+            // 恢复购买
             TextButton(
               onPressed: _isRestoring ? null : _handleRestore,
               child: _isRestoring
                   ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('鎭㈠璐拱', style: TextStyle(color: MirrorColors.textSecondary)),
+                  : const Text('恢复购买', style: TextStyle(color: MirrorColors.textSecondary)),
             ),
 
-            // 缁х画浣跨敤鍏嶈垂鐗?
+            // 继续使用免费版
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('缁х画浣跨敤鍏嶈垂鐗?, style: TextStyle(color: MirrorColors.textHint)),
+              child: const Text('继续使用免费版', style: TextStyle(color: MirrorColors.textHint)),
             ),
             const SizedBox(height: 20),
           ],
@@ -325,14 +366,14 @@ class _ProScreenState extends State<ProScreen> {
           children: [
             _buildComparisonHeader(),
             const TableRow(children: [SizedBox(height: 12), SizedBox(), SizedBox()]),
-            _buildComparisonRow('鍐ユ兂寮曞', '3 绉嶆ā寮?, '6 绉嶆ā寮廫n+ 鑷畾涔夋椂闀?),
-            _buildComparisonRow('璁ょ煡鍗＄墖', '20 寮犲熀纭€', '4 涓繘闃朵富棰樺寘\n48 寮犺繘闃跺崱鐗?),
-            _buildComparisonRow('鎯呯华璇嶅簱', '44 璇?, '72 璇峔n+ 娣卞害璇嶈В'),
-            _buildComparisonRow('蹇冩儏鍗＄墖', '3 绉嶆ā鏉?, '鍏?7 绉嶇簿缇庢ā鏉縗n+ 鑷畾涔夐厤鑹?),
-            _buildComparisonRow('鎯呯华瓒嬪娍', '7 澶╃畝鍗曡褰?, '30 澶╄秼鍔挎洸绾縗n+ Tag 鎯呯华绛涢€?),
-            _buildComparisonRow('PDF 鎶ュ憡', '鍛ㄦ姤', '鍛ㄦ姤 + 鏈堟姤\n+ 骞村害鎶ュ憡'),
-            _buildComparisonRow('鎻愰啋璁剧疆', '2 绉嶆彁閱?, '3 绉嶆彁閱抃n鍏ㄩ儴鍙敤'),
-            _buildComparisonRow('AI 瀵硅瘽', '闇€鑷 API Key', '鐩存帴鍙敤\n浜戠灏忛暅闄綘鑱?),
+            _buildComparisonRow('冥想引导', '3 种模式', '6 种模式\n+ 自定义时长'),
+            _buildComparisonRow('认知卡片', '20 张基础', '4 个进阶主题包\n48 张进阶卡片'),
+            _buildComparisonRow('情绪词库', '44 词', '72 词\n+ 深度词解'),
+            _buildComparisonRow('心情卡片', '3 种模板', '共 7 种精美模板\n+ 自定义配色'),
+            _buildComparisonRow('情绪趋势', '7 天简单记录', '30 天趋势曲线\n+ Tag 情绪筛选'),
+            _buildComparisonRow('PDF 报告', '周报', '周报 + 月报\n+ 年度报告'),
+            _buildComparisonRow('提醒设置', '2 种提醒', '3 种提醒\n全部可用'),
+            _buildComparisonRow('AI 对话', '需自备 API Key', '直接可用\n云端小镜陪你聊'),
           ],
         ),
       ),
@@ -342,8 +383,8 @@ class _ProScreenState extends State<ProScreen> {
   TableRow _buildComparisonHeader() {
     return const TableRow(
       children: [
-        Text('鍔熻兘', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: MirrorColors.textPrimary)),
-        Text('鍏嶈垂鐗?, textAlign: TextAlign.center, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: MirrorColors.textSecondary)),
+        Text('功能', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: MirrorColors.textPrimary)),
+        Text('免费版', textAlign: TextAlign.center, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: MirrorColors.textSecondary)),
         Text('Pro', textAlign: TextAlign.center, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: MirrorColors.primaryDark)),
       ],
     );
@@ -368,4 +409,3 @@ class _ProScreenState extends State<ProScreen> {
     );
   }
 }
-

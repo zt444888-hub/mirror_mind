@@ -52,7 +52,7 @@ class CardSwiper extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.3),
+                        color: Color(0x80FFFFFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
@@ -89,7 +89,7 @@ class CardSwiper extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
+                        color: Color(0x33FFFFFF),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
@@ -144,4 +144,3 @@ class CardSwiper extends StatelessWidget {
     }
   }
 }
-
