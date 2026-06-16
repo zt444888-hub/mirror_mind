@@ -238,13 +238,38 @@ class _ToolboxScreenState extends State<ToolboxScreen> {
       ),
     );
     if (paid != true || !context.mounted) return;
+
+    // On real device: starts IAP payment sheet. On simulator: immediate success.
+    final errorMsg = await PurchaseService().buyPro();
+
+    if (errorMsg != null && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMsg), backgroundColor: MirrorColors.warm));
+      return;
+    }
+
+    // Wait for payment confirmation (simulator: already done, real device: via callback)
+    if (!PurchaseService().donated) {
+      for (int i = 0; i < 120; i++) {
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (_isDonated || PurchaseService().donated) break;
+      }
+    }
+
     final prefs = await SharedPreferences.getInstance();
-    final counter = (prefs.getInt('donation_counter') ?? 0) + 1;
-    _donationNumber = counter.toString().padLeft(6, '0');
+    if (!_isDonated && PurchaseService().donated) {
+      _donationNumber = PurchaseService().donationNumber;
+    }
+    if (_donationNumber.isEmpty) {
+      final counter = (prefs.getInt('donation_counter') ?? 0) + 1;
+      _donationNumber = counter.toString().padLeft(6, '0');
+    }
     _isDonated = true;
     await prefs.setBool('has_donated', true);
     await prefs.setString('donation_number', _donationNumber);
-    await prefs.setInt('donation_counter', counter);
+    if (_donationNumber.isNotEmpty) {
+      await prefs.setInt('donation_counter', int.parse(_donationNumber));
+    }
     if (context.mounted) {
       setState(() {});
       _showAppreciationDialog(context);
