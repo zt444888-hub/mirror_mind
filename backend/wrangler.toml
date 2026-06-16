@@ -2,3 +2,6 @@ name = "mirror-mind-api"
 main = "worker.js"
 compatibility_date = "2026-06-16"
 compatibility_flags = ["nodejs_compat"]
+
+[ai]
+binding = "AI"

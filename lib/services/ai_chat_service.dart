@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 /// 心镜云后端地址
 /// 部署 Zeabur 后替换为你的域名
 /// 例如: https://xxx.zeabur.app
-const String kCloudBaseUrl = 'https://mirror-mind-api.zt444888.workers.dev
+const String kCloudBaseUrl = 'https://mirror-mind.onrender.com';
 
 class AiChatService extends ChangeNotifier {
   String? _baseUrl;
