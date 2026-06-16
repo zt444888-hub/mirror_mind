@@ -11,81 +11,81 @@ AIGC:
 
 
 
-# 蹇冮暅 MirrorMind
+# 心镜 MirrorMind
 
-> 姣忓ぉ5鍒嗛挓锛岀粰鎯呯华鍋氫竴娆′綋妫€
+> 每天5分钟，给情绪做一次体检
 >
-> **椤圭洰鐘舵€侊細鍙紪璇戝彲杩愯 | 涓婃灦鍓嶆渶缁堝鏌ュ凡瀹屾垚锛圥0=0 P1=0 P2=0锛?*
+> **项目状态：可编译可运行 | 上架前最终审查已完成（P0=0 P1=0 P2=0）**
 
-## 椤圭洰绠€浠?
+## 项目简介
 
-蹇冮暅鏄竴娆惧熀浜?Flutter 鐨?AI 鎯呯华鏃ヨ涓庡績鐞嗗仴搴?App銆傞€氳繃鏂囧瓧鎴栬闊宠褰曟瘡鏃ュ績鎯咃紝AI 鑷姩鍒嗘瀽鎯呯华瓒嬪娍锛屽苟鎻愪緵鍛煎惛缁冧範銆佽鐭ラ噸鏋勫崱鐗囥€佹劅鎭╂棩璁扮瓑鑷剤宸ュ叿锛屽府鍔╀綘寤虹珛鎯呯华绠＄悊涔犳儻銆?
+心镜是一款基于 Flutter 的 AI 情绪日记与心理健康 App。通过文字或语音记录每日心情，AI 自动分析情绪趋势，并提供呼吸练习、认知重构卡片、感恩日记等自愈工具，帮助你建立情绪管理习惯。
 
-## 鏍稿績鍔熻兘
+## 核心功能
 
-- **鎯呯华璁板綍** 鈥?鏂囧瓧/璇煶杈撳叆锛孉I 鑷姩鍒嗘瀽鎯呯华绫诲瀷涓庤瘎鍒?
-- **鎯呯华鏃ュ巻** 鈥?鏈堣鍥炬棩鍘嗭紝棰滆壊鏍囪姣忔棩蹇冩儏锛屼竴鐩簡鐒?
-- **4-7-8 鍛煎惛缁冧範** 鈥?Canvas 鍔ㄧ敾鍛煎惛鐞冿紝绉戝缂撹В鐒﹁檻
-- **璁ょ煡閲嶆瀯鍗＄墖** 鈥?20寮犲績鐞嗗鍗＄墖锛屾崲涓搴︾湅寰呮儏缁?
-- **鎰熸仼涓変欢浜?* 鈥?姣忔棩璁板綍鎰熸仼锛屽煿鍏荤Н鏋佸績鎬?
-- **鎯呯华鎬ユ晳鍖?* 鈥?鏍规嵁褰撳墠蹇冩儏鍗虫椂鎺ㄨ崘搴斿寤鸿
-- **AI 鍛ㄦ姤** 鈥?鐢熸垚鏈懆鎯呯华浣撴鎶ュ憡锛岀簿缇庡崱鐗囧垎浜?
-- **闅愮浼樺厛** 鈥?鎵€鏈夋暟鎹粎瀛樻湰鍦帮紝涓嶄笂浼犱换浣曟湇鍔″櫒
+- **情绪记录** — 文字/语音输入，AI 自动分析情绪类型与评分
+- **情绪日历** — 月视图日历，颜色标记每日心情，一目了然
+- **4-7-8 呼吸练习** — Canvas 动画呼吸球，科学缓解焦虑
+- **认知重构卡片** — 20张心理学卡片，换个角度看待情绪
+- **感恩三件事** — 每日记录感恩，培养积极心态
+- **情绪急救包** — 根据当前心情即时推荐应对建议
+- **AI 周报** — 生成本周情绪体检报告，精美卡片分享
+- **隐私优先** — 所有情绪记录仅存本地。AI分析调用外部API，聊天通过云端代理中转
 
-## 鎶€鏈爤
+## 技术栈
 
 - Flutter 3.x + Dart
-- Provider 鐘舵€佺鐞?
-- sqflite 鏈湴鍔犲瘑瀛樺偍
-- OpenAI 鍏煎 API锛堢敤鎴疯嚜琛岄厤缃級
+- Provider 状态管理
+- sqflite 本地加密存储
+- OpenAI 兼容 API（用户自行配置）
 
-## 蹇€熷紑濮?
+## 快速开始
 
-### 鐜瑕佹眰
+### 环境要求
 
 - Flutter SDK >= 3.0.0
 - Android Studio / Xcode
 - iOS 14.0+ / Android 7.0+
 
-### 瀹夎杩愯
+### 安装运行
 
 ```bash
-# 鍏嬮殕椤圭洰
+# 克隆项目
 cd mirror_mind
 
-# 瀹夎渚濊禆
+# 安装依赖
 flutter pub get
 
-# 杩愯
+# 运行
 flutter run
 ```
 
-### AI 閰嶇疆
+### AI 配置
 
-鍦?App銆岃缃€嶉〉闈㈤厤缃細
-- API Base URL锛堥粯璁?`https://api.openai.com/v1`锛?
+在 App「设置」页面配置：
+- API Base URL（默认 `https://api.openai.com/v1`）
 - API Key
-- 妯″瀷鍚嶇О锛堥粯璁?`gpt-4o-mini`锛?
+- 模型名称（默认 `gpt-4o-mini`）
 
-鏀寔鎵€鏈?OpenAI 鍏煎鐨?API 绔偣銆?
+支持所有 OpenAI 兼容的 API 端点。
 
-## 椤圭洰缁撴瀯
+## 项目结构
 
 ```
 lib/
-鈹溾攢鈹€ main.dart              # 鍏ュ彛
-鈹溾攢鈹€ app.dart               # 涓婚/璺敱
-鈹溾攢鈹€ constants/             # 甯搁噺锛堥鑹?鎯呯华/鍗＄墖锛?
-鈹溾攢鈹€ models/                # 鏁版嵁妯″瀷
-鈹溾攢鈹€ services/              # 鏈嶅姟锛堟暟鎹簱/AI/璇煶锛?
-鈹溾攢鈹€ providers/             # 鐘舵€佺鐞?
-鈹溾攢鈹€ screens/               # 椤甸潰
-鈹斺攢鈹€ widgets/               # 缁勪欢
+├── main.dart              # 入口
+├── app.dart               # 主题/路由
+├── constants/             # 常量（颜色/情绪/卡片）
+├── models/                # 数据模型
+├── services/              # 服务（数据库/AI/语音）
+├── providers/             # 状态管理
+├── screens/               # 页面
+└── widgets/               # 组件
 ```
 
-## 闅愮
+## 隐私
 
-鎵€鏈夋儏缁褰曚粎瀛樺偍鍦ㄨ澶囨湰鍦帮紝AI 鍒嗘瀽閫氳繃 HTTPS 鍔犲瘑浼犺緭鍒颁綘鑷閰嶇疆鐨?API 绔偣銆備笉鏀堕泦浠讳綍涓汉淇℃伅銆?
+所有记录仅存储在设备本地。AI分析通过HTTPS加密传输到用户配置的API端点。聊天内容通过云端代理中转（不关联身份信息）到你自行配置的 API 端点。不收集任何个人信息。
 
 ## License
 
@@ -93,62 +93,61 @@ MIT
 
 ---
 
-## 涓婃灦鍓嶆鏌ユ竻鍗?
+## 上架前检查清单
 
-鍙戝竷鍓嶉€愪竴纭浠ヤ笅鏉′欢锛?
+发布前逐一确认以下条件：
 
-### 浠ｇ爜璐ㄩ噺
-- [x] 缂栬瘧妫€鏌ワ細0 P0锛堝叏閮?40 涓?.dart 鏂囦欢瀹℃煡閫氳繃锛?
-- [x] 杩愯鏃舵鏌ワ細0 P1锛坉ispose/mounted 瀹堝崼宸插氨浣嶏級
-- [x] 璺敱瀹屾暣鎬э細17 鏉¤矾鐢卞叏閮ㄦ敞鍐屼笖瀵瑰簲鏂囦欢瀛樺湪
-- [x] 浠樿垂鍐呭锛? 绉嶅啣鎯虫ā寮?/ 68 寮犺鐭ュ崱鐗?/ 72 璇嶆儏缁瘝搴?/ 7 绉嶅績鎯呭崱鐗囨ā鏉?
-- [x] Pro 闂ㄧ锛氬叏閮ㄩ珮闃跺姛鑳藉凡娣诲姞闂ㄧ妫€鏌?
+### 代码质量
+- [x] 编译检查：0 P0（全部 40 个 .dart 文件审查通过）
+- [x] 运行时检查：0 P1（dispose/mounted 守卫已就位）
+- [x] 路由完整性：17 条路由全部注册且对应文件存在
+- [x] 付费内容：6 种冥想模式 / 68 张认知卡片 / 72 词情绪词库 / 7 种心情卡片模板
+- [x] Pro 门禁：全部高阶功能已添加门禁检查
 
-### 涓婃灦鏉愭枡
-- [x] STORE_LISTING.md锛氬惈骞撮緞鍒嗙骇锛?2+锛夊拰鍐呭鍒嗙骇锛圛ARC锛夊０鏄?
-- [x] PRIVACY_POLICY.md锛氬惈闅愮鏀跨瓥 URL 寤鸿锛圙itHub Pages锛?
-- [x] SCREENSHOTS_GUIDE.md锛? 鍦烘櫙鎴浘瑙勬牸瀹屾暣
-- [x] BUILD_AND_DEPLOY.md锛氬惈鏋勫缓鍛戒护/绛惧悕閰嶇疆/鎻愬娴佺▼/IAP娌欑洅娴嬭瘯
+### 上架材料
+- [x] STORE_LISTING.md：含年龄分级（12+）和内容分级（IARC）声明
+- [x] PRIVACY_POLICY.md：含隐私政策 URL 建议（GitHub Pages）
+- [x] SCREENSHOTS_GUIDE.md：8 场景截图规格完整
+- [x] BUILD_AND_DEPLOY.md：含构建命令/签名配置/提审流程/IAP沙盒测试
 
-### 鍘熺敓骞冲彴锛堥娆″彂甯冨墠蹇呴』瀹屾垚锛?
-- [ ] 鎵ц `flutter create --project-name mirror_mind .` 閲嶅缓 android/ 鍜?ios/ 鐩綍
-- [ ] Android 閰嶇疆锛歚applicationId`銆佺鍚嶅瘑閽ャ€乣AndroidManifest.xml` 鏉冮檺澹版槑
-- [ ] iOS 閰嶇疆锛欱undle Identifier銆佺鍚嶅洟闃熴€乣Info.plist` 鏉冮檺鎻忚堪
-- [ ] 搴旂敤鍥炬爣锛氬埗浣?1024脳1024 PNG锛堣帿鍏拌开鑹茬郴锛?
-- [ ] IAP 浜у搧 ID `mirror_mind_pro` 鍦?App Store Connect 鍜?Google Play Console 鍒涘缓
-- [ ] 闅愮鏀跨瓥 URL 鍙叕寮€璁块棶
+### 原生平台（首次发布前必须完成）
+- [ ] 执行 `flutter create --project-name mirror_mind .` 重建 android/ 和 ios/ 目录
+- [ ] Android 配置：`applicationId`、签名密钥、`AndroidManifest.xml` 权限声明
+- [ ] iOS 配置：Bundle Identifier、签名团队、`Info.plist` 权限描述
+- [ ] 应用图标：制作 1024×1024 PNG（莫兰迪色系）
+- [ ] IAP 产品 ID `mirror_mind_pro` 在 App Store Connect 和 Google Play Console 创建
+- [ ] 隐私政策 URL 可公开访问
 
-### 娴嬭瘯
-- [ ] `flutter analyze` 鏃犻敊璇?
-- [ ] `flutter test` 鍏ㄩ儴閫氳繃
-- [ ] iOS 鐪熸満鏋勫缓鎴愬姛
-- [ ] Android 鐪熸満鏋勫缓鎴愬姛
-- [ ] IAP 娌欑洅璐拱娴嬭瘯閫氳繃
+### 测试
+- [ ] `flutter analyze` 无错误
+- [ ] `flutter test` 全部通过
+- [ ] iOS 真机构建成功
+- [ ] Android 真机构建成功
+- [ ] IAP 沙盒购买测试通过
 
 ---
 
-## 蹇€熷惎鍔?
+## 快速启动
 
 ```bash
-# 1. 妫€鏌ョ幆澧?
+# 1. 检查环境
 flutter doctor
 
-# 2. 瀹夎渚濊禆
+# 2. 安装依赖
 cd mirror_mind
 flutter pub get
 
-# 3. 杩愯锛堟ā鎷熷櫒/鐪熸満锛?
+# 3. 运行（模拟器/真机）
 flutter run
 
-# 4. 鏋勫缓鍙戝竷鍖?
+# 4. 构建发布包
 # Android
 flutter build appbundle --release
-# iOS锛堜粎 macOS锛?
+# iOS（仅 macOS）
 flutter build ipa
 
-# 5. 濡傞渶閲嶅缓鍘熺敓骞冲彴宸ョ▼
+# 5. 如需重建原生平台工程
 flutter create --project-name mirror_mind .
 ```
-*锛堝唴瀹圭敱AI鐢熸垚锛屼粎渚涘弬鑰冿級*
-*锛堝唴瀹圭敱AI鐢熸垚锛屼粎渚涘弬鑰冿級*
-
+*（内容由AI生成，仅供参考）*
+*（内容由AI生成，仅供参考）*
