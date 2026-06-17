@@ -44,3 +44,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 *.py
+node_modules/
+*.bak
+flutter_*.png
+devtools_options.yaml
+verify_deps.ps1
+test_ios_simulation.sh
