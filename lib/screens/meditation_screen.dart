@@ -220,14 +220,6 @@ class _MeditationScreenState extends State<MeditationScreen>
 
   // 选择模式并显示时长选择器
   void _selectMode(_MeditationMode mode) {
-    if (mode.isPro && !PurchaseService().isPro) {
-      Navigator.pushNamed(
-        context,
-        '/pro',
-        arguments: {'hint': '解锁高级冥想，包含专注力训练、身体扫描等专业课程'},
-      );
-      return;
-    }
     setState(() {
       _selectedMode = mode;
       _selectedDuration = mode.defaultDuration;
@@ -511,18 +503,7 @@ class _MeditationScreenState extends State<MeditationScreen>
                                     ),
                                   ),
                                 ),
-                                if (mode.isPro)
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: MirrorColors.primaryLight.withValues(alpha: 0.3),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Text(
-                                      'Pro',
-                                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: MirrorColors.primaryDark),
-                                    ),
-                                  ),
+
                               ],
                             ),
                             const SizedBox(height: 4),
