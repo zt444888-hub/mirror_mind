@@ -219,7 +219,6 @@ class _CardsScreenState extends State<CardsScreen> {
 
   /// 进阶主题区段（Pro 功能）
   Widget _buildAdvancedPacks(bool isDark) {
-    final isPro = PurchaseService().isPro;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,18 +231,7 @@ class _CardsScreenState extends State<CardsScreen> {
                 '进阶主题',
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: MirrorColors.primaryLight.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Text(
-                  'Pro',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: MirrorColors.primaryDark),
-                ),
-              ),
+
             ],
           ),
         ),
@@ -258,10 +246,7 @@ class _CardsScreenState extends State<CardsScreen> {
               final pack = _advancedPacks[index];
               return GestureDetector(
                 onTap: () {
-                  if (!isPro) {
-                    Navigator.pushNamed(context, '/pro');
-                    return;
-                  }
+
                   _showPackCards(context, pack);
                 },
                 child: Container(
