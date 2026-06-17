@@ -5,7 +5,6 @@ import '../models/emotion_record.dart';
 import '../constants/colors.dart';
 import '../constants/emotions.dart';
 import '../constants/festivals.dart';
-import '../constants/festivals.dart';
 import '../widgets/calendar_grid.dart';
 import '../widgets/weekly_chart.dart';
 import '../widgets/mood_trend_chart.dart';

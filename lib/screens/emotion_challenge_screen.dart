@@ -1,9 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import '../providers/emotion_provider.dart';
 
 class _ChallengeInfo {
   final String title; final String description; final String icon; final Color color;
@@ -16,7 +14,7 @@ class _ChallengeInfo {
 
 class _ChallengeProgress {
   int day; DateTime? startDate; DateTime? lastCheckinDate; bool completed;
-  _ChallengeProgress({this.day = 0, this.startDate, this.lastCheckinDate, this.completed = false});
+  _ChallengeProgress();
   Map<String, dynamic> toJson() => {
     'day': day, 'startDate': startDate?.toIso8601String(), 'lastCheckinDate': lastCheckinDate?.toIso8601String(), 'completed': completed
   };
@@ -77,7 +75,6 @@ class _EmotionChallengeScreenState extends State<EmotionChallengeScreen> {
   }
 
   void _startChallenge(int index) {
-  void _showSnack(String msg) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg))); }
     if (_progress[index].day > 0) return;
     setState(() { _progress[index].day = 1; _progress[index].startDate = DateTime.now(); _progress[index].lastCheckinDate = DateTime.now(); });
     _saveData();

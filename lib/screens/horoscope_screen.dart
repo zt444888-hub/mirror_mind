@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../services/horoscope_service.dart';
 import '../constants/colors.dart';
 

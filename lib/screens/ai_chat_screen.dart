@@ -12,7 +12,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
   final AiChatService _cs = AiChatService();
   final TextEditingController _tc = TextEditingController();
   final ScrollController _sc = ScrollController();
-  bool _init = false;
 
   @override
   void initState() {

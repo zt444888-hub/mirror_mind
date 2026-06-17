@@ -1,9 +1,7 @@
 import 'dart:math';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../constants/cards.dart';
-import '../services/purchase_service.dart';
 import '../widgets/card_swiper.dart';
 
 class CardsScreen extends StatefulWidget {
