@@ -619,7 +619,7 @@ class _RecordScreenState extends State<RecordScreen>
   }
 
   Widget _buildTagSection(bool isDark) {
-    const tags = TagType.values;
+    final tags = TagType.values;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

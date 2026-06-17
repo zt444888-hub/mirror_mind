@@ -38,23 +38,18 @@ class HoroscopeService {
     return i >= 0 ? _engSigns[i] : 'aries';
   }
 
-  int _parseScore(String text) {
-    if (text.contains('极好') || text.contains('完美')) return 8;
-    if (text.contains('很好') || text.contains('非常')) return 7;
-    if (text.contains('不错') || text.contains('良好')) return 6;
-    return 5;
-  }
-
   Horoscope _generateFallback(String sign) {
     final seed = DateTime.now().millisecondsSinceEpoch + _signs.indexOf(sign);
     final r = Random(seed);
+    final total = _overallDescs.length;
+
     return Horoscope(
       sign: sign, overallScore: r.nextInt(6) + 3,
-      overall: _overallDescs[r.nextInt(_overallDescs.length)],
-      love: _loveDescs[r.nextInt(_loveDescs.length)],
-      career: _careerDescs[r.nextInt(_careerDescs.length)],
-      wealth: _wealthDescs[r.nextInt(_wealthDescs.length)],
-      health: _healthDescs[r.nextInt(_healthDescs.length)],
+      overall: _overallDescs[r.nextInt(total)],
+      love: _loveDescs[r.nextInt(total)],
+      career: _careerDescs[r.nextInt(total)],
+      wealth: _wealthDescs[r.nextInt(total)],
+      health: _healthDescs[r.nextInt(total)],
       luckyNumber: r.nextInt(99) + 1,
       luckyColor: _luckyColors[r.nextInt(_luckyColors.length)],
       luckyTime: '${r.nextInt(12)+1}:${r.nextInt(6)*10}',
@@ -66,37 +61,35 @@ class HoroscopeService {
   Future<Horoscope> getHoroscope(String sign) async {
     final today = DateTime.now();
     final dateKey = '${today.year}-${today.month}-${today.day}';
+
+    // 命中当日缓存
     if (_cacheDate == dateKey && _cache.containsKey(sign)) return _cache[sign]!;
     if (_cacheDate != dateKey) { _cache.clear(); _cacheDate = dateKey; }
 
-    // 联网获取
     try {
       final en = _signToEn(sign);
-      final urls = [
-        'https://horoscope-app-api.vercel.app/api/today/' + en,
-      ];
-      for (final url in urls) {
-        try {
-          final resp = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 5));
-          if (resp.statusCode == 200) {
-            final j = jsonDecode(resp.body) as Map<String, dynamic>;
-            final data = j['data'] as Map<String, dynamic>? ?? j;
-            final h = Horoscope(
-              sign: sign, overallScore: _parseScore(data['horoscope'] as String? ?? ''),
-              overall: data['horoscope'] as String? ?? '',
-              love: data['love'] as String? ?? '',
-              career: data['career'] as String? ?? '',
-              wealth: data['money'] as String? ?? '',
-              health: data['health'] as String? ?? '',
-              luckyNumber: int.tryParse(data['lucky_number']?.toString() ?? '') ?? 7,
-              luckyColor: data['lucky_color'] as String? ?? '',
-              luckyTime: data['lucky_time'] as String? ?? '',
-              luckyDirection: data['lucky_direction'] as String? ?? '',
-              mood: data['mood'] as String? ?? '期待满满',
-            );
-            _cache[sign] = h; return h;
-          }
-        } catch (_) { continue; }
+      final resp = await http.get(
+        Uri.parse('https://horoscope-app-api.vercel.app/api/today/' + en),
+      ).timeout(const Duration(seconds: 8));
+
+      if (resp.statusCode == 200) {
+        final j = jsonDecode(resp.body) as Map<String, dynamic>;
+        final data = j['data'] as Map<String, dynamic>? ?? j;
+        final h = Horoscope(
+          sign: sign, overallScore: _parseScore(data['horoscope'] as String? ?? ''),
+          overall: data['horoscope'] as String? ?? '',
+          love: data['love'] as String? ?? '',
+          career: data['career'] as String? ?? '',
+          wealth: data['money'] as String? ?? '',
+          health: data['health'] as String? ?? '',
+          luckyNumber: int.tryParse(data['lucky_number']?.toString() ?? '') ?? 7,
+          luckyColor: data['lucky_color'] as String? ?? '',
+          luckyTime: data['lucky_time'] as String? ?? '',
+          luckyDirection: data['lucky_direction'] as String? ?? '',
+          mood: data['mood'] as String? ?? '',
+        );
+        _cache[sign] = h;
+        return h;
       }
     } catch (_) {}
 
@@ -105,11 +98,19 @@ class HoroscopeService {
     return fb;
   }
 
+  int _parseScore(String text) {
+    // 从运势描述中提取评级：极好(9-10) 很好(7-8) 不错(6) 一般(5) 稍差(3-4)
+    if (text.contains('极好') || text.contains('完美')) return 8 + (DateTime.now().millisecondsSinceEpoch % 3);
+    if (text.contains('很好') || text.contains('非常')) return 7;
+    if (text.contains('不错') || text.contains('良好')) return 6;
+    return 5 + (DateTime.now().millisecondsSinceEpoch % 3);
+  }
+
   static final _luckyColors = ['红色','黄色','蓝色','绿色','粉色','紫色','白色','金色','橙色','银色','青色','棕色','米色','珊瑚色'];
   static final _directions = ['正东','正西','正南','正北','东南','西南','东北','西北'];
   static final _moodDescs = ['精力充沛', '心情愉快', '平静安稳', '略带紧张', '期待满满', '温和舒适', '灵感涌现', '自信满满'];
   static final _overallDescs = [
-    '今天状态不错，适合主动出击迎接新机会。', '各方面平稳发展，适合静心思考和规划。',
+    '今天的整体运势不错，适合主动出击迎接新机会。', '各方面平稳发展，适合静心思考和规划。',
     '有惊喜在等着你，保持开放和积极的心态。', '和谐的一天，适合与人合作和交流。',
     '内心充满力量，适合推进重要计划。', '运势上升，会有好事不期而至。',
     '注意细节，今天不宜冲动做决定。', '灵感充沛，适合创意性工作。',

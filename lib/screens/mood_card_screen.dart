@@ -12,6 +12,7 @@ import '../providers/emotion_provider.dart';
 import '../models/emotion_record.dart';
 import '../constants/colors.dart';
 import '../constants/emotions.dart';
+import '../widgets/emotion_picker.dart';
 
 class MoodCardScreen extends StatefulWidget {
   const MoodCardScreen({super.key});
@@ -215,29 +216,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
         ))),
         const SizedBox(height: 16),
         const Padding(padding: EdgeInsets.only(left: 4, bottom: 8), child: Text('选择情绪', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600))),
-        SizedBox(
-          height: 44,
-          child: ListView(scrollDirection: Axis.horizontal, children: EmotionType.values.map((e) {
-            final s = _selectedEmotion == e.label;
-            return GestureDetector(
-              onTap: () => setState(() { _selectedEmotion = e.label; _isFlipped = false; }),
-              child: Container(
-                margin: const EdgeInsets.only(right: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: s ? MirrorColors.primaryLight : (isDark ? MirrorColors.darkSurface : MirrorColors.cardBackground),
-                  borderRadius: BorderRadius.circular(20),
-                  border: s ? Border.all(color: MirrorColors.primary, width: 1.5) : null,
-                ),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Text(e.emoji, style: const TextStyle(fontSize: 16)),
-                  const SizedBox(width: 6),
-                  Text(e.label, style: TextStyle(fontSize: 13, fontWeight: s ? FontWeight.w600 : FontWeight.normal, color: s ? MirrorColors.primaryDark : (isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary))),
-                ]),
-              ),
-            );
-          }).toList()),
-        ),
+            EmotionPicker(selected: _selectedEmotion, onSelected: (e) => setState(() => _selectedEmotion = e)),
       ]),
     );
   }
