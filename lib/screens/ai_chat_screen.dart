@@ -9,6 +9,7 @@ class AiChatScreen extends StatefulWidget {
 }
 
 class _AiChatScreenState extends State<AiChatScreen> {
+  bool _init = false;
   final AiChatService _cs = AiChatService();
   final TextEditingController _tc = TextEditingController();
   final ScrollController _sc = ScrollController();

@@ -36,7 +36,7 @@ class _BreathingScreenState extends State<BreathingScreen>
     super.initState();
     _audioPlayer = AudioPlayer();
     _audioPlayer.setReleaseMode(ReleaseMode.loop);
-    _audioPlayer.setSource(AssetSource("audio/breath_guide.wav"));
+    _audioPlayer.setSource(AssetSource("audio/breath_guide.m4a"));
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 4),

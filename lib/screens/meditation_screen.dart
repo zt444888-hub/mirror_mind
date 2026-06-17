@@ -50,7 +50,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '感受阳光温暖你的肌肤',
         '慢慢睁开眼睛，带着平静开始新的一天',
       ],
-      backgroundAudio: 'assets/audio/birds.wav',
+      backgroundAudio: 'assets/audio/birds.m4a',
     ),
     const _MeditationMode(
       title: '午间小憩',
@@ -70,7 +70,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '让思绪像云朵一样飘过',
         '慢慢地回到当下，带着清醒与能量',
       ],
-      backgroundAudio: 'assets/audio/relaxing.wav',
+      backgroundAudio: 'assets/audio/relaxing.m4a',
     ),
     const _MeditationMode(
       title: '睡前放松',
@@ -90,7 +90,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '每一次呼吸都带你更深地放松',
         '安心地进入梦乡',
       ],
-      backgroundAudio: 'assets/audio/calm.wav',
+      backgroundAudio: 'assets/audio/calm.m4a',
     ),
     const _MeditationMode(
       title: '压力释放',
@@ -110,7 +110,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '重复几次，直到感觉轻松一些',
         '感谢自己释放了这些负担',
       ],
-      backgroundAudio: 'assets/audio/stress_relief.wav',
+      backgroundAudio: 'assets/audio/stress_relief.m4a',
     ),
     const _MeditationMode(
       title: '感恩冥想',
@@ -130,7 +130,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '将这份感恩传递给每一个人',
         '慢慢睁开眼睛，带着感恩的心继续一天',
       ],
-      backgroundAudio: 'assets/audio/muyu.wav',
+      backgroundAudio: 'assets/audio/muyu.m4a',
     ),
     // --- Pro 模式 ---
     const _MeditationMode(
@@ -152,7 +152,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '感受慈悲从心里流淌出来，温暖你自己',
         '慢慢睁开眼睛，带着这份慈悲回到日常',
       ],
-      backgroundAudio: 'assets/audio/bell.wav',
+      backgroundAudio: 'assets/audio/bell.m4a',
     ),
     const _MeditationMode(
       title: '情绪平衡',
@@ -173,7 +173,7 @@ class _MeditationScreenState extends State<MeditationScreen>
         '找回内心的平衡与宁静',
         '带着这份平静回到当下',
       ],
-      backgroundAudio: 'assets/audio/balance.wav',
+      backgroundAudio: 'assets/audio/balance.m4a',
     ),
   ];
 

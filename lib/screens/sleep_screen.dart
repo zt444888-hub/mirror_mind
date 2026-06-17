@@ -19,15 +19,15 @@ class _SleepScreenState extends State<SleepScreen> {
   late AudioPlayer _player;
 
   final _sounds = [
-    {'name': '雨声', 'asset': 'assets/audio/rain.wav'},
-    {'name': '海浪', 'asset': 'assets/audio/ocean.wav'},
-    {'name': '森林', 'asset': 'assets/audio/forest.wav'},
-    {'name': '白噪音', 'asset': 'assets/audio/whitenoise.wav'},
-    {'name': '篝火', 'asset': 'assets/audio/campfire.wav'},
-    {'name': '溪流', 'asset': 'assets/audio/stream.wav'},
-    {'name': '风声', 'asset': 'assets/audio/wind.wav'},
-    {'name': '夜空', 'asset': 'assets/audio/meditation.wav'},
-    {'name': '心跳', 'asset': 'assets/audio/heartbeat.wav'},
+    {'name': '雨声', 'asset': 'assets/audio/rain.m4a'},
+    {'name': '海浪', 'asset': 'assets/audio/ocean.m4a'},
+    {'name': '森林', 'asset': 'assets/audio/forest.m4a'},
+    {'name': '白噪音', 'asset': 'assets/audio/whitenoise.m4a'},
+    {'name': '篝火', 'asset': 'assets/audio/campfire.m4a'},
+    {'name': '溪流', 'asset': 'assets/audio/stream.m4a'},
+    {'name': '风声', 'asset': 'assets/audio/wind.m4a'},
+    {'name': '夜空', 'asset': 'assets/audio/meditation.m4a'},
+    {'name': '心跳', 'asset': 'assets/audio/heartbeat.m4a'},
   ];
 
   final _quotes = [

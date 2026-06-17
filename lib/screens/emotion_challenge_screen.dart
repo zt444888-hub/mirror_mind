@@ -13,7 +13,7 @@ class _ChallengeInfo {
 }
 
 class _ChallengeProgress {
-  int day; DateTime? startDate; DateTime? lastCheckinDate; bool completed;
+  int day = 0; DateTime? startDate; DateTime? lastCheckinDate; bool completed = false;
   _ChallengeProgress();
   Map<String, dynamic> toJson() => {
     'day': day, 'startDate': startDate?.toIso8601String(), 'lastCheckinDate': lastCheckinDate?.toIso8601String(), 'completed': completed
