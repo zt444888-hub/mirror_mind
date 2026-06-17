@@ -195,7 +195,7 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                       decoration: BoxDecoration(
-                        color: Color(0x80D4C5E2),
+                        color: MirrorColors.primaryLight.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
@@ -272,7 +272,7 @@ class _DiaryListScreenState extends State<DiaryListScreen> {
                       height: 4,
                       margin: const EdgeInsets.only(bottom: 20),
                       decoration: BoxDecoration(
-                        color: Color(0x80BEBEBE),
+                        color: Colors.grey.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),

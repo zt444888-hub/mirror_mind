@@ -189,7 +189,7 @@ class _EmotionVocabularyScreenState extends State<EmotionVocabularyScreen>
         gradient: LinearGradient(
           colors: [
             MirrorColors.primaryLight.withValues(alpha: 0.4),
-            Color(0x33FBEAE3),
+            MirrorColors.accentLight.withValues(alpha: 0.2),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -328,7 +328,7 @@ class _EmotionVocabularyScreenState extends State<EmotionVocabularyScreen>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Color(0x80D4C5E2),
+                color: MirrorColors.primaryLight.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(word.definition,
@@ -386,14 +386,14 @@ class _EmotionVocabularyScreenState extends State<EmotionVocabularyScreen>
         gradient: LinearGradient(
           colors: [
             MirrorColors.primaryLight.withValues(alpha: 0.4),
-            Color(0x80DCE8E0),
+            MirrorColors.secondaryLight.withValues(alpha: 0.3),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Color(0x80D4C5E2),
+          color: MirrorColors.primaryLight.withValues(alpha: 0.5),
           width: 1.5,
         ),
       ),

@@ -7,6 +7,7 @@ import 'calendar_screen.dart';
 import 'toolbox_screen.dart';
 import 'ai_chat_screen.dart';
 import '../services/ai_chat_service.dart';
+import '../widgets/blessing_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -37,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
       provider.loadWeekRecords();
       // 预热 AI 后端
       AiChatService.warmUp();
+      BlessingCard.checkAndShow(context);
     });
   }
 
@@ -68,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
           boxShadow: [
             BoxShadow(
-              color: Color(0x0A000000),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -94,8 +96,8 @@ class _HomeScreenState extends State<HomeScreen> {
               label: '小镜',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.build_outlined),
-              activeIcon: Icon(Icons.build),
+              icon: Icon(Icons.self_improvement_outlined),
+              activeIcon: Icon(Icons.self_improvement),
               label: '工具箱',
             ),
           ],
@@ -129,14 +131,14 @@ class _HomeScreenState extends State<HomeScreen> {
               gradient: LinearGradient(
                 colors: isDark
                     ? [MirrorColors.darkCardBackground, MirrorColors.darkCardBackground.withValues(alpha: 0.8)]
-                    : [MirrorColors.surface, Color(0x80D4C5E2)],
+                    : [MirrorColors.surface, MirrorColors.primaryLight.withValues(alpha: 0.3)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0x0A000000),
+                  color: Colors.black.withValues(alpha: 0.04),
                   blurRadius: 10,
                   offset: const Offset(0, 2),
                 ),
@@ -271,7 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(
                   width: 40, height: 4,
                   decoration: BoxDecoration(
-                    color: Color(0x80BEBEBE),
+                    color: Colors.grey.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -290,7 +292,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   margin: const EdgeInsets.only(bottom: 10),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: isDark ? MirrorColors.darkSurface : Color(0x14BEBEBE),
+                    color: isDark ? MirrorColors.darkSurface : Colors.grey.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(

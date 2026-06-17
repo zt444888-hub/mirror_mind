@@ -95,6 +95,13 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
     _loadMonthData();
   }
 
+  void _goToToday() {
+    setState(() {
+      _currentMonth = DateTime(DateTime.now().year, DateTime.now().month);
+    });
+    _loadMonthData();
+  }
+
   void _nextMonth() {
     setState(() {
       _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + 1);
@@ -616,6 +623,18 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
             Text(
               '${_currentMonth.year}年 ${_currentMonth.month}月',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(width: 4),
+            GestureDetector(
+              onTap: _goToToday,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Color(0x80D4C5E2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text('今日', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MirrorColors.primaryDark)),
+              ),
             ),
             const SizedBox(width: 8),
             // 导出月报按钮

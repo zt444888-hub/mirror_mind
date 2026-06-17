@@ -279,7 +279,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Color(0x80D4C5E2),
+                  color: MirrorColors.primaryLight.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: const Text(
@@ -370,7 +370,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: Color(0x80FFFFFF),
+              color: Colors.white.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -794,7 +794,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: _useCustomText
-                      ? Color(0x80D4C5E2)
+                      ? MirrorColors.primaryLight.withValues(alpha: 0.3)
                       : (isDark ? MirrorColors.darkSurface : MirrorColors.cardBackground),
                   borderRadius: BorderRadius.circular(8),
                 ),

@@ -19,10 +19,15 @@ class _SleepScreenState extends State<SleepScreen> {
   late AudioPlayer _player;
 
   final _sounds = [
-    {'name': '雨声', 'url': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'},
-    {'name': '海浪', 'url': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'},
-    {'name': '森林', 'url': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'},
-    {'name': '白噪音', 'url': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'},
+    {'name': '雨声', 'asset': 'assets/audio/rain.wav'},
+    {'name': '海浪', 'asset': 'assets/audio/ocean.wav'},
+    {'name': '森林', 'asset': 'assets/audio/forest.wav'},
+    {'name': '白噪音', 'asset': 'assets/audio/whitenoise.wav'},
+    {'name': '篝火', 'asset': 'assets/audio/campfire.wav'},
+    {'name': '溪流', 'asset': 'assets/audio/stream.wav'},
+    {'name': '风声', 'asset': 'assets/audio/wind.wav'},
+    {'name': '夜空', 'asset': 'assets/audio/meditation.wav'},
+    {'name': '心跳', 'asset': 'assets/audio/heartbeat.wav'},
   ];
 
   final _quotes = [
@@ -53,7 +58,7 @@ class _SleepScreenState extends State<SleepScreen> {
   }
 
   void _startTimer() async {
-    await _player.setSource(UrlSource(_sounds[_currentSound]['url']!));
+    await _player.setSource(AssetSource(_sounds[_currentSound]['asset']!.replaceFirst('assets/', '')));
     await _player.resume();
     setState(() { _isSoundOn = true; _isRunning = true; _remainingSeconds = _selectedMinutes * 60; });
 
@@ -79,10 +84,10 @@ class _SleepScreenState extends State<SleepScreen> {
   }
 
   void _changeSound(int index) async {
-    _currentSound = index;
+    setState(() => _currentSound = index);
     if (_isRunning) {
       await _player.stop();
-      await _player.setSource(UrlSource(_sounds[index]['url']!));
+      await _player.setSource(AssetSource(_sounds[index]['asset']!.replaceFirst('assets/', '')));
       await _player.resume();
       setState(() { _isSoundOn = true; });
     }
@@ -181,7 +186,7 @@ class _SleepScreenState extends State<SleepScreen> {
                       child: Row(
                         children: [
                           Text(
-                            ['🌧️', '🌊', '🌲', '☁️'][i],
+                            ['🌧️','🌊','🌲','☁️','🔥','💧','🌬️','🧘','💓'][i],
                             style: const TextStyle(fontSize: 18),
                           ),
                           const SizedBox(width: 6),

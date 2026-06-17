@@ -16,12 +16,12 @@ class ProScreen extends StatefulWidget {
 class _ProScreenState extends State<ProScreen> {
   bool _isBuying = false;
   bool _isRestoring = false;
-  bool _donated = false;
+  bool _isPro = false;
 
   @override
   void initState() {
     super.initState();
-    _donated = PurchaseService().donated;
+    _isPro = PurchaseService().isPro;
   }
 
   Future<void> _handleBuy() async {
@@ -62,8 +62,9 @@ class _ProScreenState extends State<ProScreen> {
   }
 
   void _checkProStatus() {
-    if (PurchaseService().donated) {
-      setState(() => _donated = true);
+    final isPro = PurchaseService().isPro;
+    if (isPro) {
+      setState(() => _isPro = true);
       _showSuccessAndPop();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -131,62 +132,20 @@ class _ProScreenState extends State<ProScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    if (_donated) {
+    if (_isPro) {
       return Scaffold(
         backgroundColor: isDark ? MirrorColors.darkBackground : MirrorColors.background,
-        appBar: AppBar(
-          title: const Text('支持心镜'),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [MirrorColors.primaryLight, MirrorColors.primary],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.all(32),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Color(0x40FFFFFF),
-                    ),
-                    child: const Icon(Icons.favorite, size: 40, color: Colors.white),
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    '心镜 MirrorMind',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Appreciation enriches our own mind.\n欣赏他人，丰盈自己',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Color(0xE6FFFFFF),
-                      height: 1.6,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+        appBar: AppBar(title: const Text('心镜 Pro')),
+        body: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.verified, size: 64, color: MirrorColors.secondary),
+              SizedBox(height: 16),
+              Text('心镜 Pro · 已解锁', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+              SizedBox(height: 8),
+              Text('感谢你的支持', style: TextStyle(fontSize: 14, color: MirrorColors.textSecondary)),
+            ],
           ),
         ),
       );
@@ -205,7 +164,7 @@ class _ProScreenState extends State<ProScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: Color(0x80FBEAE3),
+                  color: MirrorColors.accentLight.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -243,7 +202,7 @@ class _ProScreenState extends State<ProScreen> {
                     height: 64,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0x40FFFFFF),
+                      color: Colors.white.withValues(alpha: 0.25),
                     ),
                     child: const Icon(Icons.auto_awesome, color: Colors.white, size: 32),
                   ),
@@ -255,7 +214,7 @@ class _ProScreenState extends State<ProScreen> {
                   const SizedBox(height: 4),
                   Text(
                     '一次购买，终身使用',
-                    style: TextStyle(fontSize: 14, color: Color(0xD9FFFFFF)),
+                    style: TextStyle(fontSize: 14, color: Colors.white.withValues(alpha: 0.85)),
                   ),
                 ],
               ),
@@ -278,7 +237,7 @@ class _ProScreenState extends State<ProScreen> {
                 border: Border.all(color: MirrorColors.primaryLight, width: 1.5),
                 boxShadow: [
                   BoxShadow(
-                    color: Color(0x33D4C5E2),
+                    color: MirrorColors.primaryLight.withValues(alpha: 0.2),
                     blurRadius: 16,
                     offset: const Offset(0, 4),
                   ),

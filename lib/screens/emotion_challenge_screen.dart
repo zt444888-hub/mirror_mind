@@ -20,12 +20,14 @@ class _EmotionChallengeScreenState extends State<EmotionChallengeScreen> {
   int _challengeDay = 0; // 当前第几天 (1-7)
   List<bool> _checkins = List.filled(7, false); // 7天打卡记录
   DateTime? _startDate;
+  String? _lastCheckinDate;
 
   // SharedPreferences 键
   static const String _keyChallengeIndex = 'challenge_index';
   static const String _keyChallengeDay = 'challenge_day';
   static const String _keyCheckins = 'challenge_checkins';
   static const String _keyStartDate = 'challenge_start_date';
+  static const String _keyLastDate = 'challenge_last_date';
 
   // 挑战主题
   static final List<_Challenge> _challenges = [
@@ -126,6 +128,7 @@ class _EmotionChallengeScreenState extends State<EmotionChallengeScreen> {
       await prefs.remove(_keyChallengeDay);
       await prefs.remove(_keyCheckins);
       await prefs.remove(_keyStartDate);
+      await prefs.remove(_keyLastDate);
     }
   }
 
@@ -143,6 +146,15 @@ class _EmotionChallengeScreenState extends State<EmotionChallengeScreen> {
 
   /// 完成今日打卡
   Future<void> _checkinToday() async {
+    final today = DateTime.now().toIso8601String().split('T')[0];
+    if (_lastCheckinDate == today) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('今日已打卡，明天再来吧！'), backgroundColor: MirrorColors.warm),
+        );
+      }
+      return;
+    }
     final challenge = _challenges[_activeChallengeIndex!];
     final hint = challenge.dailyHints[_challengeDay - 1];
 
@@ -176,6 +188,7 @@ class _EmotionChallengeScreenState extends State<EmotionChallengeScreen> {
           _showCompletionDialog();
         }
       });
+      _lastCheckinDate = today;
       _saveChallengeState();
     }
   }
@@ -450,9 +463,9 @@ class _EmotionChallengeScreenState extends State<EmotionChallengeScreen> {
                     width: double.infinity,
                     height: 48,
                     child: ElevatedButton.icon(
-                      onPressed: _challengeDay <= 7 ? _checkinToday : null,
+                      onPressed: _challengeDay <= 7 && (_lastCheckinDate == null || _lastCheckinDate!.isEmpty || _lastCheckinDate != DateTime.now().toIso8601String().split('T')[0]) ? _checkinToday : null,
                       icon: const Icon(Icons.check_circle_outline),
-                      label: Text(_challengeDay <= 7 ? '完成打卡' : '已全部完成'),
+                      label: Text(_lastCheckinDate != null && _lastCheckinDate == DateTime.now().toIso8601String().split('T')[0] ? '今日已打卡' : (_challengeDay <= 7 ? '完成打卡' : '已全部完成')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: challenge.color,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),

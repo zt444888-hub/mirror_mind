@@ -44,9 +44,3 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 *.py
-
-backend/node_modules/
-
-# Build outputs
-android/build/
-build/

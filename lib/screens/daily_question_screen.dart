@@ -429,7 +429,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: Color(0x80FFFFFF),
+              color: Colors.white.withValues(alpha: 0.3),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -488,7 +488,7 @@ class _DailyQuestionScreenState extends State<DailyQuestionScreen>
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0x80FBEAE3),
+              MirrorColors.accentLight.withValues(alpha: 0.3),
               MirrorColors.primaryLight.withValues(alpha: 0.15),
             ],
             begin: Alignment.topLeft,

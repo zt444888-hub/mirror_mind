@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -31,7 +31,7 @@ class AiChatService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      debugPrint('[心镜] 正在调用云后端: $kCloudBaseUrl/api/chat');
+      print('[心镜] 正在调用云后端: $kCloudBaseUrl/api/chat');
       final resp = await http
           .post(
             Uri.parse('$kCloudBaseUrl/api/chat'),
@@ -53,7 +53,7 @@ class AiChatService extends ChangeNotifier {
         _messages.add({'role': 'assistant', 'content': '小镜暂时有点卡，稍后再试吧 🙏'});
       }
     } catch (e) {
-      debugPrint('[心镜] 云后端调用失败: \$e');
+      print('[心镜] 云后端调用失败: \$e');
       _lastError = e.toString();
       if (e is http.ClientException || e.toString().contains('SocketException')) {
         _messages.add({'role': 'assistant', 'content': '网络连接失败，请检查网络后重试 📶'});
@@ -72,6 +72,7 @@ class AiChatService extends ChangeNotifier {
 
   Future<void> loadHistory() async {
     try {
+      print('[心镜] 正在调用云后端: $kCloudBaseUrl/api/chat');
       final prefs = await SharedPreferences.getInstance();
       final json = prefs.getString(_keyHistory);
       if (json != null && json.isNotEmpty) {
@@ -94,6 +95,7 @@ class AiChatService extends ChangeNotifier {
 
   Future<void> _saveHistory() async {
     try {
+      print('[心镜] 正在调用云后端: $kCloudBaseUrl/api/chat');
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_keyHistory, jsonEncode(_messages));
     } catch (_) {}

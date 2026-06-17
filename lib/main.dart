@@ -33,7 +33,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => settings),
         ChangeNotifierProvider(create: (_) => EmotionProvider()),
       ],
-      child: const LocalizedMirrorMindApp(),
+      child: const _RootApp(),
     ),
   );
 }
@@ -51,33 +51,6 @@ class _AppLifecycleObserver extends WidgetsBindingObserver {
       // 应用完全退出时释放资源
       _purchaseService.dispose();
     }
-  }
-}
-
-class LocalizedMirrorMindApp extends StatelessWidget {
-  const LocalizedMirrorMindApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      localeListResolutionCallback: (locales, supportedLocales) {
-        for (final locale in locales ?? <Locale>[]) {
-          if (AppLocalizations.supportedLocales
-              .any((l) => l.languageCode == locale.languageCode)) {
-            return locale;
-          }
-        }
-        return const Locale('zh');
-      },
-      supportedLocales: AppLocalizations.supportedLocales,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      home: const _RootApp(),
-    );
   }
 }
 
@@ -113,3 +86,4 @@ class _RootAppState extends State<_RootApp> {
     );
   }
 }
+

@@ -208,8 +208,8 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Color(0x80D4C5E2),
-            Color(0x80FBEAE3),
+            MirrorColors.primaryLight.withValues(alpha: 0.5),
+            MirrorColors.accentLight.withValues(alpha: 0.3),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -251,7 +251,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Color(0x80FFFFFF),
+                color: Colors.white.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -301,7 +301,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Color(0x80FFFFFF),
+                color: Colors.white.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(

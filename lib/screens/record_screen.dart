@@ -252,7 +252,7 @@ class _RecordScreenState extends State<RecordScreen>
               margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Color(0x33D4C5E2),
+                color: MirrorColors.primaryLight.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Row(
@@ -346,7 +346,7 @@ class _RecordScreenState extends State<RecordScreen>
               gradient: LinearGradient(
                 colors: [
                   MirrorColors.warm.withValues(alpha: 0.15),
-                  Color(0x14FBEAE3),
+                  MirrorColors.accentLight.withValues(alpha: 0.08),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -424,7 +424,7 @@ class _RecordScreenState extends State<RecordScreen>
                         : const Icon(Icons.auto_awesome, size: 18),
                     label: Text(isAnalyzing ? '分析中...' : 'AI 分析'),
                     style: TextButton.styleFrom(
-                      backgroundColor: Color(0x80D4C5E2),
+                      backgroundColor: MirrorColors.primaryLight.withValues(alpha: 0.3),
                       foregroundColor: MirrorColors.primaryDark,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
@@ -545,7 +545,7 @@ class _RecordScreenState extends State<RecordScreen>
                         : const Icon(Icons.auto_awesome, size: 18),
                     label: Text(isAnalyzing ? '分析中...' : 'AI 分析'),
                     style: TextButton.styleFrom(
-                      backgroundColor: Color(0x80D4C5E2),
+                      backgroundColor: MirrorColors.primaryLight.withValues(alpha: 0.3),
                       foregroundColor: MirrorColors.primaryDark,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -577,7 +577,7 @@ class _RecordScreenState extends State<RecordScreen>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: Color(0x33B8A9C9),
+                    color: MirrorColors.primary.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(

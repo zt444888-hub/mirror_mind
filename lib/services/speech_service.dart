@@ -59,7 +59,7 @@ class SpeechService {
     if (!_isInitialized) {
       final ok = await initialize();
       if (!ok) {
-        onError?.call('麦克风权限未授权，请在系统设置中开启');
+        onError?.call('语音识别不可用：设备不支持或权限被拒绝');
         return;
       }
     }

@@ -1,3 +1,5 @@
+import 'dart:math';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../constants/cards.dart';
@@ -27,7 +29,8 @@ class _CardsScreenState extends State<CardsScreen> {
   int _getDailyIndex() {
     final now = DateTime.now();
     final seed = now.year * 10000 + now.month * 100 + now.day;
-    return seed % cognitiveCards.length;
+    final random = Random(seed);
+    return random.nextInt(cognitiveCards.length);
   }
 
   @override
@@ -233,7 +236,7 @@ class _CardsScreenState extends State<CardsScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Color(0x80D4C5E2),
+                  color: MirrorColors.primaryLight.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Text(

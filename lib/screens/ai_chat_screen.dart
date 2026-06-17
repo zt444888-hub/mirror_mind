@@ -55,7 +55,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
           final m = _cs.messages[i]; final u = m['role'] == 'user';
           return Padding(padding: const EdgeInsets.only(bottom: 10), child: Row(mainAxisAlignment: u ? MainAxisAlignment.end : MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.end, children: [
             if (!u) ...[Container(width: 28, height: 28, decoration: BoxDecoration(gradient: const LinearGradient(colors: [MirrorColors.primaryLight, MirrorColors.primary]), borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.auto_awesome, color: Colors.white, size: 14)), const SizedBox(width: 6)],
-            Flexible(child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10), decoration: BoxDecoration(color: u ? Color(0x80D4C5E2) : (d ? MirrorColors.darkSurface : Colors.white), borderRadius: BorderRadius.only(topLeft: const Radius.circular(14), topRight: const Radius.circular(14), bottomLeft: Radius.circular(u ? 14 : 4), bottomRight: Radius.circular(u ? 4 : 14))), child: Text(m['content'] ?? '', style: TextStyle(fontSize: 15, color: u ? MirrorColors.primaryDark : (d ? MirrorColors.darkTextPrimary : MirrorColors.textPrimary))))),
+            Flexible(child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10), decoration: BoxDecoration(color: u ? MirrorColors.primaryLight.withValues(alpha: 0.3) : (d ? MirrorColors.darkSurface : Colors.white), borderRadius: BorderRadius.only(topLeft: const Radius.circular(14), topRight: const Radius.circular(14), bottomLeft: Radius.circular(u ? 14 : 4), bottomRight: Radius.circular(u ? 4 : 14))), child: Text(m['content'] ?? '', style: TextStyle(fontSize: 15, color: u ? MirrorColors.primaryDark : (d ? MirrorColors.darkTextPrimary : MirrorColors.textPrimary))))),
             if (u) const SizedBox(width: 6),
           ]));
         })),
@@ -64,7 +64,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
         Container(width: 24, height: 24, decoration: BoxDecoration(gradient: const LinearGradient(colors: [MirrorColors.primaryLight, MirrorColors.primary]), borderRadius: BorderRadius.circular(6)), child: const Center(child: SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)))), const SizedBox(width: 6), const Text('小镜正在输入...', style: TextStyle(fontSize: 12, color: MirrorColors.textHint)),
       ])),
 
-      Container(padding: const EdgeInsets.fromLTRB(12, 8, 12, 12), decoration: BoxDecoration(color: d ? MirrorColors.darkSurface : Colors.white, boxShadow: [BoxShadow(color: Color(0x0A000000), blurRadius: 6, offset: const Offset(0, -2))]),
+      Container(padding: const EdgeInsets.fromLTRB(12, 8, 12, 12), decoration: BoxDecoration(color: d ? MirrorColors.darkSurface : Colors.white, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6, offset: const Offset(0, -2))]),
         child: SafeArea(top: false, child: Row(children: [
           Expanded(child: TextField(controller: _tc, textInputAction: TextInputAction.send, onSubmitted: (_) => _send(), decoration: InputDecoration(hintText: '有什么想跟我说的吗？', filled: true, fillColor: d ? MirrorColors.darkCardBackground : MirrorColors.cardBackground, border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none), contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10)), maxLines: 3, minLines: 1)),
           const SizedBox(width: 8),

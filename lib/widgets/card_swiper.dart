@@ -139,6 +139,34 @@ class CardSwiper extends StatelessWidget {
         return [const Color(0xFFB59E94), const Color(0xFF978076)];
       case '正念觉察':
         return [const Color(0xFFA0B59E), const Color(0xFF829780)];
+      case '认知解离':
+        return [const Color(0xFFA0A8B5), const Color(0xFF808897)];
+      case '成长思维':
+        return [const Color(0xFF9FB89F), const Color(0xFF7F987F)];
+      case '感恩练习':
+        return [const Color(0xFFE8C8A0), const Color(0xFFD4A880)];
+      case '正念呼吸':
+        return [const Color(0xFFA0C0D0), const Color(0xFF80A0B0)];
+      case '行为激活':
+        return [const Color(0xFFD4B878), const Color(0xFFB89C58)];
+      case '自我慈悲':
+        return [const Color(0xFFD4A0B5), const Color(0xFFB88095)];
+      case '压力管理':
+        return [const Color(0xFF7FA0A0), const Color(0xFF5F8080)];
+      case '自我价值':
+        return [const Color(0xFFC0A0D0), const Color(0xFFA080B0)];
+      case '身体正念':
+        return [const Color(0xFFA0C098), const Color(0xFF80A078)];
+      case '拖延破解':
+        return [const Color(0xFFE0B878), const Color(0xFFC09858)];
+      case '休息与恢复':
+        return [const Color(0xFF98A0B0), const Color(0xFF788090)];
+      case '不确定性':
+        return [const Color(0xFFB0A0A0), const Color(0xFF908080)];
+      case '幸福感':
+        return [const Color(0xFFE8C8B0), const Color(0xFFD4A890)];
+      case '自我成长':
+        return [const Color(0xFF98B0A8), const Color(0xFF789088)];
       default:
         return [MirrorColors.primary, MirrorColors.primaryDark];
     }

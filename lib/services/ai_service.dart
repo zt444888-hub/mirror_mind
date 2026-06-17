@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+const String kCloudBaseUrl = 'https://mirror-mind.onrender.com';
+
+
 class AiService {
   String? _baseUrl;
   String? _apiKey;
@@ -13,6 +16,7 @@ class AiService {
     _model = model ?? _model;
   }
 
+  _cloudAnalyze(String text) async { return _offlineAnalyze(text); }
   bool get isConfigured => _apiKey != null && _apiKey!.isNotEmpty;
 
   /// 检查配置状态，返回错误信息（null 表示配置正常）
@@ -80,6 +84,7 @@ class AiService {
         }
       }
       // 给长文本更多权重
+      score += (sanitized.length / 20).floor();
       if (score > bestScore) {
         bestScore = score;
         bestEmotion = entry.key;
@@ -101,7 +106,7 @@ class AiService {
 
     return EmotionAnalysisResult(
       emotion: bestEmotion,
-      confidence: bestScore > 0 ? (bestScore / 10.0).clamp(0.3, 0.95) : 0.5,
+      confidence: bestScore > 0 ? (bestScore / 20.0).clamp(0.3, 0.95) : 0.5,
       response: responses[bestEmotion] ?? responses['一般']!,
     );
   }

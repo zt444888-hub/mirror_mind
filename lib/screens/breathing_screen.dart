@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../widgets/breathing_ball.dart';
@@ -14,6 +15,8 @@ class BreathingScreen extends StatefulWidget {
 
 class _BreathingScreenState extends State<BreathingScreen>
     with SingleTickerProviderStateMixin {
+  late AudioPlayer _audioPlayer;
+  bool _isMuted = false;
   late AnimationController _controller;
   Timer? _phaseTimer;
 
@@ -31,6 +34,9 @@ class _BreathingScreenState extends State<BreathingScreen>
   @override
   void initState() {
     super.initState();
+    _audioPlayer = AudioPlayer();
+    _audioPlayer.setReleaseMode(ReleaseMode.loop);
+    _audioPlayer.setSource(AssetSource("audio/breath_guide.wav"));
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 4),
@@ -40,6 +46,8 @@ class _BreathingScreenState extends State<BreathingScreen>
   @override
   void dispose() {
     _phaseTimer?.cancel();
+    _audioPlayer.stop();
+    _audioPlayer.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -105,12 +113,15 @@ class _BreathingScreenState extends State<BreathingScreen>
   }
 
   void _pause() {
+    _audioPlayer.pause();
     _phaseTimer?.cancel();
     _controller.stop();
     setState(() => _isPlaying = false);
   }
 
   void _reset() {
+    _audioPlayer.stop();
+    setState(() => _isMuted = true);
     _phaseTimer?.cancel();
     _controller.reset();
     setState(() {
@@ -144,7 +155,7 @@ class _BreathingScreenState extends State<BreathingScreen>
       case Phase.exhale:
         return '用嘴巴缓慢呼气，释放所有紧张';
       case Phase.idle:
-        return '点击开始，进行 4-7-8 呼吸练习';
+        return '点击开始，进行 呼吸练习';
     }
   }
 
@@ -167,11 +178,24 @@ class _BreathingScreenState extends State<BreathingScreen>
 
     return Scaffold(
       backgroundColor: isDark ? MirrorColors.darkBackground : MirrorColors.background,
-      appBar: AppBar(title: const Text('4-7-8 呼吸练习')),
+      appBar: AppBar(title: const Text('呼吸练习')),
       body: SafeArea(
         child: Column(
           children: [
             const Spacer(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Text(
+                _instructionText,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
+                  height: 1.5,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
             SizedBox(
               width: 260,
               height: 260,
@@ -220,18 +244,6 @@ class _BreathingScreenState extends State<BreathingScreen>
               ),
             ),
             const SizedBox(height: 32),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Text(
-                _instructionText,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
-                  height: 1.5,
-                ),
-              ),
-            ),
             if (_roundCount > 0) ...[
               const SizedBox(height: 12),
               Text(
@@ -278,6 +290,15 @@ class _BreathingScreenState extends State<BreathingScreen>
                   ),
                 ),
                 const SizedBox(width: 24),
+            IconButton(
+              onPressed: () {
+                if (_isMuted) { _audioPlayer.resume(); } else { _audioPlayer.pause(); }
+                setState(() => _isMuted = !_isMuted);
+              },
+              icon: Icon(_isMuted ? Icons.volume_off : Icons.volume_up),
+              iconSize: 28,
+              color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
+            ),
                 const SizedBox(width: 48),
               ],
             ),
