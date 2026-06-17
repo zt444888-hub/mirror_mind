@@ -209,7 +209,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                         Text(
-                          '试试 4-7-8 呼吸练习',
+                          '试试呼吸练习',
                           style: TextStyle(fontSize: 13, color: MirrorColors.textSecondary),
                         ),
                       ],
