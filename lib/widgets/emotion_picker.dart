@@ -10,10 +10,11 @@ class EmotionPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var isDark = Theme.of(context).brightness == Brightness.dark;
+    // 每类取3个情绪，4个一排
     var categories = [
-      ('\u{1f60a} 积极', EmotionType.positive),
-      ('\u{1f914} 中性', EmotionType.neutral_),
-      ('\u{1f630} 消极', EmotionType.negative),
+      ('\u{1f60a} 积极', [EmotionType.happy, EmotionType.calm, EmotionType.excited, EmotionType.grateful]),
+      ('\u{1f914} 中性', [EmotionType.neutral, EmotionType.confused, EmotionType.bored, EmotionType.pingdan]),
+      ('\u{1f630} 消极', [EmotionType.anxious, EmotionType.sad, EmotionType.angry, EmotionType.tired]),
     ];
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       ...categories.map((cat) {

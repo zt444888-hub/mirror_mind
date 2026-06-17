@@ -1,9 +1,9 @@
+
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 const String kCloudBaseUrl = 'https://mirror-mind.onrender.com';
-
 
 class AiService {
   String? _baseUrl;
@@ -16,52 +16,83 @@ class AiService {
     _model = model ?? _model;
   }
 
-  _cloudAnalyze(String text) async { return _offlineAnalyze(text); }
   bool get isConfigured => _apiKey != null && _apiKey!.isNotEmpty;
 
-  /// 检查配置状态，返回错误信息（null 表示配置正常）
   String? _checkConfig() {
-    if (!isConfigured) return '请先在设置页配置 API Key';
-    if (_baseUrl == null || _baseUrl!.isEmpty) return '请先在设置页配置 API Base URL';
+    if (!isConfigured) return null; // 没 key 也能走云后端
+    if (_baseUrl == null || _baseUrl!.isEmpty) return '请配置 API Base URL';
     return null;
   }
 
-  /// 输入脱敏：过滤手机号、身份证号、邮箱，替换为 [已隐藏]
   String _sanitizeInput(String text) {
     var sanitized = text;
-    // 手机号（中国大陆 1[3-9]\d{9}）
-    sanitized =
-        sanitized.replaceAll(RegExp(r'1[3-9]\d{9}'), '[已隐藏]');
-    // 身份证号（18 位，末位可为 X/x）
-    sanitized =
-        sanitized.replaceAll(RegExp(r'\d{17}[\dXx]'), '[已隐藏]');
-    // 邮箱
-    sanitized =
-        sanitized.replaceAll(RegExp(r'\S+@\S+\.\S+'), '[已隐藏]');
+    sanitized = sanitized.replaceAll(RegExp(r'1[3-9]\d{9}'), '[已隐藏]');
+    sanitized = sanitized.replaceAll(RegExp(r'\d{17}[\dXx]'), '[已隐藏]');
+    sanitized = sanitized.replaceAll(RegExp(r'\S+@\S+\.\S+'), '[已隐藏]');
     return sanitized;
   }
 
-  /// AI 情绪分析：输入文本 → 返回情绪类型、置信度、共情回应
+  // === 情绪分析 ===
+
   Future<EmotionAnalysisResult?> analyzeEmotion(String text) async {
-    final configError = _checkConfig();
-    if (configError != null) {
-      // 未配置 API Key 时使用内置离线分析
-      return _offlineAnalyze(text);
+    // 有 API Key 走 OpenAI 兼容接口
+    if (isConfigured && _baseUrl != null && _baseUrl!.isNotEmpty) {
+      try {
+        final sanitized = _sanitizeInput(text);
+        final prompt = _buildAnalysisPrompt(sanitized);
+        final responseMap = await _callApi(prompt);
+        return EmotionAnalysisResult.fromJson(responseMap);
+      } catch (_) {}
     }
-
-    final sanitized = _sanitizeInput(text);
-    final prompt = _buildAnalysisPrompt(sanitized);
-    final responseMap = await _callApi(prompt);
-
-    return EmotionAnalysisResult.fromJson(responseMap);
+    // 走云后端
+    return _cloudAnalyze(text);
   }
 
-  /// 离线关键词情绪分析（无需 API Key）
+  Future<EmotionAnalysisResult> _cloudAnalyze(String text) async {
+    try {
+      final sanitized = _sanitizeInput(text);
+      final prompt = '分析以下情绪记录，只返回如下JSON（不要markdown）：\n'
+          '{"emotion":"开心/平静/兴奋/感恩/焦虑/难过/生气/疲惫/一般","confidence":0.0-1.0,"response":"共情回应"}';
+      final resp = await http.post(
+        Uri.parse('$kCloudBaseUrl/api/chat'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'messages': [
+            {'role': 'user', 'content': prompt + '\n\n用户说：' + sanitized},
+          ],
+        }),
+      ).timeout(const Duration(seconds: 20));
+      if (resp.statusCode == 200) {
+        final j = jsonDecode(resp.body) as Map<String, dynamic>;
+        final reply = j['reply'] as String? ?? '';
+        if (reply.isNotEmpty) {
+          try {
+            var jsonStr = reply.trim();
+            if (jsonStr.startsWith('```')) {
+              jsonStr = jsonStr.split('\n').where((l) => !l.startsWith('```')).join('\n');
+            }
+            final parsed = jsonDecode(jsonStr) as Map<String, dynamic>;
+            return EmotionAnalysisResult(
+              emotion: parsed['emotion'] as String? ?? '一般',
+              confidence: (parsed['confidence'] as num?)?.toDouble() ?? 0.5,
+              response: parsed['response'] as String? ?? reply,
+            );
+          } catch (_) {
+            return EmotionAnalysisResult(emotion: '一般', confidence: 0.5, response: reply);
+          }
+        }
+      }
+    } catch (e) {
+      print('[心镜] 云后端分析失败: $e');
+    }
+    return _offlineAnalyze(text);
+  }
+
+  // === 离线分析（后备） ===
+
   EmotionAnalysisResult _offlineAnalyze(String text) {
     final sanitized = _sanitizeInput(text);
     final lower = sanitized.toLowerCase();
-
-    // 情绪关键词映射
     final emotionKeywords = <String, List<String>>{
       '开心': ['开心', '高兴', '快乐', '愉快', '喜悦', '欣喜', '欢笑', '哈哈', '嘻嘻', '棒', '好开心', '太开心了', '庆祝', '满足', '幸福', '感恩', '感动'],
       '难过': ['难过', '伤心', '悲伤', '痛苦', '心碎', '哭了', '流泪', '失落', '沮丧', '绝望', '悲哀', '忧郁', '伤感', '想哭', '不开心'],
@@ -72,184 +103,98 @@ class AiService {
       '孤独': ['孤独', '孤单', '寂寞', '一个人', '没人陪', '独处', '孤零零', '被遗忘', '被忽视', '没人理解', '孤立'],
       '期待': ['期待', '希望', '盼望', '向往', '渴望', '憧憬', '期盼', '许愿', '想要', '梦想', '目标'],
     };
-
-    // 分析每个情绪类别的匹配度
     var bestEmotion = '一般';
     var bestScore = 0;
     for (final entry in emotionKeywords.entries) {
       var score = 0;
-      for (final keyword in entry.value) {
-        if (lower.contains(keyword)) {
-          score += 2;
-        }
+      for (final kw in entry.value) {
+        if (lower.contains(kw)) score++;
       }
-      // 给长文本更多权重
-      score += (sanitized.length / 20).floor();
       if (score > bestScore) {
         bestScore = score;
         bestEmotion = entry.key;
       }
     }
-
-    // 构建共情回应
-    final responses = <String, String>{
-      '开心': '感受到你的快乐了！保持这份好心情，生活中的美好时刻值得被记住和珍惜。',
-      '难过': '听到你难过我也很心疼。允许自己感受这份情绪，慢慢来，一切都会好起来的。',
-      '焦虑': '焦虑是很正常的感受。试试深呼吸，把注意力放在当下，一切都还在你的掌控中。',
-      '愤怒': '愤怒是合理的情绪。先深呼吸冷静一下，给自己一点空间和时间。',
-      '平静': '这种平静的状态非常珍贵。享受当下的宁静，这就是内心力量的源泉。',
-      '疲惫': '你辛苦了。好好休息是对自己最好的照顾，给自己充充电吧。',
-      '孤独': '即使独处，你也不孤单。你的感受值得被看见，也许可以联系一个信任的人。',
-      '期待': '有期待的感觉真好！向着目标前进的每一步都值得庆祝。',
-      '一般': '谢谢你的分享。每一天都是新的开始，希望你能找到属于自己的小确幸。',
-    };
-
+    final confidence = bestScore > 0 ? (0.3 + bestScore * 0.1).clamp(0.3, 0.95) : 0.3;
     return EmotionAnalysisResult(
       emotion: bestEmotion,
-      confidence: bestScore > 0 ? (bestScore / 20.0).clamp(0.3, 0.95) : 0.5,
-      response: responses[bestEmotion] ?? responses['一般']!,
+      confidence: confidence,
+      response: _buildResponse(bestEmotion, sanitized),
     );
   }
 
-  /// 生成周报
-  Future<WeeklyReportResult?> generateWeeklyReport(
-    List<Map<String, dynamic>> weekRecords,
-  ) async {
-    final configError = _checkConfig();
-    if (configError != null) throw AiConfigException(configError);
-
-    final recordText = weekRecords.map((r) {
-      return '日期: ${r['date']}, 情绪: ${r['emotion']}, 评分: ${r['score']}/10, 标签: ${r['tag'] ?? "无"}, 内容: ${r['text'] ?? ""}';
-    }).join('\n');
-
-    final prompt = _buildWeeklyPrompt(recordText);
-    final responseMap = await _callApi(prompt);
-
-    return WeeklyReportResult.fromJson(responseMap);
+  String _buildResponse(String emotion, String text) {
+    final responses = {
+      '开心': '感受到你的喜悦！这种快乐值得被好好珍惜和记录。',
+      '难过': '我理解你现在的心情，允许自己感受这份难过，它也会慢慢过去的。',
+      '焦虑': '焦虑是大脑在关心你，试着做几次深呼吸，把注意力带回当下。',
+      '愤怒': '愤怒是正常的情绪，试着先让自己冷静下来，问题会变得清晰。',
+      '平静': '平静是一种宝贵的内在力量，享受这份宁静吧。',
+      '疲惫': '你辛苦了，给自己一些时间和空间好好休息。',
+      '孤独': '孤独感有时候会悄悄来访，但你并不孤单，我一直在这里。',
+      '期待': '期待让生活充满希望，为你的目标加油！',
+      '一般': '谢谢你的分享，每一天都是独一无二的。',
+    };
+    return responses[emotion] ?? '谢谢你的分享，我会一直在这里倾听。';
   }
 
-  /// 重试配置常量
-  static const int _maxRetries = 3;
-  static const Duration _initialRetryDelay = Duration(seconds: 1);
-  static const double _retryBackoffMultiplier = 2.0;
+  // === OpenAI 兼容 API 调用 ===
 
-  /// 通用 API 调用（带指数退避重试）
   Future<Map<String, dynamic>> _callApi(String userMessage) async {
     int retryCount = 0;
-    Duration retryDelay = _initialRetryDelay;
-    
+    Duration retryDelay = const Duration(seconds: 1);
+    const maxRetries = 3;
+    const backoffMultiplier = 2.0;
+
     while (true) {
       try {
         return await _executeApiCall(userMessage);
       } catch (e) {
         retryCount++;
-        if (retryCount >= _maxRetries) {
-          // 超过最大重试次数，抛出最后一次异常
-          rethrow;
-        }
-        
-        // 仅对可重试的错误进行重试
-        if (_shouldRetry(e)) {
-          // 指数退避等待
-          await Future.delayed(retryDelay);
-          retryDelay = Duration(
-            milliseconds: (retryDelay.inMilliseconds * _retryBackoffMultiplier).toInt(),
-          );
-          continue;
-        }
-        
-        // 不可重试的错误，直接抛出
-        rethrow;
+        if (retryCount >= maxRetries) rethrow;
+        final shouldRetry = e is http.ClientException || e.toString().contains('TimeoutException') || (e is Map && e['retry'] == true);
+        if (!shouldRetry) rethrow;
+        await Future.delayed(retryDelay);
+        retryDelay = Duration(milliseconds: (retryDelay.inMilliseconds * backoffMultiplier).toInt());
       }
     }
   }
 
-  /// 执行单次 API 调用
   Future<Map<String, dynamic>> _executeApiCall(String userMessage) async {
     final baseUrl = _baseUrl ?? '';
-    if (baseUrl.isEmpty) {
-      throw const AiConfigException('API Base URL 未配置，请检查设置');
-    }
+    if (baseUrl.isEmpty) throw Exception('API Base URL 未配置');
     final url = '${baseUrl.replaceAll(RegExp(r'/+$'), '')}/chat/completions';
-    final response = await http
-        .post(
-          Uri.parse(url),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $_apiKey',
-          },
-          body: jsonEncode({
-            'model': _model ?? 'gpt-4o-mini',
-            'messages': [
-              {'role': 'system', 'content': _systemPrompt},
-              {'role': 'user', 'content': userMessage},
-            ],
-            'temperature': 0.7,
-            'max_tokens': 500,
-          }),
-        )
-        .timeout(const Duration(seconds: 15));
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $_apiKey'},
+      body: jsonEncode({
+        'model': _model ?? 'gpt-4o-mini',
+        'messages': [
+          {'role': 'system', 'content': _systemPrompt},
+          {'role': 'user', 'content': userMessage},
+        ],
+        'temperature': 0.7, 'max_tokens': 500,
+      }),
+    ).timeout(const Duration(seconds: 15));
 
-    if (response.statusCode == 401) {
-      throw const AiConfigException('API Key 无效，请检查设置');
-    }
-    if (response.statusCode == 429) {
-      // 限流错误，可重试
-      throw const AiRetryException('请求过于频繁，正在重试...');
-    }
-    if (response.statusCode >= 500) {
-      // 服务器错误，可重试
-      throw const AiRetryException('服务器暂时不可用，正在重试...');
-    }
-    if (response.statusCode != 200) {
-      throw AiConfigException('API 请求失败 (${response.statusCode})');
-    }
-
+    if (response.statusCode == 401) throw Exception('API Key 无效');
+    if (response.statusCode != 200) throw Exception('请求失败 (${response.statusCode})');
     final body = jsonDecode(response.body);
     final content = body['choices']?[0]?['message']?['content'] as String?;
-    if (content == null) throw const FormatException('API 返回为空');
-
+    if (content == null) throw Exception('API 返回为空');
     return _parseJsonResponse(content);
   }
 
-  /// 判断是否应该重试
-  bool _shouldRetry(dynamic e) {
-    return e is AiRetryException || 
-           e is http.ClientException || 
-           e is TimeoutException;
-  }
-
-  /// 解析 AI 返回的 JSON（支持代码块包裹的情况）
-  Map<String, dynamic> _parseJsonResponse(String raw) {
-    String jsonStr = raw.trim();
-    // 移除可能的 markdown 代码块标记
-    if (jsonStr.startsWith('```json')) {
-      jsonStr = jsonStr.substring(7);
-    } else if (jsonStr.startsWith('```')) {
-      jsonStr = jsonStr.substring(3);
+  Map<String, dynamic> _parseJsonResponse(String content) {
+    var jsonStr = content.trim();
+    if (jsonStr.startsWith('```')) {
+      jsonStr = jsonStr.split('\n').where((l) => !l.startsWith('```')).join('\n');
     }
-    if (jsonStr.endsWith('```')) {
-      jsonStr = jsonStr.substring(0, jsonStr.length - 3);
-    }
-    jsonStr = jsonStr.trim();
-
-    try {
+    if (jsonStr.startsWith('{') && jsonStr.endsWith('}')) {
       return jsonDecode(jsonStr) as Map<String, dynamic>;
-    } catch (e) {
-      // 尝试从原始文本中提取 JSON
-      final startIdx = jsonStr.indexOf('{');
-      final endIdx = jsonStr.lastIndexOf('}');
-      if (startIdx != -1 && endIdx != -1 && endIdx > startIdx) {
-        return jsonDecode(jsonStr.substring(startIdx, endIdx + 1))
-            as Map<String, dynamic>;
-      }
-      rethrow;
     }
+    return {'emotion': '一般', 'confidence': 0.5, 'response': content};
   }
-
-  String get _systemPrompt =>
-      '你是一个温暖、专业的心理健康助手"小镜"。用户会向你倾诉他们的心情，'
-      '请用温暖、共情的语气回应。你的回复必须是严格的 JSON 格式，不要包含其他内容。';
 
   String _buildAnalysisPrompt(String text) {
     final sanitized = _sanitizeInput(text);
@@ -258,64 +203,57 @@ class AiService {
         '{\n'
         '  "emotion": "情绪类型（从以下选择：开心/平静/兴奋/感恩/焦虑/难过/生气/疲惫/一般）",\n'
         '  "confidence": 0.0到1.0之间的置信度数值,\n'
-        '  "response": "一句温暖共情的回应（30字以内，中文）"\n'
-        '}';
+        '  "response": "一段温暖、共情的回应（100字以内）"\n'
+        '}\n'
+        '只返回 JSON，不要其他文字。';
   }
 
-  String _buildWeeklyPrompt(String records) {
-    return '以下是一位用户本周的情绪记录：\n\n'
-        '$records\n\n'
-        '请以温暖、专业的口吻，生成本周情绪分析报告。返回如下 JSON 格式：\n'
-        '{\n'
-        '  "summary": "本周情绪总体概述（50字以内）",\n'
-        '  "dominant_emotion": "本周主要情绪",\n'
-        '  "suggestion": "1-2条温暖的自我关怀建议（80字以内）",\n'
-        '  "quote": "一句适合用户的温暖的金句"\n'
-        '}';
+  final String _systemPrompt =
+      '你是一个温暖、专业的心理健康助手"小镜"。用户会向你倾诉他们的心情，'
+      '你需要判断用户的情绪类型，给出情绪分析的 JSON。'
+      '请始终保持温暖、共情、不评判的态度。';
+
+  // === 周报和年报（使用 OpenAI 兼容 API） ===
+
+  Future<WeeklyReportResult?> generateWeeklyReport(List<Map<String, dynamic>> weekData, {String? apiKey, String? baseUrl, String? model}) async {
+    if (!isConfigured || _baseUrl == null || _baseUrl!.isEmpty) return null;
+    try {
+      final prompt = _buildWeeklyReportPrompt(weekData);
+      final responseMap = await _callApi(prompt);
+      return WeeklyReportResult.fromJson(responseMap);
+    } catch (_) { return null; }
   }
 
-  /// 生成年度报告
-  Future<YearReportResult?> generateYearReport(
-    List<Map<String, dynamic>> yearRecords,
-  ) async {
-    final configError = _checkConfig();
-    if (configError != null) throw AiConfigException(configError);
-
-    final recordText = yearRecords.map((r) {
-      return '日期: ${r['date']}, 情绪: ${r['emotion']}, 评分: ${r['score']}/10, 标签: ${r['tag'] ?? "无"}';
-    }).join('\n');
-
-    final prompt = _buildYearPrompt(recordText);
-    final responseMap = await _callApi(prompt);
-
-    return YearReportResult.fromJson(responseMap);
+  Future<YearReportResult?> generateYearReport(List<Map<String, dynamic>> yearData, {String? apiKey, String? baseUrl, String? model}) async {
+    if (!isConfigured || _baseUrl == null || _baseUrl!.isEmpty) return null;
+    try {
+      final prompt = _buildYearReportPrompt(yearData);
+      final responseMap = await _callApi(prompt);
+      return YearReportResult.fromJson(responseMap);
+    } catch (_) { return null; }
   }
 
-  String _buildYearPrompt(String records) {
-    return '以下是一位用户全年（或近一年）的情绪记录摘要：\n\n'
-        '$records\n\n'
-        '请以温暖、专业的口吻，生成年度情绪回顾报告。返回如下 JSON 格式：\n'
-        '{\n'
-        '  "keywords": ["关键词1", "关键词2", "关键词3"],\n'
-        '  "trend": "年度情绪趋势描述（60字以内）",\n'
-        '  "insight": "深度的情绪洞察与成长发现（100字以内）",\n'
-        '  "suggestion": "新年自我关怀建议（80字以内）",\n'
-        '  "avgScore": 平均评分数值（1-10的浮点数）\n'
-        '}';
+  String _buildWeeklyReportPrompt(List<Map<String, dynamic>> data) {
+    return '请根据以下一周的情绪记录生成周报，返回 JSON 格式：\n'
+        '${jsonEncode(data)}\n\n'
+        '返回格式：{"summary":"一周总结","dominant_emotion":"主要情绪","suggestion":"建议","quote":"一句鼓励的话"}';
+  }
+
+  String _buildYearReportPrompt(List<Map<String, dynamic>> data) {
+    return '请根据以下一年的情绪记录生成年度报告，返回 JSON 格式：\n'
+        '${jsonEncode(data)}\n\n'
+        '返回格式：{"keywords":["关键词1","关键词2"],"trend":"全年趋势","insight":"核心洞察","suggestion":"新年建议","avgScore":平均分}';
   }
 }
 
-/// AI 情绪分析结果
+// === 数据类 ===
+
 class EmotionAnalysisResult {
   final String emotion;
   final double confidence;
   final String response;
 
-  EmotionAnalysisResult({
-    required this.emotion,
-    required this.confidence,
-    required this.response,
-  });
+  EmotionAnalysisResult({required this.emotion, required this.confidence, required this.response});
 
   factory EmotionAnalysisResult.fromJson(Map<String, dynamic> json) {
     return EmotionAnalysisResult(
@@ -326,19 +264,13 @@ class EmotionAnalysisResult {
   }
 }
 
-/// 周报生成结果
 class WeeklyReportResult {
   final String summary;
   final String dominantEmotion;
   final String suggestion;
   final String quote;
 
-  WeeklyReportResult({
-    required this.summary,
-    required this.dominantEmotion,
-    required this.suggestion,
-    required this.quote,
-  });
+  WeeklyReportResult({required this.summary, required this.dominantEmotion, required this.suggestion, required this.quote});
 
   factory WeeklyReportResult.fromJson(Map<String, dynamic> json) {
     return WeeklyReportResult(
@@ -350,24 +282,6 @@ class WeeklyReportResult {
   }
 }
 
-class AiConfigException implements Exception {
-  final String message;
-  const AiConfigException(this.message);
-
-  @override
-  String toString() => message;
-}
-
-/// AI 重试异常：用于标识可重试的错误
-class AiRetryException implements Exception {
-  final String message;
-  const AiRetryException(this.message);
-
-  @override
-  String toString() => message;
-}
-
-/// 年度报告生成结果
 class YearReportResult {
   final List<String> keywords;
   final String trend;
@@ -375,24 +289,21 @@ class YearReportResult {
   final String suggestion;
   final double avgScore;
 
-  YearReportResult({
-    required this.keywords,
-    required this.trend,
-    required this.insight,
-    required this.suggestion,
-    required this.avgScore,
-  });
+  YearReportResult({required this.keywords, required this.trend, required this.insight, required this.suggestion, required this.avgScore});
 
   factory YearReportResult.fromJson(Map<String, dynamic> json) {
     return YearReportResult(
-      keywords: (json['keywords'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          [],
+      keywords: (json['keywords'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
       trend: json['trend'] as String? ?? '',
       insight: json['insight'] as String? ?? '',
       suggestion: json['suggestion'] as String? ?? '',
       avgScore: (json['avgScore'] as num?)?.toDouble() ?? 5.0,
     );
   }
+}
+
+class AiConfigException implements Exception {
+  final String message;
+  const AiConfigException(this.message);
+  @override String toString() => message;
 }

@@ -9,6 +9,7 @@ enum EmotionType {
   neutral('一般', '😐', 5, 'neutral'),
   confused('迷茫', '🤔', 4, 'neutral'),
   bored('无聊', '😑', 3, 'neutral'),
+  pingdan('平淡', '😐', 4, 'neutral'),
   anxious('焦虑', '😰', 3, 'negative'),
   sad('难过', '😢', 2, 'negative'),
   angry('生气', '😤', 2, 'negative'),

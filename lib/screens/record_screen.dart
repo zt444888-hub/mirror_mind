@@ -403,15 +403,7 @@ class _RecordScreenState extends State<RecordScreen>
           ),
           const SizedBox(height: 16),
 
-          // AI 分析结果
-          if (_isAnalyzed && _aiResponse != null) _buildAiResult(isDark),
-          if (_isAnalyzed && _aiResponse != null) const SizedBox(height: 16),
-
-          // 情绪选择
-          _buildEmotionSection(isDark),
-          const SizedBox(height: 20),
-
-          // 操作按钮行
+          // 操作按钮行（放在输入框下面）
           Row(
             children: [
               Expanded(
@@ -437,6 +429,15 @@ class _RecordScreenState extends State<RecordScreen>
               ),
             ],
           ),
+          const SizedBox(height: 16),
+
+          // AI 分析结果
+          if (_isAnalyzed && _aiResponse != null) _buildAiResult(isDark),
+          if (_isAnalyzed && _aiResponse != null) const SizedBox(height: 16),
+
+          // 情绪选择
+          _buildEmotionSection(isDark),
+          const SizedBox(height: 20),
           const SizedBox(height: 20),
 
           // 日记列表入口

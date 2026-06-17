@@ -122,7 +122,6 @@ class _HomeScreenState extends State<HomeScreen> {
         final progress = _getProgress(consecutive, total);
 
         return GestureDetector(
-          onTap: () => _showAchievementDialog(context, consecutive, total),
           child: Container(
             width: double.infinity,
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -169,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         Text(
-                          total > 0 ? '共记录 $total 天 · 点击查看全部成就' : '开始记录你的第一天吧',
+                          total > 0 ? '共记录 $total 天 · 点击徽章查看全部成就' : '开始记录你的第一天吧',
                           style: TextStyle(
                             fontSize: 12,
                             color: isDark ? MirrorColors.darkTextSecondary : MirrorColors.textSecondary,
@@ -178,28 +177,31 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     const Spacer(),
-                    // 当前徽章
+                    // 当前徽章（点击弹窗）
                     if (badge != null)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: badge.color.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(badge.emoji, style: const TextStyle(fontSize: 18)),
-                            const SizedBox(width: 4),
-                            Text(
-                              badge.label,
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: badge.color,
+                      GestureDetector(
+                        onTap: () => _showAchievementDialog(context, consecutive, total),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: badge.color.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(badge.emoji, style: const TextStyle(fontSize: 18)),
+                              const SizedBox(width: 4),
+                              Text(
+                                badge.label,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: badge.color,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                   ],
