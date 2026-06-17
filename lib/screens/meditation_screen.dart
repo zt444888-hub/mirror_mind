@@ -198,6 +198,7 @@ class _MeditationScreenState extends State<MeditationScreen>
     _isPro = PurchaseService().isPro;
     _bgPlayer = AudioPlayer();
     _bgPlayer.setReleaseMode(ReleaseMode.loop);
+    _bgPlayer.setPlayerMode(PlayerMode.mediaPlayer);
     _progressController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
@@ -246,8 +247,8 @@ class _MeditationScreenState extends State<MeditationScreen>
     _fadeController.forward(from: 0);
 
     if (mode.backgroundAudio != null) {
-      unawaited(_bgPlayer.setSource(AssetSource(mode.backgroundAudio!.replaceFirst("assets/", ""))));
-      unawaited(_bgPlayer.resume());
+      _bgPlayer.setSource(AssetSource(mode.backgroundAudio!.replaceFirst("assets/", ""))).catchError((e) { debugPrint('[心镜] 音频加载失败: ' + e.toString()); });
+      _bgPlayer.resume().catchError((e) { debugPrint('[心镜] 音频播放失败: ' + e.toString()); });
     }
 
     // 计算引导文字切换间隔
@@ -288,7 +289,7 @@ class _MeditationScreenState extends State<MeditationScreen>
       _isPlaying = false;
       _isCompleted = true;
     });
-    _bgPlayer.stop();
+    _bgPlayer.stop().catchError((_){});
     _showCompletionDialog();
   }
 
@@ -297,7 +298,7 @@ class _MeditationScreenState extends State<MeditationScreen>
     _timer?.cancel();
     _phraseTimer?.cancel();
     _progressController.stop();
-    _bgPlayer.pause();
+    _bgPlayer.pause().catchError((_){});
     setState(() => _isPlaying = false);
   }
 
@@ -341,7 +342,7 @@ class _MeditationScreenState extends State<MeditationScreen>
 
   // 返回模式选择
   void _backToModeSelection() {
-    _bgPlayer.stop();
+    _bgPlayer.stop().catchError((_){});
     _timer?.cancel();
     _phraseTimer?.cancel();
     _progressController.reset();
