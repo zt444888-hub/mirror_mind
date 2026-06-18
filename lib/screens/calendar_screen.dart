@@ -642,14 +642,9 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
               ),
             ),
             const SizedBox(width: 8),
-            // 导出月报按钮
-            IconButton(
-              icon: _isExporting
-                  ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Icon(Icons.picture_as_pdf, size: 20),
-              onPressed: _isExporting ? null : _exportMonthlyPdf,
-              tooltip: '导出月报 PDF',
-            ),
+            // 每日表情
+            Text(_getDailySmiley(), style: const TextStyle(fontSize: 24)),
+
           ],
         ),
         IconButton(
@@ -745,4 +740,10 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
       }
     });
   }
-}
+
+
+  String _getDailySmiley() {
+    var seed = DateTime.now().millisecondsSinceEpoch ~/ 86400000;
+    var list = ["😊","😄","😌","🥰","🤗","😎","🥳","😇","🤩","😁","☺️","😋","🤭","😃","🙂","😉","🤪","😜","😺","💛","✨","🌟","🌈","🌻","🌸","🍀","🎉","🎊","💫","⭐"];
+    return list[seed % list.length];
+  }}
