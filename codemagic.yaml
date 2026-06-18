@@ -1,4 +1,3 @@
-# Codemagic CI/CD Auto Build for Mirror Mind
 workflows:
   ios-release:
     name: iOS Release to TestFlight
@@ -8,9 +7,6 @@ workflows:
       flutter: stable
       xcode: latest
       cocoapods: default
-      vars:
-        APP_ID: com.mirrormind.ios
-        APP_NAME: "心镜 - 情绪日记"
     triggering:
       events:
         - push
