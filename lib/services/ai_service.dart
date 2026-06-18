@@ -216,16 +216,31 @@ class AiService {
   // === 周报和年报（使用 OpenAI 兼容 API） ===
 
   Future<WeeklyReportResult?> generateWeeklyReport(List<Map<String, dynamic>> weekData, {String? apiKey, String? baseUrl, String? model}) async {
-    if (!isConfigured || _baseUrl == null || _baseUrl!.isEmpty) return null;
+    
+    if (isConfigured && _baseUrl != null && _baseUrl!.isNotEmpty) {
+      try {
+        final prompt = _buildWeeklyReportPrompt(weekData);
+        final responseMap = await _callApi(prompt);
+        return WeeklyReportResult.fromJson(responseMap);
+      } catch (_) {}
+    }
     try {
-      final prompt = _buildWeeklyReportPrompt(weekData);
-      final responseMap = await _callApi(prompt);
-      return WeeklyReportResult.fromJson(responseMap);
-    } catch (_) { return null; }
+      final p = _buildWeeklyReportPrompt(weekData);
+      var resp = await http.post(Uri.parse("https://mirror-mind.onrender.com/api/chat"), headers: {"Content-Type": "application/json"}, body: jsonEncode({"messages": [{"role": "user", "content": p}]})).timeout(const Duration(seconds: 30));
+      if (resp.statusCode == 200) {
+        var j = jsonDecode(resp.body) as Map<String, dynamic>;
+        var reply = j["reply"] as String? ?? "";
+        if (reply.isNotEmpty) {
+          try { return WeeklyReportResult.fromJson(jsonDecode(reply.trim()) as Map<String, dynamic>); } catch (_) {}
+          return WeeklyReportResult(summary: reply, dominantEmotion: "", suggestion: "", quote: "");
+        }
+      }
+    } catch (_) {}
+    return null;
   }
 
   Future<YearReportResult?> generateYearReport(List<Map<String, dynamic>> yearData, {String? apiKey, String? baseUrl, String? model}) async {
-    if (!isConfigured || _baseUrl == null || _baseUrl!.isEmpty) return null;
+    
     try {
       final prompt = _buildYearReportPrompt(yearData);
       final responseMap = await _callApi(prompt);

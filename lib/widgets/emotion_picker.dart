@@ -23,7 +23,8 @@ class EmotionPicker extends StatelessWidget {
             Padding(padding: const EdgeInsets.only(left: 4, bottom: 8),
               child: Text(cat.$1, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600,
                 color: isDark ? Colors.grey[400] : Colors.grey[500]))),
-            Wrap(spacing: 8, runSpacing: 8, children: cat.$2.map((e) {
+            SingleChildScrollView(scrollDirection: Axis.horizontal,
+        child: Row(children: cat.$2.map((e) {
               var sel = e.label == selected;
               var clr = MirrorColors.emotionColor(e.label);
               return GestureDetector(onTap: () => onSelected(e.label),
@@ -39,7 +40,7 @@ class EmotionPicker extends StatelessWidget {
                       fontWeight: sel ? FontWeight.w600 : FontWeight.normal,
                       color: sel ? clr : (isDark ? Colors.grey[300] : Colors.grey[600]))),
                   ])));
-            }).toList()),
+            }).toList(),)),
           ]));
       }),
     ]);

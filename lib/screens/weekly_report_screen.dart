@@ -32,16 +32,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
     final settings = context.read<SettingsProvider>();
     final provider = context.read<EmotionProvider>();
 
-    if (!settings.isApiConfigured) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('请先在设置页配置 API Key'),
-          backgroundColor: MirrorColors.warning,
-          action: SnackBarAction(label: '去设置', textColor: Colors.white, onPressed: _navigateToSettings),
-        ),
-      );
-      return;
-    }
+    // 无需API Key
 
     provider.updateAiConfig(
       baseUrl: settings.baseUrl,
