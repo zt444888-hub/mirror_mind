@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
       provider.loadWeekRecords();
       // 预热 AI 后端
       AiChatService.warmUp();
-      BlessingCard.checkAndShow(context);
+      if (FocusScope.of(context).hasFocus) FocusScope.of(context).unfocus(); Future.microtask(() => BlessingCard.checkAndShow(context));
     });
   }
 

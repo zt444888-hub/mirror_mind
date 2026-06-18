@@ -43,8 +43,7 @@ class _RecordScreenState extends State<RecordScreen>
     _tabController = TabController(length: 2, vsync: this);
     _initSpeech();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      FocusScope.of(context).requestFocus(_textFocus);
-    });
+          });
   }
 
   late final FocusNode _textFocus = FocusNode();
@@ -233,8 +232,7 @@ class _RecordScreenState extends State<RecordScreen>
       _aiConfidence = 0.0;
       _isAnalyzed = false;
     });
-    FocusScope.of(context).requestFocus(_textFocus);
-  }
+      }
 
   @override
   Widget build(BuildContext context) {

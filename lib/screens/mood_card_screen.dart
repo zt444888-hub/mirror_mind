@@ -210,7 +210,7 @@ class _MoodCardScreenState extends State<MoodCardScreen> {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         const Padding(padding: EdgeInsets.only(left: 4, bottom: 8), child: Text('卡片文字', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600))),
         Card(child: Padding(padding: const EdgeInsets.all(12), child: TextField(
-          controller: _textController, maxLines: 4, minLines: 2,
+          controller: _textController, autofocus: false, maxLines: 4, minLines: 2,
           style: TextStyle(fontSize: 15, height: 1.6, color: isDark ? MirrorColors.darkTextPrimary : MirrorColors.textPrimary),
           decoration: const InputDecoration(hintText: '写下今天的感受...', border: InputBorder.none, contentPadding: EdgeInsets.zero),
         ))),
