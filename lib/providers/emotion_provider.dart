@@ -121,6 +121,11 @@ class EmotionProvider extends ChangeNotifier {
     // 保存后自动刷新成就数据
     await loadStreak();
     await loadWeekRecords();
+    // 刷新日历数据
+    var now = DateTime.now();
+    await load30DayRecords();
+    await loadMonthRecordsByTag(now.year, now.month, tag: '全部');
+    notifyListeners();
     return id;
   }
 

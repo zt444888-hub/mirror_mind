@@ -171,6 +171,7 @@ class _RecordScreenState extends State<RecordScreen>
     await provider.saveRecord(record);
     // 保存后自动刷新成就条
     await provider.loadStreak();
+    await provider.load30DayRecords();
 
     if (!mounted) return;
     setState(() => _isSaving = false);
