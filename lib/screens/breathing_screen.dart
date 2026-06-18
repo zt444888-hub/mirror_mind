@@ -181,8 +181,8 @@ class _BreathingScreenState extends State<BreathingScreen>
       appBar: AppBar(title: const Text('呼吸练习')),
       body: SafeArea(
         child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Spacer(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
@@ -302,7 +302,6 @@ class _BreathingScreenState extends State<BreathingScreen>
                 const SizedBox(width: 48),
               ],
             ),
-            const Spacer(),
           ],
         ),
       ),
