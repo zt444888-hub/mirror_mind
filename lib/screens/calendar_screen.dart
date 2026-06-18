@@ -53,6 +53,8 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
     super.dispose();
   }
 
+  String _analysisResult = "";
+  bool _isAnalyzing = false;
   Future<void> _loadMonthData() async {
     final provider = context.read<EmotionProvider>();
     await provider.loadMonthRecordsByTag(_currentMonth.year, _currentMonth.month, tag: _selectedTag);
@@ -419,6 +421,8 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                         label: const Text('生成 AI 周报'),
                       ),
                     ),
+                    const SizedBox(height: 8),
+                    _buildQuickAnalysis(isDark, context.watch<EmotionProvider>().weekRecords),
                   ],
                 ),
               ),
@@ -600,6 +604,8 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
                       );
                     },
                   ),
+                  const SizedBox(height: 16),
+                  _buildQuickAnalysis(isDark, context.watch<EmotionProvider>().weekRecords),
                 ],
               ),
             ),
@@ -690,5 +696,53 @@ class _CalendarScreenState extends State<CalendarScreen> with SingleTickerProvid
         },
       ),
     );
+  }
+
+
+  Widget _buildQuickAnalysis(bool isDark, List<EmotionRecord> records) {
+    if (records.isEmpty) return const SizedBox.shrink();
+    return Container(
+      width: double.infinity, padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [MirrorColors.primaryLight.withValues(alpha: 0.15), Color(0x33D4C5E2)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: MirrorColors.primaryLight.withValues(alpha: 0.3))),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          const Icon(Icons.auto_awesome, size: 16, color: MirrorColors.primaryDark),
+          const SizedBox(width: 6),
+          const Text('AI 情绪分析', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: MirrorColors.primaryDark)),
+          const Spacer(),
+          GestureDetector(onTap: () => _triggerAnalysis(context, records),
+            child: Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(color: MirrorColors.primaryLight.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(8)),
+              child: Text(_isAnalyzing ? '分析中...' : '刷新',
+                style: TextStyle(fontSize: 11, color: isDark ? Colors.grey[400] : MirrorColors.primaryDark)))),
+        ]),
+        const SizedBox(height: 10),
+        if (_analysisResult.isNotEmpty)
+          Text(_analysisResult, style: TextStyle(fontSize: 13, height: 1.6, color: isDark ? Colors.grey[300] : Colors.grey[700])),
+        if (_analysisResult.isEmpty)
+          const Text('点击刷新获取本周情绪分析', style: TextStyle(fontSize: 12, color: MirrorColors.textSecondary)),
+      ]),
+    );
+  }
+
+  Future<void> _triggerAnalysis(BuildContext context, List<EmotionRecord> records) async {
+    if (_isAnalyzing) return;
+    setState(() { _isAnalyzing = true; _analysisResult = ''; });
+    var p = context.read<EmotionProvider>();
+    await p.loadWeekRecords();
+    var r = await p.generateWeeklyReport();
+    if (mounted) setState(() {
+      _isAnalyzing = false;
+      if (r != null) {
+        var t = r.dominantEmotion.isNotEmpty ? '本周主要情绪:' + r.dominantEmotion + '\n' : '';
+        _analysisResult = t + r.summary;
+        if (r.suggestion.isNotEmpty) _analysisResult = _analysisResult + '\n\n建议:' + r.suggestion;
+      } else {
+        _analysisResult = '暂时无法获取AI分析';
+      }
+    });
   }
 }
